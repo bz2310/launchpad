@@ -166,7 +166,7 @@ export const artists: Record<string, Artist> = {
     id: 'artist_001',
     name: 'Jeremy Elliot',
     handle: '@jeremyelliot',
-    avatar: '/jeremy-elliot-profile.jpg',
+    avatar: process.env.NODE_ENV === 'production' ? '/launchpad/jeremy-elliot-profile.jpg' : '/jeremy-elliot-profile.jpg',
     verified: true,
     bio: 'Grammy-nominated producer & songwriter. From NYC street performer to working with Justin Bieber.',
     location: 'New York, NY',
