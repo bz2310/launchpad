@@ -4,10 +4,15 @@ import Link from 'next/link';
 import { ArtistLayout } from '@/components/artist-portal';
 import { StatCard } from '@/components/artist-portal/ui';
 import { getArtistPortalData } from '@/data/artist-portal-data';
+import { getAnalyticsData } from '@/data/analytics-data';
 
 export default function ArtistPortalPage() {
   const portalData = getArtistPortalData();
   const { content, fans, revenueMetrics, overview } = portalData;
+
+  // Get computed topFans and topRisers from analytics (30-day default)
+  const analyticsData = getAnalyticsData({ dateRange: { start: '', end: '', preset: '30d', granularity: 'day' } });
+  const { topFans: computedTopFans, topRisers: computedTopRisers } = analyticsData;
 
   // Revenue data
   const revenue7d = 12430;
@@ -21,16 +26,6 @@ export default function ArtistPortalPage() {
     { label: 'Unlocks', amount: revenueMetrics.contentRevenue + 380, color: '#f59e0b' },
   ];
   const totalBreakdown = revenueBreakdown.reduce((sum, r) => sum + r.amount, 0);
-
-  // Fan Heat - Top Risers (simulated ranking changes)
-  const topRisers = [
-    { prevRank: 14, newRank: 6, fan: fans[0] },
-    { prevRank: 33, newRank: 18, fan: fans[1] },
-  ];
-
-  // Churn Risk - top fans who've been inactive
-  const churnRiskFans = fans.filter(f => f.status === 'at_risk' && f.tier !== 'free');
-  const topChurnRisk = churnRiskFans.length > 0 ? churnRiskFans[0] : fans.find(f => f.status === 'at_risk');
 
   // Get all drops (published + scheduled + draft) sorted by date
   const allDrops = content
@@ -161,16 +156,16 @@ export default function ArtistPortalPage() {
         <div className="fans-section">
           <div className="fans-header">
             <h3>Fans</h3>
-            <Link href="/artist-portal/fans" className="view-all-link">View All</Link>
+            <Link href="/artist-portal/analytics/fans" className="view-all-link">View All</Link>
           </div>
           <div className="fans-grid">
             {/* Top Fans */}
             <div className="fans-column">
               <h4>Top Fans</h4>
               <div className="top-fans-list">
-                {fans.slice(0, 5).map((fan, index) => (
+                {computedTopFans.slice(0, 5).map((fan) => (
                   <div key={fan.id} className="top-fan-row">
-                    <span className="fan-rank-num">{index + 1}</span>
+                    <span className="fan-rank-num">{fan.rank}</span>
                     <img src={fan.avatar} alt={fan.name} className="fan-avatar-sm" />
                     <div className="fan-details">
                       <span className="fan-name-link">{fan.name}</span>
@@ -184,18 +179,18 @@ export default function ArtistPortalPage() {
 
             {/* Top Risers */}
             <div className="fans-column">
-              <h4>Top Risers (7d)</h4>
+              <h4>Top Risers (30d)</h4>
               <div className="risers-list">
-                {topRisers.map((riser, i) => (
-                  <div key={i} className="riser-row">
+                {computedTopRisers.slice(0, 5).map((riser) => (
+                  <div key={riser.id} className="riser-row">
                     <div className="riser-change">
                       <span className="riser-arrow">▲</span>
-                      <span className="riser-positions">+{riser.prevRank - riser.newRank}</span>
+                      <span className="riser-positions">+{riser.rankChange || 0}</span>
                     </div>
-                    <img src={riser.fan.avatar} alt={riser.fan.name} className="fan-avatar-sm" />
+                    <img src={riser.avatar} alt={riser.name} className="fan-avatar-sm" />
                     <div className="fan-details">
-                      <span className="fan-name-link">{riser.fan.name}</span>
-                      <span className="riser-rank-text">#{riser.prevRank} → #{riser.newRank}</span>
+                      <span className="fan-name-link">{riser.name}</span>
+                      <span className="riser-rank-text">#{riser.previousRank} → #{riser.rank}</span>
                     </div>
                   </div>
                 ))}
