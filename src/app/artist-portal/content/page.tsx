@@ -21,23 +21,29 @@ export default function ContentPage() {
   const [monetizedFilter, setMonetizedFilter] = useState<boolean | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  // Filter content
+  // Filter and sort content by date
   const filteredContent = useMemo(() => {
-    return content.filter(item => {
-      if (typeFilter !== 'all' && item.type !== typeFilter) return false;
-      if (accessFilter !== 'all') {
-        if (accessFilter === 'supporters' && item.accessLevel !== 'supporters') return false;
-        if (accessFilter === 'superfans' && item.accessLevel !== 'superfans') return false;
-        if (accessFilter === 'public' && item.accessLevel !== 'public') return false;
-      }
-      if (statusFilter !== 'all' && item.status !== statusFilter) return false;
-      if (monetizedFilter !== null) {
-        const isMonetized = item.revenue > 0;
-        if (monetizedFilter && !isMonetized) return false;
-        if (!monetizedFilter && isMonetized) return false;
-      }
-      return true;
-    });
+    return content
+      .filter(item => {
+        if (typeFilter !== 'all' && item.type !== typeFilter) return false;
+        if (accessFilter !== 'all') {
+          if (accessFilter === 'supporters' && item.accessLevel !== 'supporters') return false;
+          if (accessFilter === 'superfans' && item.accessLevel !== 'superfans') return false;
+          if (accessFilter === 'public' && item.accessLevel !== 'public') return false;
+        }
+        if (statusFilter !== 'all' && item.status !== statusFilter) return false;
+        if (monetizedFilter !== null) {
+          const isMonetized = item.revenue > 0;
+          if (monetizedFilter && !isMonetized) return false;
+          if (!monetizedFilter && isMonetized) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        const dateA = a.publishedAt || a.scheduledFor || a.createdAt;
+        const dateB = b.publishedAt || b.scheduledFor || b.createdAt;
+        return new Date(dateB).getTime() - new Date(dateA).getTime();
+      });
   }, [content, typeFilter, accessFilter, statusFilter, monetizedFilter]);
 
   // Get scheduled content for calendar

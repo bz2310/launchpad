@@ -253,7 +253,7 @@ const fanSegments: FanSegmentData[] = [
 // Content Data
 // =====================
 
-const content: ContentItem[] = [
+export const content: ContentItem[] = [
   {
     id: 'content_001',
     type: 'music',

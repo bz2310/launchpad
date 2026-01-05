@@ -30,6 +30,7 @@ import type {
   DateRangePreset,
 } from '@/types/analytics';
 import type { FanTier } from '@/types/artist-portal';
+import { content } from './artist-portal-data';
 import {
   calculateMFS,
   calculateRevenueVelocity,
@@ -413,106 +414,69 @@ const generateRawFanEvents = (): RawFanEvent[] => {
   return events;
 };
 
-const generateDrops = (): DropPerformance[] => [
-  {
-    dropId: 'content_001',
-    title: 'Midnight Dreams (Single)',
-    type: 'music',
-    accessLevel: 'public',
-    publishedAt: daysAgo(7),
-    views: 45230,
-    uniqueViews: 38450,
-    likes: 3421,
-    comments: 287,
-    shares: 892,
-    saves: 1456,
-    avgWatchTime: 198,
-    completionRate: 84.5,
-    revenue: 1245.67,
-    conversions: 23,
-    conversionRate: 0.05,
-    viewsByTier: { free: 28450, supporter: 12340, superfan: 4440 },
-    topCountries: [
-      { countryCode: 'US', country: 'United States', views: 22120, percent: 48.9 },
-      { countryCode: 'GB', country: 'United Kingdom', views: 6780, percent: 15.0 },
-      { countryCode: 'CA', country: 'Canada', views: 4070, percent: 9.0 },
-    ],
-    vsAverage: { views: 142, engagement: 128, revenue: 215 },
-  },
-  {
-    dropId: 'content_002',
-    title: 'Behind the Scenes: Studio Session',
-    type: 'video',
-    accessLevel: 'supporters',
-    publishedAt: daysAgo(3),
-    views: 12450,
-    uniqueViews: 10890,
-    likes: 1876,
-    comments: 342,
-    shares: 234,
-    saves: 567,
-    avgWatchTime: 423,
-    completionRate: 71.2,
-    revenue: 0,
-    conversions: 45,
-    conversionRate: 0.36,
-    viewsByTier: { free: 0, supporter: 8920, superfan: 3530 },
-    topCountries: [
-      { countryCode: 'US', country: 'United States', views: 5840, percent: 46.9 },
-      { countryCode: 'GB', country: 'United Kingdom', views: 2120, percent: 17.0 },
-      { countryCode: 'DE', country: 'Germany', views: 1120, percent: 9.0 },
-    ],
-    vsAverage: { views: 95, engagement: 156, revenue: 0 },
-  },
-  {
-    dropId: 'content_003',
-    title: 'Tour Announcement 2025',
-    type: 'post',
-    accessLevel: 'public',
-    publishedAt: daysAgo(1),
-    views: 28340,
-    uniqueViews: 24560,
-    likes: 4532,
-    comments: 876,
-    shares: 1234,
-    saves: 234,
-    revenue: 0,
-    conversions: 67,
-    conversionRate: 0.24,
-    viewsByTier: { free: 18230, supporter: 7890, superfan: 2220 },
-    topCountries: [
-      { countryCode: 'US', country: 'United States', views: 14170, percent: 50.0 },
-      { countryCode: 'GB', country: 'United Kingdom', views: 4250, percent: 15.0 },
-      { countryCode: 'CA', country: 'Canada', views: 2550, percent: 9.0 },
-    ],
-    vsAverage: { views: 178, engagement: 245, revenue: 0 },
-  },
-  {
-    dropId: 'content_004',
-    title: 'Acoustic Session: Fan Favorites',
-    type: 'music',
-    accessLevel: 'superfans',
-    publishedAt: daysAgo(14),
-    views: 8760,
-    uniqueViews: 7890,
-    likes: 2134,
-    comments: 456,
-    shares: 123,
-    saves: 892,
-    avgWatchTime: 1256,
-    completionRate: 68.8,
-    revenue: 0,
-    conversions: 12,
-    conversionRate: 0.14,
-    viewsByTier: { free: 0, supporter: 0, superfan: 8760 },
-    topCountries: [
-      { countryCode: 'US', country: 'United States', views: 4380, percent: 50.0 },
-      { countryCode: 'GB', country: 'United Kingdom', views: 1314, percent: 15.0 },
-      { countryCode: 'CA', country: 'Canada', views: 876, percent: 10.0 },
-    ],
-    vsAverage: { views: 67, engagement: 312, revenue: 0 },
-  },
-];
+// Transform content from artist-portal-data into DropPerformance format
+// This ensures analytics/drops and content library use the same underlying data
+const generateDrops = (): DropPerformance[] => {
+  // Only include published content (has publishedAt date)
+  const publishedContent = content.filter(item => item.status === 'published' && item.publishedAt);
+
+  // Sort by date (newest first)
+  const sortedContent = [...publishedContent].sort((a, b) => {
+    const dateA = new Date(a.publishedAt!).getTime();
+    const dateB = new Date(b.publishedAt!).getTime();
+    return dateB - dateA;
+  });
+
+  // Average metrics for comparison
+  const avgViews = sortedContent.reduce((sum, c) => sum + c.viewCount, 0) / sortedContent.length || 1;
+  const avgEngagement = sortedContent.reduce((sum, c) => sum + c.likeCount + c.commentCount, 0) / sortedContent.length || 1;
+  const avgRevenue = sortedContent.reduce((sum, c) => sum + c.revenue, 0) / sortedContent.length || 1;
+
+  return sortedContent.map(item => {
+    const views = item.viewCount;
+    const engagement = item.likeCount + item.commentCount + item.shareCount;
+
+    // Calculate tier breakdown based on access level
+    let viewsByTier = { free: 0, supporter: 0, superfan: 0 };
+    if (item.accessLevel === 'public') {
+      viewsByTier = { free: Math.round(views * 0.63), supporter: Math.round(views * 0.27), superfan: Math.round(views * 0.10) };
+    } else if (item.accessLevel === 'supporters') {
+      viewsByTier = { free: 0, supporter: Math.round(views * 0.72), superfan: Math.round(views * 0.28) };
+    } else {
+      viewsByTier = { free: 0, supporter: 0, superfan: views };
+    }
+
+    return {
+      dropId: item.id,
+      title: item.title,
+      type: item.type,
+      accessLevel: item.accessLevel,
+      publishedAt: item.publishedAt!,
+      views,
+      uniqueViews: Math.round(views * 0.85),
+      likes: item.likeCount,
+      comments: item.commentCount,
+      shares: item.shareCount,
+      saves: Math.round(item.likeCount * 0.43),
+      avgWatchTime: item.duration ? Math.round(item.duration * 0.85) : undefined,
+      completionRate: item.duration ? Math.round(70 + Math.random() * 20) : undefined,
+      revenue: item.revenue,
+      conversions: Math.round(views * 0.002),
+      conversionRate: Math.round(views > 0 ? (engagement / views) * 100 : 0) / 100,
+      viewsByTier,
+      topCountries: [
+        { countryCode: 'US', country: 'United States', views: Math.round(views * 0.49), percent: 49.0 },
+        { countryCode: 'GB', country: 'United Kingdom', views: Math.round(views * 0.15), percent: 15.0 },
+        { countryCode: 'CA', country: 'Canada', views: Math.round(views * 0.09), percent: 9.0 },
+      ],
+      vsAverage: {
+        views: Math.round((views / avgViews - 1) * 100),
+        engagement: Math.round((engagement / avgEngagement - 1) * 100),
+        revenue: item.revenue > 0 ? Math.round((item.revenue / avgRevenue - 1) * 100) : 0,
+      },
+    };
+  });
+};
 
 // =====================
 // Cached Raw Data (generated once)
