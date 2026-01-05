@@ -39,10 +39,6 @@ export default function CreatePage() {
   const [referralBonus, setReferralBonus] = useState(false);
   const [giftEnabled, setGiftEnabled] = useState(false);
 
-  // Preview
-  const [previewTier, setPreviewTier] = useState('supporter');
-  const [previewRank, setPreviewRank] = useState(12);
-
   // Content
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -120,21 +116,6 @@ export default function CreatePage() {
     { id: 'superfan_candidates', label: 'Superfan Candidates' },
     { id: 'inactive', label: 'Inactive (30+ days)' },
   ];
-
-  const canAccessDrop = () => {
-    if (accessType === 'public') return true;
-    if (accessType === 'subscribers') return previewTier !== 'free';
-    if (accessType === 'tier') {
-      if (selectedTiers.includes('superfan') && previewTier === 'superfan') return true;
-      if (selectedTiers.includes('supporter') && (previewTier === 'supporter' || previewTier === 'superfan')) return true;
-      return false;
-    }
-    if (accessType === 'rank') {
-      if (rankType === 'count') return previewRank <= rankValue;
-      return previewRank <= Math.ceil(100 * (rankValue / 100));
-    }
-    return true;
-  };
 
   const handleSaveDraft = () => {
     console.log('Saving draft...', { dropType, accessType, monetization, timing, title, description });
@@ -549,119 +530,75 @@ export default function CreatePage() {
         {/* Preview Panel */}
         <div className="preview-panel">
           <div className="preview-header">
-            <h3>Preview as Fan</h3>
-          </div>
-
-          <div className="preview-controls">
-            <div className="preview-control">
-              <label>Tier</label>
-              <select value={previewTier} onChange={(e) => setPreviewTier(e.target.value)}>
-                <option value="free">Free</option>
-                <option value="supporter">Supporter</option>
-                <option value="superfan">Superfan</option>
-              </select>
-            </div>
-            <div className="preview-control">
-              <label>Rank</label>
-              <div className="rank-input">
-                <span>#</span>
-                <input
-                  type="number"
-                  value={previewRank}
-                  onChange={(e) => setPreviewRank(parseInt(e.target.value) || 1)}
-                  min={1}
-                />
-              </div>
-            </div>
+            <h3>Preview</h3>
           </div>
 
           <div className="preview-card">
-            {canAccessDrop() ? (
-              <>
-                <div className="preview-card-header">
-                  <div className="preview-artist">
-                    <img src={artist.avatar} alt={artist.name} className="preview-avatar" />
-                    <div className="preview-artist-info">
-                      <span className="preview-artist-name">{artist.name}</span>
-                      <span className="preview-time">Just now</span>
-                    </div>
-                  </div>
-                  <span className={`preview-type-badge ${dropType}`}>{dropType}</span>
+            <div className="preview-card-header">
+              <div className="preview-artist">
+                <img src={artist.avatar} alt={artist.name} className="preview-avatar" />
+                <div className="preview-artist-info">
+                  <span className="preview-artist-name">{artist.name}</span>
+                  <span className="preview-time">Just now</span>
                 </div>
-                <div className="preview-card-content">
-                  {dropType === 'audio' && (
-                    <div className="preview-audio">
-                      <div className="audio-waveform" />
-                      <div className="audio-controls">
-                        <button className="play-btn">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <polygon points="5 3 19 12 5 21 5 3" />
-                          </svg>
-                        </button>
-                        <div className="audio-progress">
-                          <div className="audio-bar" />
-                        </div>
-                        <span className="audio-time">0:00 / 3:42</span>
-                      </div>
-                    </div>
-                  )}
-                  {dropType === 'video' && (
-                    <div className="preview-video">
-                      <div className="video-placeholder">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
-                          <polygon points="5 3 19 12 5 21 5 3" />
-                        </svg>
-                      </div>
-                    </div>
-                  )}
-                  {dropType === 'post' && (
-                    <div className="preview-post">
-                      <div className="post-placeholder" />
-                    </div>
-                  )}
-                  {dropType === 'merch' && (
-                    <div className="preview-merch">
-                      <div className="merch-placeholder" />
-                      {monetization === 'paid' && (
-                        <span className="merch-price">${unlockPrice.toFixed(2)}</span>
-                      )}
-                    </div>
-                  )}
-                  {dropType === 'event' && (
-                    <div className="preview-event">
-                      <div className="event-placeholder" />
-                    </div>
-                  )}
-                  {dropType === 'poll' && (
-                    <div className="preview-poll">
-                      <div className="poll-option">Option 1</div>
-                      <div className="poll-option">Option 2</div>
-                    </div>
-                  )}
-                </div>
-                <div className="preview-card-footer">
-                  <h4>{title || 'Untitled Drop'}</h4>
-                  <p>{description || 'Add a description...'}</p>
-                </div>
-              </>
-            ) : (
-              <div className="preview-locked">
-                <div className="lock-icon">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
-                </div>
-                <h4>Content Locked</h4>
-                <p>
-                  {accessType === 'tier' && `Available for ${selectedTiers.join(' & ')} tiers`}
-                  {accessType === 'rank' &&
-                    `Available for top ${rankValue}${rankType === 'percent' ? '%' : ''} fans`}
-                  {accessType === 'subscribers' && 'Available for subscribers only'}
-                  {accessType === 'segment' && 'Available for selected segment'}
-                </p>
               </div>
-            )}
+              <span className={`preview-type-badge ${dropType}`}>{dropType}</span>
+            </div>
+            <div className="preview-card-content">
+              {dropType === 'audio' && (
+                <div className="preview-audio">
+                  <div className="audio-waveform" />
+                  <div className="audio-controls">
+                    <button className="play-btn">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                    </button>
+                    <div className="audio-progress">
+                      <div className="audio-bar" />
+                    </div>
+                    <span className="audio-time">0:00 / 3:42</span>
+                  </div>
+                </div>
+              )}
+              {dropType === 'video' && (
+                <div className="preview-video">
+                  <div className="video-placeholder">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                  </div>
+                </div>
+              )}
+              {dropType === 'post' && (
+                <div className="preview-post">
+                  <div className="post-placeholder" />
+                </div>
+              )}
+              {dropType === 'merch' && (
+                <div className="preview-merch">
+                  <div className="merch-placeholder" />
+                  {monetization === 'paid' && (
+                    <span className="merch-price">${unlockPrice.toFixed(2)}</span>
+                  )}
+                </div>
+              )}
+              {dropType === 'event' && (
+                <div className="preview-event">
+                  <div className="event-placeholder" />
+                </div>
+              )}
+              {dropType === 'poll' && (
+                <div className="preview-poll">
+                  <div className="poll-option">Option 1</div>
+                  <div className="poll-option">Option 2</div>
+                </div>
+              )}
+            </div>
+            <div className="preview-card-footer">
+              <h4>{title || 'Untitled Drop'}</h4>
+              <p>{description || 'Add a description...'}</p>
+            </div>
           </div>
 
           {/* Actions */}
