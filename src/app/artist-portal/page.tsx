@@ -177,7 +177,7 @@ export default function ArtistPortalPage() {
                       <span className="fan-name-link">{fan.name}</span>
                       <span className={`fan-tier-badge tier-${fan.tier}`}>{fan.tier}</span>
                     </div>
-                    <span className="fan-spend">${fan.totalSpend.toLocaleString()}</span>
+                    <span className="fan-points">{fan.engagementScore.toLocaleString()} pts</span>
                   </div>
                 ))}
               </div>

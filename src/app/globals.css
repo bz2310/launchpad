@@ -6890,6 +6890,13 @@ a.leaderboard-item {
     white-space: nowrap;
 }
 
+.fan-points {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+    white-space: nowrap;
+}
+
 .risers-list {
     display: flex;
     flex-direction: column;
