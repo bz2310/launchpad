@@ -69,26 +69,28 @@ export default function HomePage() {
                   <div className="featured-artist-stats">
                     <span><strong>{featuredArtist.stats.supporters}</strong> supporters</span>
                   </div>
-                  <div className="momentum-wheel-sm">
-                    <div className="momentum-circle">
-                      <svg viewBox="0 0 36 36">
-                        <path
-                          className="momentum-bg"
-                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        />
-                        <path
-                          className="momentum-progress"
-                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                          strokeDasharray="68, 100"
-                        />
-                      </svg>
-                      <div className="momentum-value">68%</div>
+                  {featuredArtist.momentum && (
+                    <div className="momentum-wheel-sm">
+                      <div className="momentum-circle">
+                        <svg viewBox="0 0 36 36">
+                          <path
+                            className="momentum-bg"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          />
+                          <path
+                            className="momentum-progress"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            strokeDasharray={`${Math.round((featuredArtist.momentum.current / featuredArtist.momentum.target) * 100)}, 100`}
+                          />
+                        </svg>
+                        <div className="momentum-value">{Math.round((featuredArtist.momentum.current / featuredArtist.momentum.target) * 100)}%</div>
+                      </div>
+                      <div className="momentum-info">
+                        <span className="momentum-label">Momentum</span>
+                        <span className="momentum-target">toward <strong>{featuredArtist.momentum.label}</strong></span>
+                      </div>
                     </div>
-                    <div className="momentum-info">
-                      <span className="momentum-label">Momentum</span>
-                      <span className="momentum-target">toward <strong>15K</strong></span>
-                    </div>
-                  </div>
+                  )}
                   {relationship?.isEarlySupporter && (
                     <span className="relationship-signal">
                       ✨ Early supporter since {relationship.supporterSince}

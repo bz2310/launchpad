@@ -136,19 +136,22 @@ export default function FansAnalyticsPage() {
         </div>
 
         {/* Tier Movement Summary */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginTop: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginTop: '16px' }}>
           {fanLadder.tiers.filter(t => t.tier !== 'free').map((tier) => (
             <div key={tier.tier} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px' }}>
-              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{tier.displayName} Movement</div>
-              <div style={{ display: 'flex', gap: '12px', fontSize: '12px' }}>
-                <div>
-                  <span style={{ color: '#22c55e' }}>↑ {tier.upgradedFrom}</span>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px' }}>{tier.displayName}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Upgraded in</span>
+                  <span style={{ color: '#22c55e', fontWeight: 500 }}>+{tier.upgradedFrom}</span>
                 </div>
-                <div>
-                  <span style={{ color: '#ef4444' }}>↓ {tier.downgradedTo}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Downgraded out</span>
+                  <span style={{ color: '#ef4444', fontWeight: 500 }}>-{tier.downgradedTo}</span>
                 </div>
-                <div>
-                  <span style={{ color: 'var(--text-secondary)' }}>✕ {tier.churned}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Churned</span>
+                  <span style={{ color: '#6b7280', fontWeight: 500 }}>{tier.churned}</span>
                 </div>
               </div>
             </div>

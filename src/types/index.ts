@@ -107,6 +107,8 @@ export interface Artist {
   risingReason?: string;
   profileUrl: string;
   socialLinks?: SocialLinks;
+  momentum?: MomentumTarget;
+  badges?: ArtistBadgeInfo[];
   milestones?: Milestone[];
   membershipTiers?: MembershipTier[];
 }
@@ -124,7 +126,23 @@ export interface SocialLinks {
   spotify?: string;
   instagram?: string;
   twitter?: string;
+  tiktok?: string;
+  youtube?: string;
+  soundcloud?: string;
   website?: string;
+}
+
+export interface MomentumTarget {
+  current: number;
+  target: number;
+  label: string;
+}
+
+export interface ArtistBadgeInfo {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
 }
 
 export interface Milestone {
