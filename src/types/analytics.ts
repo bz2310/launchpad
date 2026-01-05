@@ -480,7 +480,7 @@ export interface TopFanData {
   id: string;
   name: string;
   avatar: string;
-  tier: 'free' | 'supporter' | 'superfan';
+  tier: FanTier;             // Uses FanTier from artist-portal types
   totalSpend: number;        // Total spend in period
   lifetimeValue: number;     // All-time spend
   engagementScore: number;   // 0-100

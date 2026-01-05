@@ -27,12 +27,13 @@ export default function FansAnalyticsPage() {
 
   // Format tier display
   const getTierBadge = (tier: string) => {
-    const colors: Record<string, string> = {
-      superfan: '#8b2bff',
-      supporter: '#3b82f6',
-      free: '#6b7280',
+    const tierConfig: Record<string, { color: string; label: string }> = {
+      inner_circle: { color: '#ff4757', label: 'Inner Circle' },
+      superfan: { color: '#8b2bff', label: 'Superfan' },
+      supporter: { color: '#22c55e', label: 'Supporter' },
+      free: { color: '#6b7280', label: 'Free' },
     };
-    return { color: colors[tier] || '#6b7280', label: tier.charAt(0).toUpperCase() + tier.slice(1) };
+    return tierConfig[tier] || { color: '#6b7280', label: tier.charAt(0).toUpperCase() + tier.slice(1) };
   };
 
   // Get label for current date range

@@ -5,6 +5,18 @@ import { ArtistLayout } from '@/components/artist-portal';
 import { StatCard } from '@/components/artist-portal/ui';
 import { getArtistPortalData } from '@/data/artist-portal-data';
 import { getAnalyticsData } from '@/data/analytics-data';
+import type { FanTier } from '@/types/artist-portal';
+
+// Helper to get display label for tier
+const getTierLabel = (tier: FanTier): string => {
+  const labels: Record<FanTier, string> = {
+    inner_circle: 'Inner Circle',
+    superfan: 'Superfan',
+    supporter: 'Supporter',
+    free: 'Free',
+  };
+  return labels[tier] || tier;
+};
 
 export default function ArtistPortalPage() {
   const portalData = getArtistPortalData();
@@ -169,7 +181,7 @@ export default function ArtistPortalPage() {
                     <img src={fan.avatar} alt={fan.name} className="fan-avatar-sm" />
                     <div className="fan-details">
                       <span className="fan-name-link">{fan.name}</span>
-                      <span className={`fan-tier-badge tier-${fan.tier}`}>{fan.tier}</span>
+                      <span className={`fan-tier-badge tier-${fan.tier}`}>{getTierLabel(fan.tier)}</span>
                     </div>
                     <span className="fan-points">{fan.engagementScore.toLocaleString()} pts</span>
                   </div>

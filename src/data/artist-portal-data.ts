@@ -50,7 +50,7 @@ const fans: FanProfile[] = [
     email: 'alex.rivera@email.com',
     avatar: 'https://i.pravatar.cc/150?img=1',
     location: { city: 'Los Angeles', country: 'United States', countryCode: 'US', region: 'North America' },
-    tier: 'superfan',
+    tier: 'inner_circle',
     status: 'active',
     joinedAt: daysAgo(180),
     lastActiveAt: daysAgo(0),
@@ -68,7 +68,7 @@ const fans: FanProfile[] = [
     email: 'jordan.chen@email.com',
     avatar: 'https://i.pravatar.cc/150?img=2',
     location: { city: 'New York', country: 'United States', countryCode: 'US', region: 'North America' },
-    tier: 'superfan',
+    tier: 'inner_circle',
     status: 'active',
     joinedAt: daysAgo(240),
     lastActiveAt: daysAgo(1),
@@ -651,7 +651,8 @@ const subscriptionHealth: SubscriptionHealthMetrics = {
   byTier: {
     free: 8934,
     supporter: 3420,
-    superfan: 847,
+    superfan: 647,
+    inner_circle: 200,
   },
   mrr: 59610.00,
   arr: 715320.00,
@@ -697,7 +698,8 @@ const audienceMetrics: AudienceMetrics = {
   byTier: {
     free: 8934,
     supporter: 3420,
-    superfan: 847,
+    superfan: 647,
+    inner_circle: 200,
   },
   byStatus: {
     active: 11234,

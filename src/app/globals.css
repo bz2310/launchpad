@@ -6868,14 +6868,19 @@ a.leaderboard-item {
     width: fit-content;
 }
 
+.fan-tier-badge.tier-inner_circle {
+    background: linear-gradient(135deg, #ff4757 0%, #ff6b7d 100%);
+    color: white;
+}
+
 .fan-tier-badge.tier-superfan {
     background: linear-gradient(135deg, #8b2bff 0%, #a855f7 100%);
     color: white;
 }
 
 .fan-tier-badge.tier-supporter {
-    background: rgba(139, 43, 255, 0.2);
-    color: var(--primary);
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
 }
 
 .fan-tier-badge.tier-free {

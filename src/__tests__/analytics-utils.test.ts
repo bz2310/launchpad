@@ -41,14 +41,15 @@ describe('Revenue Metrics', () => {
 
   describe('calculateMFSByTier', () => {
     it('should calculate MFS for each tier', () => {
-      const revenueByTier = { free: 0, supporter: 34200, superfan: 25410 };
-      const fansByTier = { free: 8934, supporter: 3420, superfan: 847 };
+      const revenueByTier = { free: 0, supporter: 34200, superfan: 25410, inner_circle: 15000 };
+      const fansByTier = { free: 8934, supporter: 3420, superfan: 847, inner_circle: 200 };
 
       const result = calculateMFSByTier(revenueByTier, fansByTier);
 
       expect(result.free).toBe(0);
       expect(result.supporter).toBe(10);
       expect(result.superfan).toBe(30);
+      expect(result.inner_circle).toBe(75);
     });
   });
 

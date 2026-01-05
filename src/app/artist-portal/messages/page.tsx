@@ -4,20 +4,22 @@ import { useState } from 'react';
 import { ArtistLayout } from '@/components/artist-portal';
 import { getArtistMessages } from '@/lib/data';
 import type { ArtistMessage } from '@/data/dashboard-data';
+import type { FanTier } from '@/types/artist-portal';
+
+type MessageFilter = 'all' | 'unread' | FanTier;
 
 export default function ArtistMessagesPage() {
   const allMessages = getArtistMessages();
   const [selectedChat, setSelectedChat] = useState<ArtistMessage | null>(allMessages[0] || null);
   const [messageInput, setMessageInput] = useState('');
   const [conversations, setConversations] = useState(allMessages);
-  const [filter, setFilter] = useState<'all' | 'unread' | 'superfan' | 'early'>('all');
+  const [filter, setFilter] = useState<MessageFilter>('all');
 
   const filteredConversations = conversations.filter(conv => {
     if (filter === 'all') return true;
     if (filter === 'unread') return conv.unread;
-    if (filter === 'superfan') return conv.fanBadge === 'superfan';
-    if (filter === 'early') return conv.fanBadge === 'early_supporter';
-    return true;
+    // Filter by tier
+    return conv.fanTier === filter;
   });
 
   const unreadCount = conversations.filter(c => c.unread).length;
@@ -66,14 +68,16 @@ export default function ArtistMessagesPage() {
     }
   };
 
-  const getBadgeLabel = (badge?: string) => {
-    switch (badge) {
+  const getTierBadge = (tier?: FanTier) => {
+    switch (tier) {
+      case 'inner_circle':
+        return { label: 'Inner Circle', color: '#ff4757' };
       case 'superfan':
         return { label: 'Superfan', color: '#8b2bff' };
-      case 'early_supporter':
-        return { label: 'Early Supporter', color: '#FFD700' };
-      case 'vip':
-        return { label: 'VIP', color: '#ff4757' };
+      case 'supporter':
+        return { label: 'Supporter', color: '#22c55e' };
+      case 'free':
+        return { label: 'Free', color: '#6b7280' };
       default:
         return null;
     }
@@ -114,23 +118,29 @@ export default function ArtistMessagesPage() {
               Unread
             </button>
             <button
+              className={`filter-btn ${filter === 'inner_circle' ? 'active' : ''}`}
+              onClick={() => setFilter('inner_circle')}
+            >
+              Inner Circle
+            </button>
+            <button
               className={`filter-btn ${filter === 'superfan' ? 'active' : ''}`}
               onClick={() => setFilter('superfan')}
             >
-              Superfans
+              Superfan
             </button>
             <button
-              className={`filter-btn ${filter === 'early' ? 'active' : ''}`}
-              onClick={() => setFilter('early')}
+              className={`filter-btn ${filter === 'supporter' ? 'active' : ''}`}
+              onClick={() => setFilter('supporter')}
             >
-              Early
+              Supporter
             </button>
           </div>
 
           {/* Conversation List */}
           <div className="conversations-list">
             {filteredConversations.map(conv => {
-              const badge = getBadgeLabel(conv.fanBadge);
+              const badge = getTierBadge(conv.fanTier);
               return (
                 <div
                   key={conv.id}
@@ -178,12 +188,12 @@ export default function ArtistMessagesPage() {
                   <img src={selectedChat.fanAvatar} alt={selectedChat.fanName} className="chat-avatar" />
                   <div className="chat-header-details">
                     <h3>{selectedChat.fanName}</h3>
-                    {getBadgeLabel(selectedChat.fanBadge) && (
+                    {getTierBadge(selectedChat.fanTier) && (
                       <span
                         className="fan-badge"
-                        style={{ background: getBadgeLabel(selectedChat.fanBadge)?.color }}
+                        style={{ background: getTierBadge(selectedChat.fanTier)?.color }}
                       >
-                        {getBadgeLabel(selectedChat.fanBadge)?.label}
+                        {getTierBadge(selectedChat.fanTier)?.label}
                       </span>
                     )}
                   </div>

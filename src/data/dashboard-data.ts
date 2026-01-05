@@ -901,12 +901,15 @@ export function formatCurrency(num: number): string {
 
 
 // Artist Messages (DMs from fans)
+// Import FanTier from artist-portal types for consistency
+import type { FanTier } from '@/types/artist-portal';
+
 export interface ArtistMessage {
   id: string;
   fanId: string;
   fanName: string;
   fanAvatar: string;
-  fanBadge?: 'early_supporter' | 'superfan' | 'vip';
+  fanTier?: FanTier;
   lastMessage: string;
   timestamp: string;
   unread: boolean;
@@ -922,9 +925,9 @@ export const artistMessages: ArtistMessage[] = [
   {
     id: 'msg_001',
     fanId: 'fan_001',
-    fanName: 'Sarah Mitchell',
+    fanName: 'Alex Rivera',
     fanAvatar: 'https://i.pravatar.cc/150?img=1',
-    fanBadge: 'superfan',
+    fanTier: 'inner_circle',
     lastMessage: 'The new EP is absolutely incredible! Healing is on repeat 24/7',
     timestamp: '5m ago',
     unread: true,
@@ -937,9 +940,9 @@ export const artistMessages: ArtistMessage[] = [
   {
     id: 'msg_002',
     fanId: 'fan_002',
-    fanName: 'Marcus Johnson',
+    fanName: 'Jordan Chen',
     fanAvatar: 'https://i.pravatar.cc/150?img=2',
-    fanBadge: 'early_supporter',
+    fanTier: 'inner_circle',
     lastMessage: 'Been following you since the beginning. So proud of how far you\'ve come!',
     timestamp: '15m ago',
     unread: true,
@@ -950,8 +953,9 @@ export const artistMessages: ArtistMessage[] = [
   {
     id: 'msg_003',
     fanId: 'fan_003',
-    fanName: 'Emily Chen',
+    fanName: 'Sam Williams',
     fanAvatar: 'https://i.pravatar.cc/150?img=3',
+    fanTier: 'supporter',
     lastMessage: 'Will you ever come to San Francisco for a show?',
     timestamp: '1h ago',
     unread: true,
@@ -963,9 +967,9 @@ export const artistMessages: ArtistMessage[] = [
   {
     id: 'msg_004',
     fanId: 'fan_004',
-    fanName: 'James Williams',
+    fanName: 'Taylor Kim',
     fanAvatar: 'https://i.pravatar.cc/150?img=4',
-    fanBadge: 'vip',
+    fanTier: 'supporter',
     lastMessage: 'The vinyl quality is amazing, thank you for the handwritten note!',
     timestamp: '3h ago',
     unread: false,
@@ -978,8 +982,9 @@ export const artistMessages: ArtistMessage[] = [
   {
     id: 'msg_005',
     fanId: 'fan_005',
-    fanName: 'Aisha Patel',
+    fanName: 'Morgan Davis',
     fanAvatar: 'https://i.pravatar.cc/150?img=5',
+    fanTier: 'supporter',
     lastMessage: 'Your acoustic version of City Lights gave me chills',
     timestamp: '5h ago',
     unread: false,
@@ -990,9 +995,9 @@ export const artistMessages: ArtistMessage[] = [
   {
     id: 'msg_006',
     fanId: 'fan_006',
-    fanName: 'Daniel Kim',
+    fanName: 'Casey Brown',
     fanAvatar: 'https://i.pravatar.cc/150?img=6',
-    fanBadge: 'superfan',
+    fanTier: 'free',
     lastMessage: 'Can\'t wait for the live stream tomorrow!',
     timestamp: '8h ago',
     unread: false,
@@ -1005,8 +1010,9 @@ export const artistMessages: ArtistMessage[] = [
   {
     id: 'msg_007',
     fanId: 'fan_007',
-    fanName: 'Sophia Lee',
+    fanName: 'Jamie Lee',
     fanAvatar: 'https://i.pravatar.cc/150?img=7',
+    fanTier: 'supporter',
     lastMessage: 'Your journey from street performer to Grammy nominee is so inspiring',
     timestamp: '1d ago',
     unread: false,
@@ -1017,9 +1023,9 @@ export const artistMessages: ArtistMessage[] = [
   {
     id: 'msg_008',
     fanId: 'fan_008',
-    fanName: 'Alex Thompson',
+    fanName: 'Riley Martinez',
     fanAvatar: 'https://i.pravatar.cc/150?img=8',
-    fanBadge: 'early_supporter',
+    fanTier: 'superfan',
     lastMessage: 'The community is incredible, everyone is so supportive!',
     timestamp: '2d ago',
     unread: false,

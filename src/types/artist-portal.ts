@@ -15,7 +15,7 @@ export interface DatabaseRecord {
 // Fan Management Types
 // =====================
 
-export type FanTier = 'free' | 'supporter' | 'superfan';
+export type FanTier = 'free' | 'supporter' | 'superfan' | 'inner_circle';
 export type FanStatus = 'active' | 'at_risk' | 'churned';
 
 export interface FanProfile extends DatabaseRecord {

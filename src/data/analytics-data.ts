@@ -442,13 +442,13 @@ const generateDrops = (): DropPerformance[] => {
     const engagement = item.likeCount + item.commentCount + item.shareCount;
 
     // Calculate tier breakdown based on access level
-    let viewsByTier = { free: 0, supporter: 0, superfan: 0 };
+    let viewsByTier = { free: 0, supporter: 0, superfan: 0, inner_circle: 0 };
     if (item.accessLevel === 'public') {
-      viewsByTier = { free: Math.round(views * 0.63), supporter: Math.round(views * 0.27), superfan: Math.round(views * 0.10) };
+      viewsByTier = { free: Math.round(views * 0.58), supporter: Math.round(views * 0.25), superfan: Math.round(views * 0.12), inner_circle: Math.round(views * 0.05) };
     } else if (item.accessLevel === 'supporters') {
-      viewsByTier = { free: 0, supporter: Math.round(views * 0.72), superfan: Math.round(views * 0.28) };
+      viewsByTier = { free: 0, supporter: Math.round(views * 0.65), superfan: Math.round(views * 0.25), inner_circle: Math.round(views * 0.10) };
     } else {
-      viewsByTier = { free: 0, supporter: 0, superfan: views };
+      viewsByTier = { free: 0, supporter: 0, superfan: Math.round(views * 0.7), inner_circle: Math.round(views * 0.3) };
     }
 
     return {
@@ -562,14 +562,19 @@ const aggregateRevenueMetrics = (days: number): RevenuePeriodMetrics => {
     byTier: {
       free: { gross: 0, subscriberCount: 0, churnCount: 0 },
       supporter: {
-        gross: bySource.subscription.gross * 0.6,
+        gross: bySource.subscription.gross * 0.5,
         subscriberCount: supporterFans.size,
         churnCount: Math.floor(supporterFans.size * 0.02),
       },
       superfan: {
-        gross: bySource.subscription.gross * 0.4,
+        gross: bySource.subscription.gross * 0.35,
         subscriberCount: superfanFans.size,
         churnCount: Math.floor(superfanFans.size * 0.015),
+      },
+      inner_circle: {
+        gross: bySource.subscription.gross * 0.15,
+        subscriberCount: Math.floor(superfanFans.size * 0.3),
+        churnCount: Math.floor(superfanFans.size * 0.01),
       },
     },
     previousPeriod: {
@@ -846,6 +851,7 @@ const aggregateFanMetrics = (days: number): { ladder: FanLadderMetrics; flow: Fa
         free: freeChurns,
         supporter: supporterChurns,
         superfan: superfanChurns,
+        inner_circle: Math.floor(superfanChurns * 0.2),
       },
       churnReasons,
       netGrowth: signups - churns.length,
@@ -887,6 +893,7 @@ const aggregateMFS = (days: number): MonthlyFanSpend => {
       free: 0,
       supporter: 10.00,
       superfan: 30.00,
+      inner_circle: 75.00,
     },
     mfsTrend: trendData,
     changePercent: calculatePercentChange(mfs, prevMfs),
