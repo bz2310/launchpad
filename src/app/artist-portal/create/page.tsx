@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { ArtistLayout } from '@/components/artist-portal';
+import { getArtistDashboardData } from '@/lib/data';
 
 type DropType = 'audio' | 'video' | 'post' | 'merch' | 'event' | 'poll';
 type AccessType = 'public' | 'subscribers' | 'tier' | 'rank' | 'segment';
@@ -9,6 +10,9 @@ type MonetizationType = 'included' | 'paid' | 'limited';
 type TimingType = 'now' | 'scheduled';
 
 export default function CreatePage() {
+  const dashboardData = getArtistDashboardData();
+  const artist = dashboardData.artist;
+
   // Drop Type
   const [dropType, setDropType] = useState<DropType>('audio');
 
@@ -576,9 +580,9 @@ export default function CreatePage() {
               <>
                 <div className="preview-card-header">
                   <div className="preview-artist">
-                    <div className="preview-avatar" />
+                    <img src={artist.avatar} alt={artist.name} className="preview-avatar" />
                     <div className="preview-artist-info">
-                      <span className="preview-artist-name">Luna Ray</span>
+                      <span className="preview-artist-name">{artist.name}</span>
                       <span className="preview-time">Just now</span>
                     </div>
                   </div>

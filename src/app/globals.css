@@ -9697,7 +9697,7 @@ a.leaderboard-item {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+    object-fit: cover;
 }
 
 .preview-artist-info {
