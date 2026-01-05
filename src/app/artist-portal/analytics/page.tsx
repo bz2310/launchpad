@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { getAnalyticsData } from '@/data/analytics-data';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { formatCompactNumber, formatCurrency } from '@/lib/analytics-utils';
 
 // Icons
@@ -58,8 +58,8 @@ const TrendDownIcon = () => (
 );
 
 export default function AnalyticsOverviewPage() {
-  const data = getAnalyticsData();
-  const { overview, revenue, fanLadder, drops } = data;
+  const { data } = useAnalytics();
+  const { overview, fanLadder, drops } = data;
 
   // Prepare chart data
   const revenueChartData = data.revenueTimeSeries.slice(-14).map(point => ({
@@ -223,19 +223,6 @@ export default function AnalyticsOverviewPage() {
         </div>
       </div>
 
-      {/* Highlights */}
-      <div className="analytics-highlights">
-        <h3>Highlights</h3>
-        <div className="analytics-highlights-list">
-          {overview.highlights.map((highlight, i) => (
-            <div key={i} className="analytics-highlight-item">
-              <div className={`analytics-highlight-icon ${highlight.type}`} />
-              <span className="analytics-highlight-message">{highlight.message}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Charts Row */}
       <div className="analytics-charts-row">
         {/* Revenue Chart */}
@@ -311,52 +298,6 @@ export default function AnalyticsOverviewPage() {
           </div>
         </div>
 
-        {/* Health Indicators */}
-        <div className="analytics-chart-container">
-          <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '16px' }}>Health Indicators</h3>
-          <div className="analytics-health-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
-            <div className="analytics-health-item">
-              <span className="analytics-health-label">Overall</span>
-              <span className={`analytics-health-value ${overview.health.overall}`}>
-                {overview.health.overall.replace('_', ' ')}
-              </span>
-            </div>
-            <div className="analytics-health-item">
-              <span className="analytics-health-label">Revenue</span>
-              <span className={`analytics-health-value ${overview.health.revenue}`}>
-                {overview.health.revenue}
-              </span>
-            </div>
-            <div className="analytics-health-item">
-              <span className="analytics-health-label">Fans</span>
-              <span className={`analytics-health-value ${overview.health.fans}`}>
-                {overview.health.fans}
-              </span>
-            </div>
-            <div className="analytics-health-item">
-              <span className="analytics-health-label">Engagement</span>
-              <span className={`analytics-health-value ${overview.health.engagement}`}>
-                {overview.health.engagement}
-              </span>
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>MRR</span>
-              <span style={{ fontSize: '13px', fontWeight: 600 }}>{formatCurrency(revenue.byTier.supporter.gross + revenue.byTier.superfan.gross)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Paying Fans</span>
-              <span style={{ fontSize: '13px', fontWeight: 600 }}>{fanLadder.payingFans.toLocaleString()}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Conversion Rate</span>
-              <span style={{ fontSize: '13px', fontWeight: 600 }}>{fanLadder.conversionRate}%</span>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Fan Ladder Preview */}

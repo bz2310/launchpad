@@ -15,7 +15,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { getAnalyticsData } from '@/data/analytics-data';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { formatCurrency, formatCompactNumber } from '@/lib/analytics-utils';
 
 // Icons
@@ -28,7 +28,7 @@ const ChevronRightIcon = () => (
 const COLORS = ['#8b2bff', '#22c55e', '#3b82f6', '#f59e0b', '#ec4899'];
 
 export default function RevenueAnalyticsPage() {
-  const data = getAnalyticsData();
+  const { data } = useAnalytics();
   const { revenue, revenueTimeSeries, revenueByGeo, revenueVelocity, revenueConcentration } = data;
   const [expandedCountries, setExpandedCountries] = useState<Set<string>>(new Set());
 

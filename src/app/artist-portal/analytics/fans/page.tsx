@@ -12,7 +12,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { getAnalyticsData } from '@/data/analytics-data';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { formatCurrency, formatCompactNumber } from '@/lib/analytics-utils';
 
 const ChevronRightIcon = () => (
@@ -22,7 +22,7 @@ const ChevronRightIcon = () => (
 );
 
 export default function FansAnalyticsPage() {
-  const data = getAnalyticsData();
+  const { data } = useAnalytics();
   const { fanLadder, mfs, fanFlow, fansByGeo } = data;
   const [expandedCountries, setExpandedCountries] = useState<Set<string>>(new Set());
 

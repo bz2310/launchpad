@@ -1,10 +1,10 @@
 'use client';
 
-import { getAnalyticsData } from '@/data/analytics-data';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { formatCompactNumber, formatCurrency } from '@/lib/analytics-utils';
 
 export default function DropsAnalyticsPage() {
-  const data = getAnalyticsData();
+  const { data } = useAnalytics();
   const { drops, recentDrops } = data;
 
   return (

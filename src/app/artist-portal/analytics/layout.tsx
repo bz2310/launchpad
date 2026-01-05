@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ArtistLayout } from '@/components/artist-portal';
+import { AnalyticsProvider, useAnalytics } from '@/contexts/AnalyticsContext';
 import type { DateRangePreset, SegmentType } from '@/types/analytics';
 
 // Analytics sub-navigation tabs
@@ -13,7 +14,6 @@ const analyticsTabs = [
   { name: 'Fans', href: '/artist-portal/analytics/fans' },
   { name: 'Drops', href: '/artist-portal/analytics/drops' },
   { name: 'Forecasting', href: '/artist-portal/analytics/forecasting' },
-  { name: 'Data & Integrations', href: '/artist-portal/analytics/integrations' },
 ];
 
 const dateRangeOptions: { label: string; value: DateRangePreset }[] = [
@@ -54,14 +54,6 @@ const UsersIcon = () => (
   </svg>
 );
 
-const GlobeIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="10" />
-    <line x1="2" y1="12" x2="22" y2="12" />
-    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-  </svg>
-);
-
 const ChevronDownIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <polyline points="6 9 12 15 18 9" />
@@ -76,16 +68,93 @@ const DownloadIcon = () => (
   </svg>
 );
 
-interface AnalyticsLayoutProps {
-  children: React.ReactNode;
-}
-
-export default function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
-  const pathname = usePathname();
-  const [dateRange, setDateRange] = useState<DateRangePreset>('30d');
-  const [segment, setSegment] = useState<SegmentType>('all');
+function AnalyticsControls() {
+  const { dateRange, setDateRange, segment, setSegment } = useAnalytics();
   const [showDateDropdown, setShowDateDropdown] = useState(false);
   const [showSegmentDropdown, setShowSegmentDropdown] = useState(false);
+
+  const selectedDateLabel = dateRangeOptions.find(o => o.value === dateRange)?.label || 'Select';
+  const selectedSegmentLabel = segmentOptions.find(o => o.value === segment)?.label || 'All Fans';
+
+  return (
+    <div className="analytics-controls">
+      <div className="analytics-controls-left">
+        {/* Date Range Selector */}
+        <div className="analytics-dropdown-container">
+          <button
+            className="analytics-dropdown-trigger"
+            onClick={() => {
+              setShowDateDropdown(!showDateDropdown);
+              setShowSegmentDropdown(false);
+            }}
+          >
+            <CalendarIcon />
+            <span>{selectedDateLabel}</span>
+            <ChevronDownIcon />
+          </button>
+          {showDateDropdown && (
+            <div className="analytics-dropdown-menu">
+              {dateRangeOptions.map(option => (
+                <button
+                  key={option.value}
+                  className={`analytics-dropdown-item ${dateRange === option.value ? 'active' : ''}`}
+                  onClick={() => {
+                    setDateRange(option.value);
+                    setShowDateDropdown(false);
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Segment Selector */}
+        <div className="analytics-dropdown-container">
+          <button
+            className="analytics-dropdown-trigger"
+            onClick={() => {
+              setShowSegmentDropdown(!showSegmentDropdown);
+              setShowDateDropdown(false);
+            }}
+          >
+            <UsersIcon />
+            <span>{selectedSegmentLabel}</span>
+            <ChevronDownIcon />
+          </button>
+          {showSegmentDropdown && (
+            <div className="analytics-dropdown-menu">
+              {segmentOptions.map(option => (
+                <button
+                  key={option.value}
+                  className={`analytics-dropdown-item ${segment === option.value ? 'active' : ''}`}
+                  onClick={() => {
+                    setSegment(option.value);
+                    setShowSegmentDropdown(false);
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="analytics-controls-right">
+        {/* Export Button */}
+        <button className="analytics-export-btn">
+          <DownloadIcon />
+          <span>Export</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsTabs() {
+  const pathname = usePathname();
 
   const isTabActive = (href: string) => {
     if (href === '/artist-portal/analytics') {
@@ -94,112 +163,43 @@ export default function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
     return pathname.startsWith(href);
   };
 
-  const selectedDateLabel = dateRangeOptions.find(o => o.value === dateRange)?.label || 'Select';
-  const selectedSegmentLabel = segmentOptions.find(o => o.value === segment)?.label || 'All Fans';
+  return (
+    <div className="analytics-tabs">
+      {analyticsTabs.map(tab => (
+        <Link
+          key={tab.name}
+          href={tab.href}
+          className={`analytics-tab ${isTabActive(tab.href) ? 'active' : ''}`}
+        >
+          {tab.name}
+        </Link>
+      ))}
+    </div>
+  );
+}
 
+interface AnalyticsLayoutProps {
+  children: React.ReactNode;
+}
+
+function AnalyticsLayoutInner({ children }: AnalyticsLayoutProps) {
   return (
     <ArtistLayout title="Analytics">
       <div className="analytics-layout">
-        {/* Global Controls Bar */}
-        <div className="analytics-controls">
-          <div className="analytics-controls-left">
-            {/* Date Range Selector */}
-            <div className="analytics-dropdown-container">
-              <button
-                className="analytics-dropdown-trigger"
-                onClick={() => {
-                  setShowDateDropdown(!showDateDropdown);
-                  setShowSegmentDropdown(false);
-                }}
-              >
-                <CalendarIcon />
-                <span>{selectedDateLabel}</span>
-                <ChevronDownIcon />
-              </button>
-              {showDateDropdown && (
-                <div className="analytics-dropdown-menu">
-                  {dateRangeOptions.map(option => (
-                    <button
-                      key={option.value}
-                      className={`analytics-dropdown-item ${dateRange === option.value ? 'active' : ''}`}
-                      onClick={() => {
-                        setDateRange(option.value);
-                        setShowDateDropdown(false);
-                      }}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Segment Selector */}
-            <div className="analytics-dropdown-container">
-              <button
-                className="analytics-dropdown-trigger"
-                onClick={() => {
-                  setShowSegmentDropdown(!showSegmentDropdown);
-                  setShowDateDropdown(false);
-                }}
-              >
-                <UsersIcon />
-                <span>{selectedSegmentLabel}</span>
-                <ChevronDownIcon />
-              </button>
-              {showSegmentDropdown && (
-                <div className="analytics-dropdown-menu">
-                  {segmentOptions.map(option => (
-                    <button
-                      key={option.value}
-                      className={`analytics-dropdown-item ${segment === option.value ? 'active' : ''}`}
-                      onClick={() => {
-                        setSegment(option.value);
-                        setShowSegmentDropdown(false);
-                      }}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Geography Filter (placeholder) */}
-            <button className="analytics-dropdown-trigger">
-              <GlobeIcon />
-              <span>All Regions</span>
-              <ChevronDownIcon />
-            </button>
-          </div>
-
-          <div className="analytics-controls-right">
-            {/* Export Button */}
-            <button className="analytics-export-btn">
-              <DownloadIcon />
-              <span>Export</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Sub-Navigation Tabs */}
-        <div className="analytics-tabs">
-          {analyticsTabs.map(tab => (
-            <Link
-              key={tab.name}
-              href={tab.href}
-              className={`analytics-tab ${isTabActive(tab.href) ? 'active' : ''}`}
-            >
-              {tab.name}
-            </Link>
-          ))}
-        </div>
-
-        {/* Page Content */}
+        <AnalyticsControls />
+        <AnalyticsTabs />
         <div className="analytics-content">
           {children}
         </div>
       </div>
     </ArtistLayout>
+  );
+}
+
+export default function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
+  return (
+    <AnalyticsProvider>
+      <AnalyticsLayoutInner>{children}</AnalyticsLayoutInner>
+    </AnalyticsProvider>
   );
 }

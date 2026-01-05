@@ -9,11 +9,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { getAnalyticsData } from '@/data/analytics-data';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { formatCurrency, formatCompactNumber } from '@/lib/analytics-utils';
 
 export default function ForecastingPage() {
-  const data = getAnalyticsData();
+  const { data } = useAnalytics();
   const { revenueForecast, fanForecast } = data;
 
   // Prepare chart data
