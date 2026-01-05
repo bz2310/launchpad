@@ -218,18 +218,6 @@ export function ArtistHeader({ title }: ArtistHeaderProps) {
           )}
         </div>
 
-        {/* Quick Stats */}
-        <div className="header-quick-stats">
-          <div className="header-stat">
-            <span className="header-stat-value">{dashboardData.overview.totalFans.toLocaleString()}</span>
-            <span className="header-stat-label">Fans</span>
-          </div>
-          <div className="header-stat">
-            <span className="header-stat-value">${(dashboardData.overview.totalRevenue / 1000).toFixed(1)}K</span>
-            <span className="header-stat-label">Revenue</span>
-          </div>
-        </div>
-
         {/* Notifications */}
         <div className="notification-container" ref={notificationRef}>
           <button
