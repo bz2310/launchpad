@@ -2,23 +2,18 @@
 
 import Link from 'next/link';
 import { ArtistLayout } from '@/components/artist-portal';
-
-// Mock merch products data
-const merchProducts = [
-  { id: 'merch_001', name: 'Tour T-Shirt 2025', category: 'Apparel', price: 35, sold: 847, revenue: 29645, stock: 153, image: 'https://picsum.photos/seed/tshirt/200/200', status: 'active' },
-  { id: 'merch_002', name: 'Signed Vinyl LP', category: 'Music', price: 45, sold: 234, revenue: 10530, stock: 66, image: 'https://picsum.photos/seed/vinyl/200/200', status: 'active' },
-  { id: 'merch_003', name: 'Logo Hoodie', category: 'Apparel', price: 65, sold: 412, revenue: 26780, stock: 88, image: 'https://picsum.photos/seed/hoodie/200/200', status: 'active' },
-  { id: 'merch_004', name: 'Poster Set (3-Pack)', category: 'Accessories', price: 25, sold: 523, revenue: 13075, stock: 277, image: 'https://picsum.photos/seed/poster/200/200', status: 'active' },
-  { id: 'merch_005', name: 'Limited Edition Cap', category: 'Apparel', price: 30, sold: 189, revenue: 5670, stock: 11, image: 'https://picsum.photos/seed/cap/200/200', status: 'low_stock' },
-  { id: 'merch_006', name: 'Phone Case', category: 'Accessories', price: 20, sold: 634, revenue: 12680, stock: 366, image: 'https://picsum.photos/seed/phonecase/200/200', status: 'active' },
-];
+import { getArtistPortalData } from '@/data/artist-portal-data';
 
 const formatCurrency = (value: number) => `$${value.toLocaleString()}`;
 
 export default function MerchPage() {
-  const totalRevenue = merchProducts.reduce((sum, p) => sum + p.revenue, 0);
-  const totalSold = merchProducts.reduce((sum, p) => sum + p.sold, 0);
-  const lowStockCount = merchProducts.filter(p => p.stock < 50).length;
+  const portalData = getArtistPortalData();
+  const { shopifyProducts } = portalData;
+
+  // Derive metrics from shopifyProducts (single source of truth)
+  const totalRevenue = shopifyProducts.reduce((sum, p) => sum + p.totalRevenue, 0);
+  const totalSold = shopifyProducts.reduce((sum, p) => sum + p.totalSales, 0);
+  const lowStockCount = shopifyProducts.filter(p => p.inventoryQuantity < 50).length;
 
   return (
     <ArtistLayout title="Merch">
@@ -52,7 +47,7 @@ export default function MerchPage() {
 
         {/* Products Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-          {merchProducts.map((product) => (
+          {shopifyProducts.map((product) => (
             <div key={product.id} style={{
               background: 'var(--bg-secondary)',
               border: '1px solid var(--border)',
@@ -60,22 +55,22 @@ export default function MerchPage() {
               overflow: 'hidden',
             }}>
               <img
-                src={product.image}
-                alt={product.name}
+                src={product.imageUrl}
+                alt={product.title}
                 style={{ width: '100%', height: '160px', objectFit: 'cover' }}
               />
               <div style={{ padding: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                   <div>
-                    <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>{product.name}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{product.category}</div>
+                    <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>{product.title}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{(product.description || '').substring(0, 40)}...</div>
                   </div>
                   <div style={{ fontSize: '16px', fontWeight: 700 }}>{formatCurrency(product.price)}</div>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
-                  <span>{product.sold} sold</span>
-                  <span style={{ color: product.stock < 50 ? '#f59e0b' : 'var(--text-secondary)', fontWeight: product.stock < 50 ? 600 : 400 }}>
-                    {product.stock} in stock {product.stock < 20 && '⚠️'}
+                  <span>{product.totalSales} sold</span>
+                  <span style={{ color: product.inventoryQuantity < 50 ? '#f59e0b' : 'var(--text-secondary)', fontWeight: product.inventoryQuantity < 50 ? 600 : 400 }}>
+                    {product.inventoryQuantity} in stock {product.inventoryQuantity < 20 && '⚠️'}
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>

@@ -3,8 +3,6 @@
 import {
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -13,56 +11,47 @@ import {
 } from 'recharts';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { formatCurrency, formatCompactNumber } from '@/lib/analytics-utils';
-
-// Mock merch data - in production this would come from the analytics context
-const merchProducts = [
-  { id: 'merch_001', name: 'Tour T-Shirt 2025', category: 'Apparel', price: 35, sold: 847, revenue: 29645, stock: 153 },
-  { id: 'merch_002', name: 'Signed Vinyl LP', category: 'Music', price: 45, sold: 234, revenue: 10530, stock: 66 },
-  { id: 'merch_003', name: 'Logo Hoodie', category: 'Apparel', price: 65, sold: 412, revenue: 26780, stock: 88 },
-  { id: 'merch_004', name: 'Poster Set (3-Pack)', category: 'Accessories', price: 25, sold: 523, revenue: 13075, stock: 277 },
-  { id: 'merch_005', name: 'Limited Edition Cap', category: 'Apparel', price: 30, sold: 189, revenue: 5670, stock: 11 },
-  { id: 'merch_006', name: 'Phone Case', category: 'Accessories', price: 20, sold: 634, revenue: 12680, stock: 366 },
-];
-
-const merchSalesTimeSeries = [
-  { date: '2025-12-20', revenue: 2340, orders: 67 },
-  { date: '2025-12-21', revenue: 3120, orders: 89 },
-  { date: '2025-12-22', revenue: 4560, orders: 131 },
-  { date: '2025-12-23', revenue: 5230, orders: 149 },
-  { date: '2025-12-24', revenue: 6780, orders: 194 },
-  { date: '2025-12-25', revenue: 4230, orders: 121 },
-  { date: '2025-12-26', revenue: 3890, orders: 111 },
-  { date: '2025-12-27', revenue: 4120, orders: 118 },
-  { date: '2025-12-28', revenue: 3560, orders: 102 },
-  { date: '2025-12-29', revenue: 4890, orders: 140 },
-  { date: '2025-12-30', revenue: 5670, orders: 162 },
-  { date: '2025-12-31', revenue: 7230, orders: 207 },
-  { date: '2026-01-01', revenue: 5430, orders: 155 },
-  { date: '2026-01-02', revenue: 4120, orders: 118 },
-];
-
-const categoryBreakdown = [
-  { category: 'Apparel', revenue: 62095, percent: 63, orders: 1448 },
-  { category: 'Accessories', revenue: 25755, percent: 26, orders: 1157 },
-  { category: 'Music', revenue: 10530, percent: 11, orders: 234 },
-];
+import { getArtistPortalData } from '@/data/artist-portal-data';
 
 export default function MerchAnalyticsPage() {
   const { data } = useAnalytics();
-  const { revenue } = data;
+  const portalData = getArtistPortalData();
+  const { shopifyProducts, transactions } = portalData;
 
-  // Calculate totals from mock data
-  const totalRevenue = merchProducts.reduce((sum, p) => sum + p.revenue, 0);
-  const totalOrders = merchProducts.reduce((sum, p) => sum + p.sold, 0);
-  const avgOrderValue = totalRevenue / totalOrders;
-  const lowStockCount = merchProducts.filter(p => p.stock < 50).length;
+  // Filter merch transactions and derive time series
+  const merchTransactions = transactions.filter(t => t.type === 'merch');
 
-  // Prepare chart data
-  const chartData = merchSalesTimeSeries.map(point => ({
-    date: new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    revenue: point.revenue,
-    orders: point.orders,
+  // Calculate totals from shopifyProducts (single source of truth)
+  const totalRevenue = shopifyProducts.reduce((sum, p) => sum + p.totalRevenue, 0);
+  const totalOrders = shopifyProducts.reduce((sum, p) => sum + p.totalSales, 0);
+  const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+  const lowStockCount = shopifyProducts.filter(p => p.inventoryQuantity < 50).length;
+
+  // Derive category breakdown from products
+  const categoryMap: Record<string, { revenue: number; orders: number }> = {};
+  shopifyProducts.forEach(p => {
+    const category = p.title.includes('Hoodie') || p.title.includes('T-Shirt') ? 'Apparel' :
+                     p.title.includes('Vinyl') ? 'Music' : 'Accessories';
+    if (!categoryMap[category]) categoryMap[category] = { revenue: 0, orders: 0 };
+    categoryMap[category].revenue += p.totalRevenue;
+    categoryMap[category].orders += p.totalSales;
+  });
+  const categoryBreakdown = Object.entries(categoryMap).map(([category, data]) => ({
+    category,
+    revenue: data.revenue,
+    orders: data.orders,
+    percent: Math.round((data.revenue / totalRevenue) * 100),
   }));
+
+  // Generate time series from merch revenue in analytics data
+  const merchTimeSeries = data.revenueTimeSeries.slice(-14).map(point => {
+    const merchRevenue = typeof point.merch === 'number' ? point.merch : 0;
+    return {
+      date: new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      revenue: merchRevenue,
+      orders: avgOrderValue > 0 ? Math.round(merchRevenue / avgOrderValue) : 0,
+    };
+  });
 
   return (
     <div className="analytics-overview">
@@ -107,15 +96,11 @@ export default function MerchAnalyticsPage() {
               <div className="analytics-legend-dot" style={{ background: '#22c55e' }} />
               <span>Revenue</span>
             </div>
-            <div className="analytics-legend-item">
-              <div className="analytics-legend-dot" style={{ background: '#3b82f6' }} />
-              <span>Orders</span>
-            </div>
           </div>
         </div>
         <div style={{ height: 280 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
+            <AreaChart data={merchTimeSeries}>
               <defs>
                 <linearGradient id="merchRevenueGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
@@ -159,30 +144,33 @@ export default function MerchAnalyticsPage() {
         <div className="analytics-drops-table analytics-drops-table-wide">
           <div className="analytics-drops-header">
             <span>Product</span>
-            <span>Category</span>
             <span>Price</span>
             <span>Sold</span>
             <span>Revenue</span>
             <span>Stock</span>
           </div>
-          {merchProducts.map((product) => (
-            <div key={product.id} className="analytics-drops-row">
-              <div className="analytics-drops-title">
-                <span className="analytics-drops-name">{product.name}</span>
+          {shopifyProducts.map((product) => {
+            const category = product.title.includes('Hoodie') || product.title.includes('T-Shirt') ? 'Apparel' :
+                             product.title.includes('Vinyl') ? 'Music' : 'Accessories';
+            return (
+              <div key={product.id} className="analytics-drops-row">
+                <div className="analytics-drops-title">
+                  <span className="analytics-drops-type">{category}</span>
+                  <span className="analytics-drops-name">{product.title}</span>
+                </div>
+                <span>{formatCurrency(product.price)}</span>
+                <span>{product.totalSales.toLocaleString()}</span>
+                <span style={{ fontWeight: 600 }}>{formatCurrency(product.totalRevenue)}</span>
+                <span style={{
+                  color: product.inventoryQuantity < 50 ? '#f59e0b' : product.inventoryQuantity < 20 ? '#ef4444' : 'var(--text-primary)',
+                  fontWeight: product.inventoryQuantity < 50 ? 600 : 400
+                }}>
+                  {product.inventoryQuantity}
+                  {product.inventoryQuantity < 20 && ' ⚠️'}
+                </span>
               </div>
-              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{product.category}</span>
-              <span>{formatCurrency(product.price)}</span>
-              <span>{product.sold.toLocaleString()}</span>
-              <span style={{ fontWeight: 600 }}>{formatCurrency(product.revenue)}</span>
-              <span style={{
-                color: product.stock < 50 ? '#f59e0b' : product.stock < 20 ? '#ef4444' : 'var(--text-primary)',
-                fontWeight: product.stock < 50 ? 600 : 400
-              }}>
-                {product.stock}
-                {product.stock < 20 && ' ⚠️'}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
