@@ -2,114 +2,117 @@
 
 import Link from 'next/link';
 import { ArtistLayout } from '@/components/artist-portal';
+import { StatCard } from '@/components/artist-portal/ui';
 import { getArtistDashboardData, getArtistMessages } from '@/lib/data';
+import { getArtistPortalData } from '@/data/artist-portal-data';
 
 export default function ArtistPortalPage() {
   const dashboardData = getArtistDashboardData();
   const messages = getArtistMessages();
+  const portalData = getArtistPortalData();
   const { overview, revenueByCategory } = dashboardData;
-
-  // Recent activity items
-  const recentActivity = [
-    { type: 'fan', message: 'New supporter: Sarah M. joined your community', time: '2m ago', icon: '💜' },
-    { type: 'milestone', message: 'Milestone unlocked: 10K supporters reached!', time: '1h ago', icon: '🎉' },
-    { type: 'content', message: '"Midnight Dreams" reached 100K streams', time: '3h ago', icon: '🔥' },
-    { type: 'message', message: '12 new messages from fans', time: '5h ago', icon: '💬' },
-    { type: 'revenue', message: 'New merch sale: Premium Hoodie', time: '6h ago', icon: '🛍️' },
-  ];
+  const { pendingActions, recentActivity, milestones, fans, content } = portalData;
 
   // Quick actions
   const quickActions = [
     { name: 'Upload Music', href: '/artist-portal/content', icon: '🎵', color: '#8b2bff' },
-    { name: 'Go Live', href: '/artist-portal/events', icon: '📺', color: '#ff4757' },
+    { name: 'Go Live', href: '/artist-portal/community', icon: '📺', color: '#ff4757' },
     { name: 'Post Update', href: '/artist-portal/content', icon: '✏️', color: '#2ed573' },
-    { name: 'View Analytics', href: '/dashboard', icon: '📊', color: '#ffa502' },
+    { name: 'Send Announcement', href: '/artist-portal/messages', icon: '📢', color: '#ffa502' },
   ];
 
-  // Top performing content
-  const topContent = [
-    { title: 'Midnight Dreams', type: 'Single', streams: '245K', change: '+12%' },
-    { title: 'Electric Soul EP', type: 'Album', streams: '189K', change: '+8%' },
-    { title: 'Summer Vibes', type: 'Single', streams: '156K', change: '+15%' },
-  ];
+  // Get upcoming scheduled content
+  const scheduledContent = content.filter(c => c.status === 'scheduled');
 
   return (
-    <ArtistLayout title="Overview">
+    <ArtistLayout title="Home">
       <div className="artist-overview">
         {/* Welcome Section */}
         <div className="welcome-section">
           <h2>Welcome back, {dashboardData.artist.name}!</h2>
-          <p>Here's what's happening with your music today.</p>
+          <p>Here&apos;s what&apos;s happening with your music today.</p>
         </div>
 
-        {/* Quick Stats */}
+        {/* Key Metrics Row */}
         <div className="overview-stats-grid">
-          <div className="overview-stat-card">
-            <div className="stat-icon fans">
+          <StatCard
+            title="Total Fans"
+            value={overview.totalFans.toLocaleString()}
+            change={{ value: overview.fansChange, period: 'this month' }}
+            icon={
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
-            </div>
-            <div className="stat-details">
-              <span className="stat-value">{overview.totalFans.toLocaleString()}</span>
-              <span className="stat-label">Total Fans</span>
-              <span className={`stat-change ${overview.fansChange >= 0 ? 'positive' : 'negative'}`}>
-                {overview.fansChange >= 0 ? '+' : ''}{overview.fansChange}% this month
-              </span>
-            </div>
-          </div>
-
-          <div className="overview-stat-card">
-            <div className="stat-icon revenue">
+            }
+          />
+          <StatCard
+            title="Total Revenue"
+            value={`$${overview.totalRevenue.toLocaleString()}`}
+            change={{ value: overview.revenueChange, period: 'this month' }}
+            icon={
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="12" y1="1" x2="12" y2="23" />
                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
               </svg>
-            </div>
-            <div className="stat-details">
-              <span className="stat-value">${overview.totalRevenue.toLocaleString()}</span>
-              <span className="stat-label">Total Revenue</span>
-              <span className={`stat-change ${overview.revenueChange >= 0 ? 'positive' : 'negative'}`}>
-                {overview.revenueChange >= 0 ? '+' : ''}{overview.revenueChange}% this month
-              </span>
-            </div>
-          </div>
-
-          <div className="overview-stat-card">
-            <div className="stat-icon streams">
+            }
+          />
+          <StatCard
+            title="Total Streams"
+            value={`${(overview.totalStreams / 1000000).toFixed(1)}M`}
+            change={{ value: overview.streamsChange, period: 'this month' }}
+            icon={
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polygon points="5 3 19 12 5 21 5 3" />
               </svg>
-            </div>
-            <div className="stat-details">
-              <span className="stat-value">{(overview.totalStreams / 1000000).toFixed(1)}M</span>
-              <span className="stat-label">Total Streams</span>
-              <span className={`stat-change ${overview.streamsChange >= 0 ? 'positive' : 'negative'}`}>
-                {overview.streamsChange >= 0 ? '+' : ''}{overview.streamsChange}% this month
-              </span>
-            </div>
-          </div>
-
-          <div className="overview-stat-card">
-            <div className="stat-icon merch">
+            }
+          />
+          <StatCard
+            title="Engagement Rate"
+            value="8.5%"
+            change={{ value: 2.3, period: 'this month' }}
+            icon={
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
-            </div>
-            <div className="stat-details">
-              <span className="stat-value">{overview.merchSold}</span>
-              <span className="stat-label">Merch Sold</span>
-              <span className={`stat-change ${overview.merchChange >= 0 ? 'positive' : 'negative'}`}>
-                {overview.merchChange >= 0 ? '+' : ''}{overview.merchChange}% this month
-              </span>
+            }
+          />
+        </div>
+
+        {/* Pending Actions */}
+        {pendingActions.length > 0 && (
+          <div className="pending-actions-section">
+            <h3>Pending Actions</h3>
+            <div className="pending-actions-list">
+              {pendingActions.map((action) => (
+                <Link
+                  key={action.id}
+                  href={action.actionUrl}
+                  className={`pending-action-item priority-${action.priority}`}
+                >
+                  <div className="action-icon">
+                    {action.type === 'message' && '💬'}
+                    {action.type === 'payout' && '💰'}
+                    {action.type === 'content' && '📝'}
+                    {action.type === 'milestone' && '🎉'}
+                    {action.type === 'moderation' && '🛡️'}
+                  </div>
+                  <div className="action-content">
+                    <span className="action-title">{action.title}</span>
+                    <span className="action-description">{action.description}</span>
+                  </div>
+                  <div className="action-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
-        </div>
+        )}
 
         {/* Quick Actions */}
         <div className="quick-actions-section">
@@ -157,40 +160,91 @@ export default function ArtistPortalPage() {
               <h3>Recent Activity</h3>
             </div>
             <div className="activity-list">
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="activity-item">
-                  <span className="activity-icon">{activity.icon}</span>
+              {recentActivity.slice(0, 5).map((activity) => (
+                <div key={activity.id} className="activity-item">
+                  <span className="activity-icon">
+                    {activity.type === 'new_fan' && '💜'}
+                    {activity.type === 'new_supporter' && '⭐'}
+                    {activity.type === 'upgrade' && '🚀'}
+                    {activity.type === 'purchase' && '🛍️'}
+                    {activity.type === 'comment' && '💬'}
+                    {activity.type === 'milestone' && '🎉'}
+                    {activity.type === 'payout' && '💰'}
+                  </span>
                   <div className="activity-content">
-                    <p className="activity-message">{activity.message}</p>
-                    <span className="activity-time">{activity.time}</span>
+                    <p className="activity-message">{activity.description}</p>
+                    <span className="activity-time">
+                      {formatTimeAgo(new Date(activity.occurredAt))}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Top Performing Content */}
-          <div className="overview-card top-content-card">
+          {/* Upcoming Scheduled Content */}
+          <div className="overview-card scheduled-card">
             <div className="card-header">
-              <h3>Top Performing</h3>
-              <Link href="/dashboard" className="view-all-link">Analytics</Link>
+              <h3>Scheduled Content</h3>
+              <Link href="/artist-portal/content" className="view-all-link">View All</Link>
             </div>
-            <div className="top-content-list">
-              {topContent.map((content, index) => (
-                <div key={index} className="top-content-item">
-                  <div className="content-rank">{index + 1}</div>
-                  <div
-                    className="content-cover"
-                    style={{ background: `linear-gradient(135deg, #8b2bff ${index * 20}%, #b366ff 100%)` }}
-                  ></div>
-                  <div className="content-info">
-                    <span className="content-title">{content.title}</span>
-                    <span className="content-type">{content.type}</span>
+            <div className="scheduled-list">
+              {scheduledContent.length === 0 ? (
+                <div className="empty-scheduled">
+                  <p>No scheduled content</p>
+                  <Link href="/artist-portal/content" className="schedule-link">
+                    Schedule something
+                  </Link>
+                </div>
+              ) : (
+                scheduledContent.map((item) => (
+                  <div key={item.id} className="scheduled-item">
+                    <div className="scheduled-date">
+                      {item.scheduledFor && (
+                        <>
+                          <span className="date-day">
+                            {new Date(item.scheduledFor).toLocaleDateString('en-US', { day: 'numeric' })}
+                          </span>
+                          <span className="date-month">
+                            {new Date(item.scheduledFor).toLocaleDateString('en-US', { month: 'short' })}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <div className="scheduled-info">
+                      <span className="scheduled-title">{item.title}</span>
+                      <span className="scheduled-type">{item.type}</span>
+                    </div>
+                    <span className={`scheduled-access access-${item.accessLevel}`}>
+                      {item.accessLevel === 'public' ? 'Public' : item.accessLevel === 'supporters' ? 'Supporters' : 'Superfans'}
+                    </span>
                   </div>
-                  <div className="content-stats">
-                    <span className="content-streams">{content.streams}</span>
-                    <span className="content-change positive">{content.change}</span>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Fan Milestones */}
+          <div className="overview-card milestones-card">
+            <div className="card-header">
+              <h3>Fan Milestones</h3>
+            </div>
+            <div className="milestones-list">
+              {milestones.map((milestone) => (
+                <div key={milestone.id} className="milestone-item">
+                  <div className="milestone-icon">
+                    {milestone.type === 'fan_count' && '👥'}
+                    {milestone.type === 'revenue' && '💰'}
+                    {milestone.type === 'content_views' && '👁️'}
+                    {milestone.type === 'anniversary' && '🎂'}
                   </div>
+                  <div className="milestone-content">
+                    <span className="milestone-fan">{milestone.title}</span>
+                    <span className="milestone-achievement">{milestone.description}</span>
+                  </div>
+                  {!milestone.isAcknowledged && (
+                    <button className="celebrate-btn">Celebrate</button>
+                  )}
                 </div>
               ))}
             </div>
@@ -220,8 +274,46 @@ export default function ArtistPortalPage() {
               ))}
             </div>
           </div>
+
+          {/* Top Fans */}
+          <div className="overview-card top-fans-card">
+            <div className="card-header">
+              <h3>Top Fans This Month</h3>
+              <Link href="/artist-portal/fans" className="view-all-link">View All</Link>
+            </div>
+            <div className="top-fans-list">
+              {fans.slice(0, 5).map((fan, index) => (
+                <div key={fan.id} className="top-fan-item">
+                  <span className="fan-rank">{index + 1}</span>
+                  <img src={fan.avatar} alt={fan.name} className="fan-avatar" />
+                  <div className="fan-info">
+                    <span className="fan-name">{fan.name}</span>
+                    <span className="fan-tier">{fan.tier}</span>
+                  </div>
+                  <span className="fan-engagement">
+                    {fan.engagementScore} pts
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </ArtistLayout>
   );
+}
+
+// Helper function to format time ago
+function formatTimeAgo(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
