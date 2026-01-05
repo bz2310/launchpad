@@ -104,14 +104,29 @@ export default function ArtistPortalPage() {
           />
         </div>
 
-        {/* Primary CTA */}
-        <Link href="/artist-portal/content" className="new-drop-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          New Drop
-        </Link>
+        {/* Primary CTA - New Drop */}
+        <div className="new-drop-card">
+          <div className="new-drop-content">
+            <div className="new-drop-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+              </svg>
+            </div>
+            <div className="new-drop-text">
+              <h3>Create a New Drop</h3>
+              <p>Share music, videos, posts, or exclusive content with your fans</p>
+            </div>
+          </div>
+          <Link href="/artist-portal/content" className="new-drop-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New Drop
+          </Link>
+        </div>
 
         {/* Revenue Snapshot */}
         <div className="revenue-snapshot">
@@ -143,36 +158,49 @@ export default function ArtistPortalPage() {
           </div>
         </div>
 
-        {/* Fan Heat */}
-        <div className="fan-heat">
-          <h3>Fan Heat</h3>
-          <div className="fan-heat-grid">
-            {/* Top Risers */}
-            <div className="fan-heat-section">
-              <h4>Top Risers (7d)</h4>
-              <div className="risers-list">
-                {topRisers.map((riser, i) => (
-                  <div key={i} className="riser-item">
-                    <span className="riser-arrow">▲</span>
-                    <span className="riser-rank">#{riser.prevRank} → #{riser.newRank}</span>
-                    <span className="riser-name">@{riser.fan.name.toLowerCase().replace(' ', '_')}</span>
+        {/* Fans */}
+        <div className="fans-section">
+          <div className="fans-header">
+            <h3>Fans</h3>
+            <Link href="/artist-portal/fans" className="view-all-link">View All</Link>
+          </div>
+          <div className="fans-grid">
+            {/* Top Fans */}
+            <div className="fans-column">
+              <h4>Top Fans</h4>
+              <div className="top-fans-list">
+                {fans.slice(0, 5).map((fan, index) => (
+                  <div key={fan.id} className="top-fan-row">
+                    <span className="fan-rank-num">{index + 1}</span>
+                    <img src={fan.avatar} alt={fan.name} className="fan-avatar-sm" />
+                    <div className="fan-details">
+                      <span className="fan-name-link">{fan.name}</span>
+                      <span className={`fan-tier-badge tier-${fan.tier}`}>{fan.tier}</span>
+                    </div>
+                    <span className="fan-spend">${fan.totalSpend.toLocaleString()}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Churn Risk */}
-            <div className="fan-heat-section">
-              <h4>Churn Risk</h4>
-              {topChurnRisk ? (
-                <div className="churn-item">
-                  <span className="churn-icon">⚠</span>
-                  <span className="churn-name">@{topChurnRisk.name.toLowerCase().replace(' ', '_')}</span>
-                  <span className="churn-detail">(Top 3%, inactive 14d)</span>
-                </div>
-              ) : (
-                <div className="churn-empty">No churn risks detected</div>
-              )}
+            {/* Top Risers */}
+            <div className="fans-column">
+              <h4>Top Risers (7d)</h4>
+              <div className="risers-list">
+                {topRisers.map((riser, i) => (
+                  <div key={i} className="riser-row">
+                    <div className="riser-change">
+                      <span className="riser-arrow">▲</span>
+                      <span className="riser-positions">+{riser.prevRank - riser.newRank}</span>
+                    </div>
+                    <img src={riser.fan.avatar} alt={riser.fan.name} className="fan-avatar-sm" />
+                    <div className="fan-details">
+                      <span className="fan-name-link">{riser.fan.name}</span>
+                      <span className="riser-rank-text">#{riser.prevRank} → #{riser.newRank}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

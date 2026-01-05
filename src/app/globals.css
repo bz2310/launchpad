@@ -6634,21 +6634,61 @@ a.leaderboard-item {
     margin-bottom: 24px;
 }
 
-/* Primary CTA - New Drop Button */
+/* Primary CTA - New Drop Card */
+.new-drop-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(139, 43, 255, 0.08) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.new-drop-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.new-drop-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.new-drop-text h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.new-drop-text p {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
 .new-drop-btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     background: var(--primary);
     color: white;
-    padding: 16px 32px;
+    padding: 14px 28px;
     border-radius: 12px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     text-decoration: none;
-    margin-bottom: 32px;
     transition: all 0.2s;
     box-shadow: 0 4px 12px rgba(139, 43, 255, 0.3);
+    flex-shrink: 0;
 }
 
 .new-drop-btn:hover {
@@ -6729,8 +6769,8 @@ a.leaderboard-item {
     color: white;
 }
 
-/* Fan Heat */
-.fan-heat {
+/* Fans Section */
+.fans-section {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
     border-radius: 16px;
@@ -6738,20 +6778,26 @@ a.leaderboard-item {
     margin-bottom: 24px;
 }
 
-.fan-heat h3 {
+.fans-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.fans-header h3 {
     font-size: 16px;
     font-weight: 600;
-    margin-bottom: 16px;
     color: var(--text-secondary);
 }
 
-.fan-heat-grid {
+.fans-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 32px;
 }
 
-.fan-heat-section h4 {
+.fans-column h4 {
     font-size: 13px;
     font-weight: 600;
     color: var(--text-secondary);
@@ -6760,17 +6806,115 @@ a.leaderboard-item {
     letter-spacing: 0.5px;
 }
 
+.top-fans-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.top-fan-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.top-fan-row:hover {
+    background: rgba(139, 43, 255, 0.08);
+}
+
+.fan-rank-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    width: 20px;
+    text-align: center;
+}
+
+.fan-avatar-sm {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.fan-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.fan-name-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fan-tier-badge {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.fan-tier-badge.tier-superfan {
+    background: linear-gradient(135deg, #8b2bff 0%, #a855f7 100%);
+    color: white;
+}
+
+.fan-tier-badge.tier-supporter {
+    background: rgba(139, 43, 255, 0.2);
+    color: var(--primary);
+}
+
+.fan-tier-badge.tier-free {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+.fan-spend {
+    font-size: 14px;
+    font-weight: 600;
+    color: #22c55e;
+    white-space: nowrap;
+}
+
 .risers-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
-.riser-item {
+.riser-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 15px;
+    gap: 12px;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.riser-row:hover {
+    background: rgba(139, 43, 255, 0.08);
+}
+
+.riser-change {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 50px;
 }
 
 .riser-arrow {
@@ -6778,41 +6922,16 @@ a.leaderboard-item {
     font-size: 12px;
 }
 
-.riser-rank {
+.riser-positions {
+    font-size: 14px;
+    font-weight: 700;
+    color: #22c55e;
+}
+
+.riser-rank-text {
+    font-size: 12px;
     color: var(--text-secondary);
     font-family: 'SF Mono', 'Monaco', monospace;
-    font-size: 13px;
-}
-
-.riser-name {
-    color: var(--primary);
-    font-weight: 500;
-}
-
-.churn-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 15px;
-}
-
-.churn-icon {
-    color: #f59e0b;
-}
-
-.churn-name {
-    color: var(--primary);
-    font-weight: 500;
-}
-
-.churn-detail {
-    color: var(--text-secondary);
-    font-size: 13px;
-}
-
-.churn-empty {
-    color: var(--text-secondary);
-    font-size: 14px;
 }
 
 /* Drops Table */
