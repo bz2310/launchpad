@@ -2,9 +2,25 @@
 
 import { useState } from 'react';
 import { ArtistLayout } from '@/components/artist-portal';
+import { getArtistPortalData } from '@/data/artist-portal-data';
 
 export default function CommunityManagementPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'channels' | 'members' | 'moderation'>('overview');
+  const { fans } = getArtistPortalData();
+
+  // Derive member data from fans
+  const activeFans = fans.filter(f => f.status === 'active');
+  const atRiskFans = fans.filter(f => f.status === 'at_risk');
+
+  // Format tier display
+  const getTierBadge = (tier: string) => {
+    const colors: Record<string, string> = {
+      superfan: '#8b2bff',
+      supporter: '#3b82f6',
+      free: '#6b7280',
+    };
+    return { color: colors[tier] || '#6b7280', label: tier.charAt(0).toUpperCase() + tier.slice(1) };
+  };
 
   const communityStats = {
     totalMembers: 12450,
@@ -259,7 +275,83 @@ export default function CommunityManagementPage() {
         {/* Members Tab */}
         {activeTab === 'members' && (
           <div className="members-management">
-            <p className="placeholder-text">Member management coming soon...</p>
+            {/* Member Stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
+              <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Active Members</div>
+                <div style={{ fontSize: '24px', fontWeight: 700 }}>{activeFans.length}</div>
+              </div>
+              <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Superfans</div>
+                <div style={{ fontSize: '24px', fontWeight: 700, color: '#8b2bff' }}>{fans.filter(f => f.tier === 'superfan').length}</div>
+              </div>
+              <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Supporters</div>
+                <div style={{ fontSize: '24px', fontWeight: 700, color: '#3b82f6' }}>{fans.filter(f => f.tier === 'supporter').length}</div>
+              </div>
+              <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ fontSize: '12px', color: '#f59e0b', marginBottom: '4px' }}>At Risk</div>
+                <div style={{ fontSize: '24px', fontWeight: 700, color: '#f59e0b' }}>{atRiskFans.length}</div>
+              </div>
+            </div>
+
+            {/* Members Table */}
+            <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px', padding: '12px 16px', borderBottom: '1px solid var(--border)', fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                <span>Member</span>
+                <span>Tier</span>
+                <span>Status</span>
+                <span>Spend</span>
+                <span>Engagement</span>
+              </div>
+              {fans.map((fan) => {
+                const tierBadge = getTierBadge(fan.tier);
+                return (
+                  <div key={fan.id} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px', padding: '12px 16px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <img
+                        src={fan.avatar}
+                        alt={fan.name}
+                        style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }}
+                      />
+                      <div>
+                        <div style={{ fontSize: '14px', fontWeight: 500 }}>{fan.name}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{fan.location.city}, {fan.location.country}</div>
+                      </div>
+                    </div>
+                    <span style={{
+                      padding: '4px 10px',
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      background: `${tierBadge.color}20`,
+                      color: tierBadge.color,
+                      width: 'fit-content',
+                    }}>
+                      {tierBadge.label}
+                    </span>
+                    <span style={{
+                      padding: '4px 10px',
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      background: fan.status === 'active' ? 'rgba(34, 197, 94, 0.1)' : fan.status === 'at_risk' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                      color: fan.status === 'active' ? '#22c55e' : fan.status === 'at_risk' ? '#f59e0b' : '#ef4444',
+                      width: 'fit-content',
+                    }}>
+                      {fan.status === 'at_risk' ? 'At Risk' : fan.status.charAt(0).toUpperCase() + fan.status.slice(1)}
+                    </span>
+                    <span style={{ fontWeight: 600 }}>${fan.totalSpend.toLocaleString()}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ flex: 1, height: 4, background: 'var(--bg-tertiary)', borderRadius: '2px', overflow: 'hidden' }}>
+                        <div style={{ width: `${fan.engagementScore}%`, height: '100%', background: fan.engagementScore > 70 ? '#22c55e' : fan.engagementScore > 40 ? '#f59e0b' : '#ef4444', borderRadius: '2px' }} />
+                      </div>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', minWidth: '24px' }}>{fan.engagementScore}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 

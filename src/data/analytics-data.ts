@@ -28,9 +28,10 @@ import type {
   AnalyticsPageData,
   AnalyticsFilter,
   DateRangePreset,
+  TopFanData,
 } from '@/types/analytics';
 import type { FanTier } from '@/types/artist-portal';
-import { content } from './artist-portal-data';
+import { content, getArtistPortalData } from './artist-portal-data';
 import {
   calculateMFS,
   calculateRevenueVelocity,
@@ -121,6 +122,10 @@ const getDateRangeDays = (preset: DateRangePreset): number => {
     case '30d': return 30;
     case '90d': return 90;
     case '12m': return 365;
+    case 'mtd': {
+      const now = new Date();
+      return now.getDate(); // Days since start of month
+    }
     case 'ytd': {
       const now = new Date();
       const startOfYear = new Date(now.getFullYear(), 0, 1);
@@ -1082,6 +1087,109 @@ const buildFanForecast = (days: number): FanGrowthForecast => {
 };
 
 // =====================
+// Top Fans Computation
+// =====================
+
+const computeTopFans = (days: number): { topFans: TopFanData[]; topRisers: TopFanData[] } => {
+  const { fans } = getArtistPortalData();
+  const revenueEvents = getRevenueEvents();
+
+  // Get revenue events in the current period
+  const currentPeriodEvents = revenueEvents.filter(e => isDateInRange(e.date, days));
+
+  // Get revenue events in the previous period for comparison
+  const previousPeriodEvents = revenueEvents.filter(e => {
+    const eventDate = new Date(e.date);
+    const cutoffStart = new Date();
+    cutoffStart.setDate(cutoffStart.getDate() - days * 2);
+    const cutoffEnd = new Date();
+    cutoffEnd.setDate(cutoffEnd.getDate() - days);
+    return eventDate >= cutoffStart && eventDate < cutoffEnd;
+  });
+
+  // Compute spend per fan in current period
+  const currentSpendByFan: Record<string, number> = {};
+  for (const event of currentPeriodEvents) {
+    currentSpendByFan[event.fanId] = (currentSpendByFan[event.fanId] || 0) + event.amount;
+  }
+
+  // Compute spend per fan in previous period
+  const previousSpendByFan: Record<string, number> = {};
+  for (const event of previousPeriodEvents) {
+    previousSpendByFan[event.fanId] = (previousSpendByFan[event.fanId] || 0) + event.amount;
+  }
+
+  // Map fans to TopFanData with current period spend
+  const fansWithSpend: TopFanData[] = fans
+    .filter(fan => fan.status !== 'churned') // Exclude churned fans
+    .map(fan => {
+      // Use actual period spend if available, otherwise derive from totalSpend
+      const periodSpend = currentSpendByFan[fan.id] ||
+        (isDateInRange(fan.joinedAt, days) ? fan.totalSpend : fan.totalSpend * (days / 180));
+
+      return {
+        id: fan.id,
+        name: fan.name,
+        avatar: fan.avatar,
+        tier: fan.tier,
+        totalSpend: Math.round(periodSpend * 100) / 100,
+        lifetimeValue: fan.lifetimeValue,
+        engagementScore: fan.engagementScore,
+        location: `${fan.location.city}, ${fan.location.country}`,
+        joinedAt: fan.joinedAt,
+        lastActiveAt: fan.lastActiveAt,
+        rank: 0, // Will be set after sorting
+        previousRank: 0,
+        rankChange: 0,
+      };
+    });
+
+  // Sort by current period spend (descending) and assign ranks
+  const sortedByCurrentSpend = [...fansWithSpend].sort((a, b) => b.totalSpend - a.totalSpend);
+  sortedByCurrentSpend.forEach((fan, index) => {
+    fan.rank = index + 1;
+  });
+
+  // Sort by previous period spend to get previous ranks
+  const previousRanks: Record<string, number> = {};
+  [...fansWithSpend]
+    .sort((a, b) => {
+      const prevA = previousSpendByFan[a.id] || a.lifetimeValue * 0.3;
+      const prevB = previousSpendByFan[b.id] || b.lifetimeValue * 0.3;
+      return prevB - prevA;
+    })
+    .forEach((fan, index) => {
+      previousRanks[fan.id] = index + 1;
+    });
+
+  // Update with previous rank and calculate change
+  for (const fan of sortedByCurrentSpend) {
+    fan.previousRank = previousRanks[fan.id] || fan.rank;
+    fan.rankChange = fan.previousRank - fan.rank; // Positive = moved up
+  }
+
+  // Top fans: sorted by spend
+  const topFans = sortedByCurrentSpend.slice(0, 10);
+
+  // Top risers: fans with biggest positive rank change (moved up the most)
+  const topRisers = [...sortedByCurrentSpend]
+    .filter(f => (f.rankChange || 0) > 0) // Only fans who moved up
+    .sort((a, b) => (b.rankChange || 0) - (a.rankChange || 0))
+    .slice(0, 10);
+
+  // If we don't have enough risers, include fans with high engagement who are new
+  if (topRisers.length < 5) {
+    const newHighEngagement = sortedByCurrentSpend
+      .filter(f => isDateInRange(f.joinedAt, days * 2) && !topRisers.find(r => r.id === f.id))
+      .sort((a, b) => b.engagementScore - a.engagementScore)
+      .slice(0, 5 - topRisers.length);
+    topRisers.push(...newHighEngagement);
+  }
+
+  return { topFans, topRisers };
+};
+
+// =====================
 // Default Filter
 // =====================
 
@@ -1138,6 +1246,7 @@ export const getAnalyticsData = (filter?: Partial<AnalyticsFilter>): AnalyticsPa
     mfs: aggregateMFS(days),
     fanFlow: flow,
     fansByGeo: aggregateRevenueByGeo(days), // Reuse geo structure
+    ...computeTopFans(days), // topFans and topRisers
 
     // Drops
     drops: buildDropsOverview(days),

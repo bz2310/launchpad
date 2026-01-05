@@ -14,7 +14,7 @@ import type { FanTier, ContentType, AccessLevel } from './artist-portal';
 // =====================
 
 export type TimeGranularity = 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year';
-export type DateRangePreset = '7d' | '30d' | '90d' | '12m' | 'ytd' | 'all' | 'custom';
+export type DateRangePreset = '7d' | '30d' | '90d' | '12m' | 'mtd' | 'ytd' | 'all' | 'custom';
 
 export interface DateRange {
   start: string; // ISO date
@@ -473,6 +473,26 @@ export interface IntegrationStatus {
 }
 
 // =====================
+// Top Fan Types
+// =====================
+
+export interface TopFanData {
+  id: string;
+  name: string;
+  avatar: string;
+  tier: 'free' | 'supporter' | 'superfan';
+  totalSpend: number;        // Total spend in period
+  lifetimeValue: number;     // All-time spend
+  engagementScore: number;   // 0-100
+  location: string;          // City, Country
+  joinedAt: string;          // ISO date
+  lastActiveAt: string;      // ISO date
+  rank: number;              // Current rank
+  previousRank?: number;     // Rank in previous period (for risers calculation)
+  rankChange?: number;       // Positive = moved up, negative = moved down
+}
+
+// =====================
 // Aggregated Analytics Data Types
 // =====================
 
@@ -494,6 +514,8 @@ export interface AnalyticsPageData {
   mfs: MonthlyFanSpend;
   fanFlow: FanFlowMetrics;
   fansByGeo: RegionBreakdown[];
+  topFans: TopFanData[];     // Top fans by spend in period
+  topRisers: TopFanData[];   // Fans with biggest rank improvement
 
   // Drops page
   drops: DropsOverviewMetrics;

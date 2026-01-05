@@ -22,8 +22,30 @@ const ChevronRightIcon = () => (
 );
 
 export default function FansAnalyticsPage() {
-  const { data } = useAnalytics();
-  const { fanLadder, mfs, fanFlow, fansByGeo } = data;
+  const { data, dateRange } = useAnalytics();
+  const { fanLadder, mfs, fanFlow, fansByGeo, topFans, topRisers } = data;
+
+  // Format tier display
+  const getTierBadge = (tier: string) => {
+    const colors: Record<string, string> = {
+      superfan: '#8b2bff',
+      supporter: '#3b82f6',
+      free: '#6b7280',
+    };
+    return { color: colors[tier] || '#6b7280', label: tier.charAt(0).toUpperCase() + tier.slice(1) };
+  };
+
+  // Get label for current date range
+  const dateRangeLabels: Record<string, string> = {
+    '7d': 'Last 7 Days',
+    '30d': 'Last 30 Days',
+    '90d': 'Last 90 Days',
+    'mtd': 'Month to Date',
+    '12m': 'Last 12 Months',
+    'ytd': 'Year to Date',
+    'all': 'All Time',
+  };
+  const periodLabel = dateRangeLabels[dateRange] || 'Selected Period';
   const [expandedCountries, setExpandedCountries] = useState<Set<string>>(new Set());
 
   const toggleCountry = (countryCode: string) => {
@@ -130,6 +152,109 @@ export default function FansAnalyticsPage() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Top Fans & Top Risers Tables */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+        {/* Top Fans Table */}
+        <div className="analytics-chart-container">
+          <div className="analytics-chart-header">
+            <h3>Top Fans</h3>
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>by spend in {periodLabel}</span>
+          </div>
+          <div className="analytics-drops-table">
+            <div className="analytics-drops-header" style={{ gridTemplateColumns: '40px 1fr 80px 80px 80px' }}>
+              <span>#</span>
+              <span>Fan</span>
+              <span>Tier</span>
+              <span>Spend</span>
+              <span>Score</span>
+            </div>
+            {topFans.slice(0, 8).map((fan) => {
+              const tierBadge = getTierBadge(fan.tier);
+              return (
+                <div key={fan.id} className="analytics-drops-row" style={{ gridTemplateColumns: '40px 1fr 80px 80px 80px' }}>
+                  <span style={{ fontWeight: 600, color: fan.rank <= 3 ? '#f59e0b' : 'var(--text-secondary)' }}>
+                    {fan.rank}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img
+                      src={fan.avatar}
+                      alt={fan.name}
+                      style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }}
+                    />
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 500 }}>{fan.name}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{fan.location}</div>
+                    </div>
+                  </div>
+                  <span style={{
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    background: `${tierBadge.color}20`,
+                    color: tierBadge.color,
+                  }}>
+                    {tierBadge.label}
+                  </span>
+                  <span style={{ fontWeight: 600 }}>{formatCurrency(fan.totalSpend)}</span>
+                  <span>{fan.engagementScore}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Top Risers Table */}
+        <div className="analytics-chart-container">
+          <div className="analytics-chart-header">
+            <h3>Top Risers</h3>
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>biggest rank improvement</span>
+          </div>
+          <div className="analytics-drops-table">
+            <div className="analytics-drops-header" style={{ gridTemplateColumns: '60px 1fr 80px 80px 80px' }}>
+              <span>Change</span>
+              <span>Fan</span>
+              <span>Tier</span>
+              <span>Spend</span>
+              <span>Score</span>
+            </div>
+            {topRisers.slice(0, 8).map((fan) => {
+              const tierBadge = getTierBadge(fan.tier);
+              return (
+                <div key={fan.id} className="analytics-drops-row" style={{ gridTemplateColumns: '60px 1fr 80px 80px 80px' }}>
+                  <span style={{ color: '#22c55e', fontWeight: 600 }}>
+                    {(fan.rankChange || 0) > 0 ? `↑${fan.rankChange}` : `#${fan.rank}`}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img
+                      src={fan.avatar}
+                      alt={fan.name}
+                      style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }}
+                    />
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 500 }}>{fan.name}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{fan.location}</div>
+                    </div>
+                  </div>
+                  <span style={{
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    background: `${tierBadge.color}20`,
+                    color: tierBadge.color,
+                  }}>
+                    {tierBadge.label}
+                  </span>
+                  <span style={{ fontWeight: 600 }}>{formatCurrency(fan.totalSpend)}</span>
+                  <span>{fan.engagementScore}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
