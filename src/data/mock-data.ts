@@ -204,7 +204,7 @@ export const artists: Record<string, Artist> = {
     id: 'artist_002',
     name: 'Lady Gaga',
     handle: '@ladygaga',
-    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Lady_Gaga_at_the_White_House_in_2023_%281%29.jpg/220px-Lady_Gaga_at_the_White_House_in_2023_%281%29.jpg',
+    avatar: 'https://i.scdn.co/image/ab6761610000e5ebc8d3d98a1bccbe71393dbfbf',
     verified: true,
     bio: 'Grammy-winning artist, actress, and activist. Mother Monster. Born This Way Foundation.',
     location: 'New York, NY',
