@@ -12309,6 +12309,11 @@ a.leaderboard-item {
     background: rgba(139, 43, 255, 0.1);
 }
 
+.content-library-table .table-row.scheduled,
+.content-library-table .table-row.draft {
+    opacity: 0.6;
+}
+
 .content-library-table .th-checkbox,
 .content-library-table .td-checkbox {
     display: flex;

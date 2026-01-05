@@ -234,8 +234,11 @@ export default function ContentPage() {
                 <div className="th-actions">Actions</div>
               </div>
               <div className="table-body">
-                {filteredContent.map(item => (
-                  <div key={item.id} className={`table-row ${selectedItems.includes(item.id) ? 'selected' : ''}`}>
+                {filteredContent.map(item => {
+                  const isScheduled = item.status === 'scheduled';
+                  const isDraft = item.status === 'draft';
+                  return (
+                  <div key={item.id} className={`table-row ${selectedItems.includes(item.id) ? 'selected' : ''} ${isScheduled ? 'scheduled' : ''} ${isDraft ? 'draft' : ''}`}>
                     <div className="td-checkbox">
                       <input
                         type="checkbox"
@@ -293,7 +296,8 @@ export default function ContentPage() {
                       </button>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
