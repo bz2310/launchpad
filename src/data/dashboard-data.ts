@@ -899,30 +899,6 @@ export function formatCurrency(num: number): string {
   return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-export function formatDuration(seconds: number): string {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  }
-  return `${minutes}m`;
-}
-
-export function getTotalMerchRevenue(): number {
-  return artistDashboardData.merchandise.reduce((sum, item) => sum + item.revenue, 0);
-}
-
-export function getTotalMerchUnits(): number {
-  return artistDashboardData.merchandise.reduce((sum, item) => sum + item.unitsSold, 0);
-}
-
-export function getTotalVideoViews(): number {
-  return artistDashboardData.videos.reduce((sum, video) => sum + video.views, 0);
-}
-
-export function getTotalVideoRevenue(): number {
-  return artistDashboardData.videos.reduce((sum, video) => sum + video.revenue, 0);
-}
 
 // Artist Messages (DMs from fans)
 export interface ArtistMessage {

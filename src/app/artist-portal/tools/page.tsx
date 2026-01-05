@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { ArtistLayout } from '@/components/artist-portal';
-import { StatCard } from '@/components/artist-portal/ui';
 import { getArtistPortalData } from '@/data/artist-portal-data';
 
 export default function ToolsPage() {

@@ -43,7 +43,7 @@ const now = (): string => new Date().toISOString();
 // Fan Data
 // =====================
 
-export const fans: FanProfile[] = [
+const fans: FanProfile[] = [
   {
     id: 'fan_001',
     name: 'Alex Rivera',
@@ -186,7 +186,7 @@ export const fans: FanProfile[] = [
   },
 ];
 
-export const fanSegments: FanSegmentData[] = [
+const fanSegments: FanSegmentData[] = [
   {
     id: 'seg_001',
     name: 'Superfans',
@@ -253,7 +253,7 @@ export const fanSegments: FanSegmentData[] = [
 // Content Data
 // =====================
 
-export const content: ContentItem[] = [
+const content: ContentItem[] = [
   {
     id: 'content_001',
     type: 'music',
@@ -371,7 +371,7 @@ export const content: ContentItem[] = [
   },
 ];
 
-export const scheduledContent: ScheduledContent[] = [
+const scheduledContent: ScheduledContent[] = [
   {
     contentId: 'content_005',
     scheduledFor: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
@@ -399,7 +399,7 @@ export const scheduledContent: ScheduledContent[] = [
 // Subscription & Revenue Data
 // =====================
 
-export const subscriptionTiers: SubscriptionTier[] = [
+const subscriptionTiers: SubscriptionTier[] = [
   {
     id: 'tier_free',
     name: 'Free',
@@ -461,7 +461,7 @@ export const subscriptionTiers: SubscriptionTier[] = [
   },
 ];
 
-export const transactions: Transaction[] = [
+const transactions: Transaction[] = [
   {
     id: 'txn_001',
     fanId: 'fan_001',
@@ -549,7 +549,7 @@ export const transactions: Transaction[] = [
   },
 ];
 
-export const payouts: Payout[] = [
+const payouts: Payout[] = [
   {
     id: 'payout_001',
     amount: 12450.32,
@@ -594,7 +594,7 @@ export const payouts: Payout[] = [
   },
 ];
 
-export const promoCodes: PromoCode[] = [
+const promoCodes: PromoCode[] = [
   {
     id: 'promo_001',
     code: 'SUPERFAN20',
@@ -629,7 +629,7 @@ export const promoCodes: PromoCode[] = [
   },
 ];
 
-export const revenueMetrics: RevenueMetrics = {
+const revenueMetrics: RevenueMetrics = {
   period: 'last_30_days',
   totalRevenue: 59842.50,
   subscriptionRevenue: 42610.00,
@@ -646,7 +646,7 @@ export const revenueMetrics: RevenueMetrics = {
   projectedAnnual: 750000.00,
 };
 
-export const subscriptionHealth: SubscriptionHealthMetrics = {
+const subscriptionHealth: SubscriptionHealthMetrics = {
   totalSubscribers: 4267,
   byTier: {
     free: 8934,
@@ -666,7 +666,7 @@ export const subscriptionHealth: SubscriptionHealthMetrics = {
   churnTrend: [2.8, 2.6, 2.5, 2.4, 2.3],
 };
 
-export const contentPerformance: ContentPerformanceMetrics = {
+const contentPerformance: ContentPerformanceMetrics = {
   totalContent: 47,
   totalViews: 892340,
   totalEngagement: 124560,
@@ -689,7 +689,7 @@ export const contentPerformance: ContentPerformanceMetrics = {
   },
 };
 
-export const audienceMetrics: AudienceMetrics = {
+const audienceMetrics: AudienceMetrics = {
   totalFans: 13201,
   activeFans: 11234,
   newFans: 687,
@@ -720,7 +720,7 @@ export const audienceMetrics: AudienceMetrics = {
 // Community Data
 // =====================
 
-export const channels: CommunityChannelConfig[] = [
+const channels: CommunityChannelConfig[] = [
   {
     id: 'channel_001',
     name: 'announcements',
@@ -792,7 +792,7 @@ export const channels: CommunityChannelConfig[] = [
   },
 ];
 
-export const communityMembers: CommunityMemberRecord[] = fans.map((fan, index) => ({
+const communityMembers: CommunityMemberRecord[] = fans.map((fan, index) => ({
   id: `member_${fan.id}`,
   fanId: fan.id,
   role: index === 0 ? 'moderator' : 'member',
@@ -805,7 +805,7 @@ export const communityMembers: CommunityMemberRecord[] = fans.map((fan, index) =
   updatedAt: now(),
 }));
 
-export const moderationQueue: ModerationItem[] = [
+const moderationQueue: ModerationItem[] = [
   {
     id: 'mod_001',
     type: 'reported',
@@ -831,7 +831,7 @@ export const moderationQueue: ModerationItem[] = [
   },
 ];
 
-export const polls: Poll[] = [
+const polls: Poll[] = [
   {
     id: 'poll_001',
     question: 'Which song should I perform at the tour opener?',
@@ -855,7 +855,7 @@ export const polls: Poll[] = [
 // Messaging Data
 // =====================
 
-export const conversations: Conversation[] = [
+const conversations: Conversation[] = [
   {
     id: 'conv_001',
     fanId: 'fan_001',
@@ -904,7 +904,7 @@ export const conversations: Conversation[] = [
 // Shopify Data
 // =====================
 
-export const shopifyConnection: ShopifyConnection = {
+const shopifyConnection: ShopifyConnection = {
   id: 'shopify_001',
   shopDomain: 'jeremyelliot-merch.myshopify.com',
   accessToken: 'shpat_xxxxxxxxxxxxx', // encrypted in production
@@ -916,7 +916,7 @@ export const shopifyConnection: ShopifyConnection = {
   updatedAt: now(),
 };
 
-export const shopifyProducts: ShopifyProduct[] = [
+const shopifyProducts: ShopifyProduct[] = [
   {
     id: 'shop_001',
     shopifyId: 'gid://shopify/Product/123456789',
@@ -985,7 +985,7 @@ export const shopifyProducts: ShopifyProduct[] = [
 // Team Data
 // =====================
 
-export const teamMembers: TeamMember[] = [
+const teamMembers: TeamMember[] = [
   {
     id: 'team_001',
     email: 'jeremy@jeremyelliot.com',
@@ -1058,7 +1058,7 @@ export const teamMembers: TeamMember[] = [
 // Settings Data
 // =====================
 
-export const artistSettings: ArtistSettings = {
+const artistSettings: ArtistSettings = {
   id: 'settings_001',
   displayName: 'Jeremy Elliot',
   handle: '@jeremyelliot',
@@ -1095,7 +1095,7 @@ export const artistSettings: ArtistSettings = {
 // Dashboard Data
 // =====================
 
-export const pendingActions: PendingAction[] = [
+const pendingActions: PendingAction[] = [
   {
     id: 'action_001',
     type: 'message',
@@ -1134,7 +1134,7 @@ export const pendingActions: PendingAction[] = [
   },
 ];
 
-export const recentActivity: ActivityFeedItem[] = [
+const recentActivity: ActivityFeedItem[] = [
   {
     id: 'activity_001',
     type: 'new_supporter',
@@ -1198,7 +1198,7 @@ export const recentActivity: ActivityFeedItem[] = [
   },
 ];
 
-export const milestones: MilestoneCelebration[] = [
+const milestones: MilestoneCelebration[] = [
   {
     id: 'milestone_001',
     type: 'fan_count',
