@@ -13,6 +13,7 @@ const analyticsTabs = [
   { name: 'Revenue', href: '/artist-portal/analytics/revenue' },
   { name: 'Fans', href: '/artist-portal/analytics/fans' },
   { name: 'Drops', href: '/artist-portal/analytics/drops' },
+  { name: 'Merch', href: '/artist-portal/analytics/merch' },
   { name: 'Forecasting', href: '/artist-portal/analytics/forecasting' },
 ];
 
