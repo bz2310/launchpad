@@ -112,15 +112,15 @@ const navItems: NavItem[] = [
     icon: <AnalyticsIcon />,
   },
   {
-    name: 'Community',
-    href: '/artist-portal/community',
-    icon: <CommunityIcon />,
-  },
-  {
     name: 'Messages',
     href: '/artist-portal/messages',
     icon: <MessagesIcon />,
     badge: '12',
+  },
+  {
+    name: 'Community',
+    href: '/artist-portal/community',
+    icon: <CommunityIcon />,
   },
   {
     name: 'Tools',

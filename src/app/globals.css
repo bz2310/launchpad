@@ -13057,6 +13057,8 @@ a.leaderboard-item {
     display: flex;
     flex-direction: column;
     gap: 24px;
+    padding: 0 32px 32px;
+    max-width: 1200px;
 }
 
 .analytics-kpi-grid {
@@ -13546,7 +13548,7 @@ a.leaderboard-item {
 
 .analytics-drops-header {
     display: grid;
-    grid-template-columns: 1fr 100px 80px 80px 100px;
+    grid-template-columns: 1fr 80px 80px 60px 80px;
     padding: 12px 16px;
     background: var(--bg-tertiary);
     font-size: 11px;
@@ -13557,10 +13559,24 @@ a.leaderboard-item {
 
 .analytics-drops-row {
     display: grid;
-    grid-template-columns: 1fr 100px 80px 80px 100px;
+    grid-template-columns: 1fr 80px 80px 60px 80px;
     padding: 14px 16px;
     border-bottom: 1px solid var(--border);
     align-items: center;
+}
+
+/* Wide table variant with date + vs average columns */
+.analytics-drops-table-wide .analytics-drops-header {
+    grid-template-columns: 1fr 80px 80px 80px 80px 100px;
+}
+
+.analytics-drops-table-wide .analytics-drops-row {
+    grid-template-columns: 1fr 80px 80px 80px 80px 100px;
+}
+
+.analytics-drops-date {
+    font-size: 13px;
+    color: var(--text-secondary);
 }
 
 .analytics-drops-row:last-child {

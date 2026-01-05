@@ -59,7 +59,7 @@ const TrendDownIcon = () => (
 
 export default function AnalyticsOverviewPage() {
   const { data } = useAnalytics();
-  const { overview, fanLadder, drops } = data;
+  const { overview, fanLadder, recentDrops } = data;
 
   // Prepare chart data
   const revenueChartData = data.revenueTimeSeries.slice(-14).map(point => ({
@@ -117,7 +117,7 @@ export default function AnalyticsOverviewPage() {
         {/* Total Revenue */}
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-header">
-            <span className="analytics-kpi-label">Revenue (30d)</span>
+            <span className="analytics-kpi-label">Revenue</span>
             <div className="analytics-kpi-icon" style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e' }}>
               <DollarIcon />
             </div>
@@ -153,7 +153,7 @@ export default function AnalyticsOverviewPage() {
         {/* Total Views */}
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-header">
-            <span className="analytics-kpi-label">Total Views (30d)</span>
+            <span className="analytics-kpi-label">Total Views</span>
             <div className="analytics-kpi-icon" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' }}>
               <EyeIcon />
             </div>
@@ -223,81 +223,77 @@ export default function AnalyticsOverviewPage() {
         </div>
       </div>
 
-      {/* Charts Row */}
-      <div className="analytics-charts-row">
-        {/* Revenue Chart */}
-        <div className="analytics-chart-container">
-          <div className="analytics-chart-header">
-            <h3>Revenue Trend</h3>
-            <div className="analytics-chart-legend">
-              <div className="analytics-legend-item">
-                <div className="analytics-legend-dot" style={{ background: '#8b2bff' }} />
-                <span>Subscriptions</span>
-              </div>
-              <div className="analytics-legend-item">
-                <div className="analytics-legend-dot" style={{ background: '#22c55e' }} />
-                <span>Merch</span>
-              </div>
+      {/* Revenue Chart - Full Width */}
+      <div className="analytics-chart-container">
+        <div className="analytics-chart-header">
+          <h3>Revenue Trend</h3>
+          <div className="analytics-chart-legend">
+            <div className="analytics-legend-item">
+              <div className="analytics-legend-dot" style={{ background: '#8b2bff' }} />
+              <span>Subscriptions</span>
+            </div>
+            <div className="analytics-legend-item">
+              <div className="analytics-legend-dot" style={{ background: '#22c55e' }} />
+              <span>Merch</span>
             </div>
           </div>
-          <div style={{ height: 200 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueChartData}>
-                <defs>
-                  <linearGradient id="subGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8b2bff" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#8b2bff" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="merchGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  stroke="#666"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="#666"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                />
-                <Tooltip
-                  contentStyle={{
-                    background: '#1a1a1a',
-                    border: '1px solid #333',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                  }}
-                  formatter={(value) => [`$${Number(value).toLocaleString()}`, '']}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="subscription"
-                  stackId="1"
-                  stroke="#8b2bff"
-                  fill="url(#subGradient)"
-                  strokeWidth={2}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="merch"
-                  stackId="1"
-                  stroke="#22c55e"
-                  fill="url(#merchGradient)"
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
         </div>
-
+        <div style={{ height: 280 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={revenueChartData}>
+              <defs>
+                <linearGradient id="subGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#8b2bff" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#8b2bff" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="merchGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+              <XAxis
+                dataKey="date"
+                stroke="#666"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                stroke="#666"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: '#1a1a1a',
+                  border: '1px solid #333',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                }}
+                formatter={(value) => [`$${Number(value).toLocaleString()}`, '']}
+              />
+              <Area
+                type="monotone"
+                dataKey="subscription"
+                stackId="1"
+                stroke="#8b2bff"
+                fill="url(#subGradient)"
+                strokeWidth={2}
+              />
+              <Area
+                type="monotone"
+                dataKey="merch"
+                stackId="1"
+                stroke="#22c55e"
+                fill="url(#merchGradient)"
+                strokeWidth={2}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Fan Ladder Preview */}
@@ -329,10 +325,10 @@ export default function AnalyticsOverviewPage() {
         </div>
       </div>
 
-      {/* Top Drops Preview */}
+      {/* Most Recent Drops */}
       <div>
         <div className="analytics-section-header">
-          <h2>Top Performing Drops</h2>
+          <h2>Most Recent Drops</h2>
           <Link href="/artist-portal/analytics/drops" className="analytics-section-link">
             View All →
           </Link>
@@ -340,35 +336,25 @@ export default function AnalyticsOverviewPage() {
         <div className="analytics-drops-table">
           <div className="analytics-drops-header">
             <span>Title</span>
+            <span>Date</span>
             <span>Views</span>
             <span>Eng.</span>
             <span>Revenue</span>
-            <span>Performance</span>
           </div>
-          {drops.topPerformers.slice(0, 4).map((drop) => {
-            const performanceScore = Math.min(100, Math.max(0, drop.vsAverage.views));
-            const performanceClass = performanceScore >= 100 ? 'excellent' : performanceScore >= 70 ? 'good' : performanceScore >= 40 ? 'average' : 'poor';
-
-            return (
-              <div key={drop.dropId} className="analytics-drops-row">
-                <div className="analytics-drops-title">
-                  <span className="analytics-drops-type">{drop.type}</span>
-                  <span className="analytics-drops-name">{drop.title}</span>
-                </div>
-                <span className="analytics-drops-views">{formatCompactNumber(drop.views)}</span>
-                <span className="analytics-drops-engagement">{drop.conversionRate.toFixed(1)}%</span>
-                <span className="analytics-drops-revenue">{drop.revenue > 0 ? formatCurrency(drop.revenue) : '—'}</span>
-                <div className="analytics-drops-performance">
-                  <div className="analytics-drops-performance-bar">
-                    <div
-                      className={`analytics-drops-performance-fill ${performanceClass}`}
-                      style={{ width: `${Math.min(100, performanceScore)}%` }}
-                    />
-                  </div>
-                </div>
+          {recentDrops.slice(0, 4).map((drop) => (
+            <div key={drop.dropId} className="analytics-drops-row">
+              <div className="analytics-drops-title">
+                <span className="analytics-drops-type">{drop.type}</span>
+                <span className="analytics-drops-name">{drop.title}</span>
               </div>
-            );
-          })}
+              <span className="analytics-drops-date">
+                {new Date(drop.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </span>
+              <span className="analytics-drops-views">{formatCompactNumber(drop.views)}</span>
+              <span className="analytics-drops-engagement">{drop.conversionRate.toFixed(1)}%</span>
+              <span className="analytics-drops-revenue">{drop.revenue > 0 ? formatCurrency(drop.revenue) : '—'}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -72,9 +72,10 @@ export default function DropsAnalyticsPage() {
         <div className="analytics-section-header">
           <h2>All Drops</h2>
         </div>
-        <div className="analytics-drops-table">
+        <div className="analytics-drops-table analytics-drops-table-wide">
           <div className="analytics-drops-header">
             <span>Title</span>
+            <span>Date</span>
             <span>Views</span>
             <span>Engagement</span>
             <span>Revenue</span>
@@ -90,6 +91,9 @@ export default function DropsAnalyticsPage() {
                   <span className="analytics-drops-type">{drop.type}</span>
                   <span className="analytics-drops-name">{drop.title}</span>
                 </div>
+                <span className="analytics-drops-date">
+                  {new Date(drop.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
                 <span className="analytics-drops-views">{formatCompactNumber(drop.views)}</span>
                 <span className="analytics-drops-engagement">{drop.conversionRate.toFixed(1)}%</span>
                 <span className="analytics-drops-revenue">{drop.revenue > 0 ? formatCurrency(drop.revenue) : '—'}</span>
