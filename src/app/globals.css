@@ -6994,8 +6994,9 @@ a.leaderboard-item {
     border-bottom: none;
 }
 
-.drops-table-row.scheduled {
-    opacity: 0.7;
+.drops-table-row.scheduled,
+.drops-table-row.draft {
+    opacity: 0.6;
 }
 
 .drop-col-title {
@@ -7031,6 +7032,28 @@ a.leaderboard-item {
     text-transform: uppercase;
     margin-left: 8px;
     flex-shrink: 0;
+}
+
+/* Drop status badges (matches content library) */
+.drop-status-badge {
+    display: inline-flex;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: capitalize;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.drop-status-badge.scheduled {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+
+.drop-status-badge.draft {
+    background: rgba(156, 163, 175, 0.15);
+    color: #9ca3af;
 }
 
 .drop-col-date {

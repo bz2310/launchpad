@@ -32,9 +32,8 @@ export default function ArtistPortalPage() {
   const churnRiskFans = fans.filter(f => f.status === 'at_risk' && f.tier !== 'free');
   const topChurnRisk = churnRiskFans.length > 0 ? churnRiskFans[0] : fans.find(f => f.status === 'at_risk');
 
-  // Get all drops (published + scheduled) sorted by date
+  // Get all drops (published + scheduled + draft) sorted by date
   const allDrops = content
-    .filter(c => c.status === 'published' || c.status === 'scheduled')
     .sort((a, b) => {
       const dateA = a.publishedAt || a.scheduledFor || a.createdAt;
       const dateB = b.publishedAt || b.scheduledFor || b.createdAt;
@@ -223,13 +222,16 @@ export default function ArtistPortalPage() {
             {allDrops.map((drop) => {
               const dropDate = drop.publishedAt || drop.scheduledFor || drop.createdAt;
               const isScheduled = drop.status === 'scheduled';
+              const isDraft = drop.status === 'draft';
+              const isNotPublished = isScheduled || isDraft;
 
               return (
-                <div key={drop.id} className={`drops-table-row ${isScheduled ? 'scheduled' : ''}`}>
+                <div key={drop.id} className={`drops-table-row ${isScheduled ? 'scheduled' : ''} ${isDraft ? 'draft' : ''}`}>
                   <span className="drop-col-title">
                     <span className="drop-type-badge">{drop.type}</span>
                     {drop.title}
-                    {isScheduled && <span className="scheduled-badge">Scheduled</span>}
+                    {isScheduled && <span className="drop-status-badge scheduled">Scheduled</span>}
+                    {isDraft && <span className="drop-status-badge draft">Draft</span>}
                   </span>
                   <span className="drop-col-date">
                     {new Date(dropDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -238,13 +240,13 @@ export default function ArtistPortalPage() {
                     {drop.accessLevel === 'public' ? 'Public' : drop.accessLevel === 'supporters' ? 'Supporters' : 'Superfans'}
                   </span>
                   <span className="drop-col-views">
-                    {isScheduled ? '—' : drop.viewCount.toLocaleString()}
+                    {isNotPublished ? '—' : drop.viewCount.toLocaleString()}
                   </span>
                   <span className="drop-col-conv">
-                    {isScheduled ? '—' : getConversionRate(drop.viewCount)}
+                    {isNotPublished ? '—' : getConversionRate(drop.viewCount)}
                   </span>
                   <span className="drop-col-revenue">
-                    {isScheduled ? '—' : `$${drop.revenue.toLocaleString()}`}
+                    {isNotPublished ? '—' : `$${drop.revenue.toLocaleString()}`}
                   </span>
                 </div>
               );
