@@ -1,478 +1,435 @@
 'use client';
 
-import { useState } from 'react';
-import { ArtistLayout } from '@/components/artist-portal';
-import { StatCard, DateRangePicker, ExportButton, Tabs, TabPanel, downloadAsCSV } from '@/components/artist-portal/ui';
-import { getArtistPortalData } from '@/data/artist-portal-data';
-import type { DateRange } from '@/components/artist-portal/ui';
+import Link from 'next/link';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+import { getAnalyticsData } from '@/data/analytics-data';
+import { formatCompactNumber, formatCurrency } from '@/lib/analytics-utils';
 
-export default function AnalyticsPage() {
-  const [dateRange, setDateRange] = useState<DateRange>('30d');
-  const [activeTab, setActiveTab] = useState('overview');
-  const portalData = getArtistPortalData();
-  const { contentAnalytics, audienceMetrics, subscriptionHealth } = portalData;
+// Icons
+const UsersIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);
 
-  const handleExport = (format: 'csv' | 'json' | 'pdf') => {
-    if (format === 'csv') {
-      const data = [
-        { metric: 'Total Views', value: contentAnalytics.totalViews },
-        { metric: 'Total Content', value: contentAnalytics.totalContent },
-        { metric: 'Total Engagement', value: contentAnalytics.totalEngagement },
-        { metric: 'Avg Engagement Rate', value: `${contentAnalytics.avgEngagementRate}%` },
-      ];
-      downloadAsCSV(data, `analytics-${dateRange}`);
-    }
-  };
+const DollarIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="12" y1="1" x2="12" y2="23" />
+    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+  </svg>
+);
 
-  const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'content', label: 'Content Performance' },
-    { id: 'audience', label: 'Audience' },
-    { id: 'subscriptions', label: 'Subscriptions' },
-  ];
+const EyeIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const HeartIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+  </svg>
+);
+
+const TrendUpIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+    <polyline points="17 6 23 6 23 12" />
+  </svg>
+);
+
+const TrendDownIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+    <polyline points="17 18 23 18 23 12" />
+  </svg>
+);
+
+export default function AnalyticsOverviewPage() {
+  const data = getAnalyticsData();
+  const { overview, revenue, fanLadder, drops } = data;
+
+  // Prepare chart data
+  const revenueChartData = data.revenueTimeSeries.slice(-14).map(point => ({
+    date: new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    revenue: point.total,
+    subscription: point.subscription,
+    merch: point.merch,
+  }));
+
+  const fansChartData = overview.fans.sparkline.map((value, i) => ({
+    day: i + 1,
+    fans: value,
+  }));
 
   return (
-    <ArtistLayout title="Analytics">
-      <div className="analytics-page">
-        {/* Header Controls */}
-        <div className="analytics-header">
-          <div className="analytics-filters">
-            <DateRangePicker
-              value={dateRange}
-              onChange={(range) => setDateRange(range)}
-            />
+    <div className="analytics-overview">
+      {/* KPI Cards */}
+      <div className="analytics-kpi-grid">
+        {/* Total Fans */}
+        <div className="analytics-kpi-card">
+          <div className="analytics-kpi-header">
+            <span className="analytics-kpi-label">Total Fans</span>
+            <div className="analytics-kpi-icon">
+              <UsersIcon />
+            </div>
           </div>
-          <ExportButton
-            onExport={handleExport}
-            formats={['csv', 'json']}
-            label="Export Data"
-          />
+          <div className="analytics-kpi-value">
+            {formatCompactNumber(overview.fans.total)}
+          </div>
+          <div className={`analytics-kpi-change ${overview.fans.changePercent >= 0 ? 'positive' : 'negative'}`}>
+            {overview.fans.changePercent >= 0 ? <TrendUpIcon /> : <TrendDownIcon />}
+            <span>{overview.fans.changePercent >= 0 ? '+' : ''}{overview.fans.changePercent}% this month</span>
+          </div>
+          <div className="analytics-kpi-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={fansChartData}>
+                <defs>
+                  <linearGradient id="fanGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b2bff" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#8b2bff" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="fans"
+                  stroke="#8b2bff"
+                  fill="url(#fanGradient)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs
-          tabs={tabs}
-          activeTab={activeTab}
-          onChange={setActiveTab}
-        />
-
-        {/* Overview Tab */}
-        <TabPanel id="overview" activeTab={activeTab}>
-          <div className="analytics-stats-grid">
-            <StatCard
-              title="Total Views"
-              value={contentAnalytics.totalViews.toLocaleString()}
-              change={{ value: 12.5, period: 'vs last period' }}
-              icon={
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              }
-            />
-            <StatCard
-              title="Total Content"
-              value={contentAnalytics.totalContent.toLocaleString()}
-              change={{ value: 8.3, period: 'vs last period' }}
-              icon={
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                  <polyline points="14 2 14 8 20 8" />
-                </svg>
-              }
-            />
-            <StatCard
-              title="Total Engagement"
-              value={contentAnalytics.totalEngagement.toLocaleString()}
-              change={{ value: 5.2, period: 'vs last period' }}
-              icon={
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-              }
-            />
-            <StatCard
-              title="Engagement Rate"
-              value={`${contentAnalytics.avgEngagementRate}%`}
-              change={{ value: 3.1, period: 'vs last period' }}
-              icon={
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              }
-            />
-          </div>
-
-          {/* Chart Placeholder */}
-          <div className="analytics-chart-section">
-            <div className="analytics-chart-card">
-              <h3>Views Over Time</h3>
-              <div className="chart-placeholder">
-                <div className="chart-bars">
-                  {[65, 45, 80, 55, 90, 70, 85, 60, 75, 95, 80, 70].map((height, i) => (
-                    <div key={i} className="chart-bar" style={{ height: `${height}%` }} />
-                  ))}
-                </div>
-                <div className="chart-labels">
-                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month) => (
-                    <span key={month}>{month}</span>
-                  ))}
-                </div>
-              </div>
+        {/* Total Revenue */}
+        <div className="analytics-kpi-card">
+          <div className="analytics-kpi-header">
+            <span className="analytics-kpi-label">Revenue (30d)</span>
+            <div className="analytics-kpi-icon" style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e' }}>
+              <DollarIcon />
             </div>
           </div>
+          <div className="analytics-kpi-value">
+            {formatCurrency(overview.revenue.total)}
+          </div>
+          <div className={`analytics-kpi-change ${overview.revenue.changePercent >= 0 ? 'positive' : 'negative'}`}>
+            {overview.revenue.changePercent >= 0 ? <TrendUpIcon /> : <TrendDownIcon />}
+            <span>{overview.revenue.changePercent >= 0 ? '+' : ''}{overview.revenue.changePercent}% vs last month</span>
+          </div>
+          <div className="analytics-kpi-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={overview.revenue.sparkline.map((v, i) => ({ day: i, revenue: v }))}>
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#22c55e"
+                  fill="url(#revenueGradient)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
-          {/* Engagement Metrics */}
-          <div className="analytics-metrics-grid">
-            <div className="analytics-metric-card">
-              <h3>Engagement Breakdown</h3>
-              <div className="metric-rows">
-                <div className="metric-row">
-                  <span className="metric-label">Likes</span>
-                  <div className="metric-bar-container">
-                    <div className="metric-bar" style={{ width: '78%', background: '#8b2bff' }} />
-                  </div>
-                  <span className="metric-value">78%</span>
-                </div>
-                <div className="metric-row">
-                  <span className="metric-label">Comments</span>
-                  <div className="metric-bar-container">
-                    <div className="metric-bar" style={{ width: '45%', background: '#3b82f6' }} />
-                  </div>
-                  <span className="metric-value">45%</span>
-                </div>
-                <div className="metric-row">
-                  <span className="metric-label">Shares</span>
-                  <div className="metric-bar-container">
-                    <div className="metric-bar" style={{ width: '32%', background: '#10b981' }} />
-                  </div>
-                  <span className="metric-value">32%</span>
-                </div>
-                <div className="metric-row">
-                  <span className="metric-label">Saves</span>
-                  <div className="metric-bar-container">
-                    <div className="metric-bar" style={{ width: '56%', background: '#f59e0b' }} />
-                  </div>
-                  <span className="metric-value">56%</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="analytics-metric-card">
-              <h3>Traffic Sources</h3>
-              <div className="source-list">
-                <div className="source-item">
-                  <div className="source-info">
-                    <span className="source-color" style={{ background: '#8b2bff' }} />
-                    <span className="source-name">Direct</span>
-                  </div>
-                  <span className="source-value">42%</span>
-                </div>
-                <div className="source-item">
-                  <div className="source-info">
-                    <span className="source-color" style={{ background: '#3b82f6' }} />
-                    <span className="source-name">Social Media</span>
-                  </div>
-                  <span className="source-value">28%</span>
-                </div>
-                <div className="source-item">
-                  <div className="source-info">
-                    <span className="source-color" style={{ background: '#10b981' }} />
-                    <span className="source-name">Search</span>
-                  </div>
-                  <span className="source-value">18%</span>
-                </div>
-                <div className="source-item">
-                  <div className="source-info">
-                    <span className="source-color" style={{ background: '#f59e0b' }} />
-                    <span className="source-name">Referral</span>
-                  </div>
-                  <span className="source-value">12%</span>
-                </div>
-              </div>
+        {/* Total Views */}
+        <div className="analytics-kpi-card">
+          <div className="analytics-kpi-header">
+            <span className="analytics-kpi-label">Total Views (30d)</span>
+            <div className="analytics-kpi-icon" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' }}>
+              <EyeIcon />
             </div>
           </div>
-        </TabPanel>
+          <div className="analytics-kpi-value">
+            {formatCompactNumber(overview.views.total)}
+          </div>
+          <div className={`analytics-kpi-change ${overview.views.changePercent >= 0 ? 'positive' : 'negative'}`}>
+            {overview.views.changePercent >= 0 ? <TrendUpIcon /> : <TrendDownIcon />}
+            <span>{overview.views.changePercent >= 0 ? '+' : ''}{overview.views.changePercent}% this month</span>
+          </div>
+          <div className="analytics-kpi-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={overview.views.sparkline.map((v, i) => ({ day: i, views: v }))}>
+                <defs>
+                  <linearGradient id="viewsGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="views"
+                  stroke="#3b82f6"
+                  fill="url(#viewsGradient)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
-        {/* Content Performance Tab */}
-        <TabPanel id="content" activeTab={activeTab}>
-          <div className="content-performance">
-            <div className="analytics-metric-card full-width">
-              <h3>Top Performing Content</h3>
-              <div className="content-table">
-                <div className="content-table-header">
-                  <span>Content</span>
-                  <span>Views</span>
-                  <span>Likes</span>
-                  <span>Comments</span>
-                  <span>Revenue</span>
-                </div>
-                {contentAnalytics.topByViews.map((item) => (
-                  <div key={item.id} className="content-table-row">
-                    <div className="content-info">
-                      <span className="content-title">{item.title}</span>
-                      <span className="content-type">{item.type}</span>
-                    </div>
-                    <span className="content-views">{item.viewCount.toLocaleString()}</span>
-                    <span className="content-engagement">{item.likeCount.toLocaleString()}</span>
-                    <span className="content-time">{item.commentCount.toLocaleString()}</span>
-                    <span className="content-revenue">${item.revenue.toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="analytics-stats-grid">
-              <StatCard
-                title="Best Day"
-                value="Saturday"
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                }
-              />
-              <StatCard
-                title="Peak Hour"
-                value="8:00 PM"
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                }
-              />
-              <StatCard
-                title="Avg. Session"
-                value="12m 34s"
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                  </svg>
-                }
-              />
+        {/* Engagement Rate */}
+        <div className="analytics-kpi-card">
+          <div className="analytics-kpi-header">
+            <span className="analytics-kpi-label">Engagement Rate</span>
+            <div className="analytics-kpi-icon" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' }}>
+              <HeartIcon />
             </div>
           </div>
-        </TabPanel>
-
-        {/* Audience Tab */}
-        <TabPanel id="audience" activeTab={activeTab}>
-          <div className="audience-analytics">
-            <div className="analytics-stats-grid">
-              <StatCard
-                title="Total Audience"
-                value={audienceMetrics.totalFans.toLocaleString()}
-                change={{ value: 8.5, period: 'this month' }}
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
-                }
-              />
-              <StatCard
-                title="Active Fans"
-                value={audienceMetrics.activeFans.toLocaleString()}
-                change={{ value: 5.2, period: 'vs last month' }}
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                  </svg>
-                }
-              />
-              <StatCard
-                title="New Fans"
-                value={audienceMetrics.newFans.toLocaleString()}
-                change={{ value: 12.8, period: 'vs last month' }}
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                }
-              />
-              <StatCard
-                title="Churned Fans"
-                value={audienceMetrics.churnedFans.toLocaleString()}
-                change={{ value: -0.5, period: 'vs last month' }}
-                trend="down"
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                    <polyline points="17 6 23 6 23 12" />
-                  </svg>
-                }
-              />
-            </div>
-
-            <div className="analytics-metrics-grid">
-              <div className="analytics-metric-card">
-                <h3>Geographic Distribution</h3>
-                <div className="geo-list">
-                  {audienceMetrics.byRegion.map((region) => (
-                    <div key={region.region} className="geo-item">
-                      <div className="geo-info">
-                        <span className="geo-name">{region.region}</span>
-                      </div>
-                      <div className="geo-bar-container">
-                        <div
-                          className="geo-bar"
-                          style={{ width: `${region.percent}%` }}
-                        />
-                      </div>
-                      <span className="geo-value">{region.percent}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="analytics-metric-card">
-                <h3>Fan Breakdown by Tier</h3>
-                <div className="demo-grid">
-                  <div className="demo-section">
-                    <div className="demo-item">
-                      <span className="demo-label">Free</span>
-                      <div className="demo-bar-container">
-                        <div
-                          className="demo-bar"
-                          style={{ width: `${(audienceMetrics.byTier.free / audienceMetrics.totalFans) * 100}%` }}
-                        />
-                      </div>
-                      <span className="demo-value">{audienceMetrics.byTier.free.toLocaleString()}</span>
-                    </div>
-                    <div className="demo-item">
-                      <span className="demo-label">Supporter</span>
-                      <div className="demo-bar-container">
-                        <div
-                          className="demo-bar"
-                          style={{ width: `${(audienceMetrics.byTier.supporter / audienceMetrics.totalFans) * 100}%` }}
-                        />
-                      </div>
-                      <span className="demo-value">{audienceMetrics.byTier.supporter.toLocaleString()}</span>
-                    </div>
-                    <div className="demo-item">
-                      <span className="demo-label">Superfan</span>
-                      <div className="demo-bar-container">
-                        <div
-                          className="demo-bar"
-                          style={{ width: `${(audienceMetrics.byTier.superfan / audienceMetrics.totalFans) * 100}%` }}
-                        />
-                      </div>
-                      <span className="demo-value">{audienceMetrics.byTier.superfan.toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="analytics-kpi-value">
+            {overview.engagement.rate}%
           </div>
-        </TabPanel>
-
-        {/* Subscriptions Tab */}
-        <TabPanel id="subscriptions" activeTab={activeTab}>
-          <div className="subscription-analytics">
-            <div className="analytics-stats-grid">
-              <StatCard
-                title="Monthly Recurring"
-                value={`$${subscriptionHealth.mrr.toLocaleString()}`}
-                change={{ value: 8.5, period: 'this month' }}
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="12" y1="1" x2="12" y2="23" />
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                  </svg>
-                }
-              />
-              <StatCard
-                title="Total Subscribers"
-                value={subscriptionHealth.totalSubscribers.toLocaleString()}
-                change={{ value: 8.5, period: 'this month' }}
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                  </svg>
-                }
-              />
-              <StatCard
-                title="Annual Recurring"
-                value={`$${subscriptionHealth.arr.toLocaleString()}`}
-                change={{ value: 12.3, period: 'this month' }}
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                  </svg>
-                }
-              />
-              <StatCard
-                title="Churn Rate"
-                value={`${subscriptionHealth.churnRate}%`}
-                change={{ value: -0.3, period: 'this month' }}
-                trend="down"
-                icon={
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="15" y1="9" x2="9" y2="15" />
-                    <line x1="9" y1="9" x2="15" y2="15" />
-                  </svg>
-                }
-              />
-            </div>
-
-            <div className="analytics-metrics-grid">
-              <div className="analytics-metric-card">
-                <h3>Subscribers by Tier</h3>
-                <div className="tier-breakdown">
-                  <div className="tier-item">
-                    <div className="tier-info">
-                      <span className="tier-name">Free</span>
-                      <span className="tier-count">{subscriptionHealth.byTier.free.toLocaleString()} subscribers</span>
-                    </div>
-                  </div>
-                  <div className="tier-item">
-                    <div className="tier-info">
-                      <span className="tier-name">Supporter</span>
-                      <span className="tier-count">{subscriptionHealth.byTier.supporter.toLocaleString()} subscribers</span>
-                    </div>
-                  </div>
-                  <div className="tier-item">
-                    <div className="tier-info">
-                      <span className="tier-name">Superfan</span>
-                      <span className="tier-count">{subscriptionHealth.byTier.superfan.toLocaleString()} subscribers</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="analytics-metric-card">
-                <h3>Conversion Funnel</h3>
-                <div className="funnel">
-                  <div className="funnel-stage" style={{ width: '100%' }}>
-                    <span className="funnel-label">Visitors</span>
-                    <span className="funnel-value">10,000</span>
-                  </div>
-                  <div className="funnel-stage" style={{ width: '60%' }}>
-                    <span className="funnel-label">Free Sign-ups</span>
-                    <span className="funnel-value">6,000</span>
-                  </div>
-                  <div className="funnel-stage" style={{ width: '25%' }}>
-                    <span className="funnel-label">Trial Started</span>
-                    <span className="funnel-value">2,500</span>
-                  </div>
-                  <div className="funnel-stage" style={{ width: '15%' }}>
-                    <span className="funnel-label">Converted</span>
-                    <span className="funnel-value">1,500</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className={`analytics-kpi-change ${overview.engagement.change >= 0 ? 'positive' : 'negative'}`}>
+            {overview.engagement.change >= 0 ? <TrendUpIcon /> : <TrendDownIcon />}
+            <span>{overview.engagement.change >= 0 ? '+' : ''}{overview.engagement.change}% this month</span>
           </div>
-        </TabPanel>
+          <div className="analytics-kpi-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={overview.engagement.sparkline.map((v, i) => ({ day: i, engagement: v }))}>
+                <defs>
+                  <linearGradient id="engagementGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="engagement"
+                  stroke="#f59e0b"
+                  fill="url(#engagementGradient)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
-    </ArtistLayout>
+
+      {/* Highlights */}
+      <div className="analytics-highlights">
+        <h3>Highlights</h3>
+        <div className="analytics-highlights-list">
+          {overview.highlights.map((highlight, i) => (
+            <div key={i} className="analytics-highlight-item">
+              <div className={`analytics-highlight-icon ${highlight.type}`} />
+              <span className="analytics-highlight-message">{highlight.message}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Charts Row */}
+      <div className="analytics-charts-row">
+        {/* Revenue Chart */}
+        <div className="analytics-chart-container">
+          <div className="analytics-chart-header">
+            <h3>Revenue Trend</h3>
+            <div className="analytics-chart-legend">
+              <div className="analytics-legend-item">
+                <div className="analytics-legend-dot" style={{ background: '#8b2bff' }} />
+                <span>Subscriptions</span>
+              </div>
+              <div className="analytics-legend-item">
+                <div className="analytics-legend-dot" style={{ background: '#22c55e' }} />
+                <span>Merch</span>
+              </div>
+            </div>
+          </div>
+          <div style={{ height: 200 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={revenueChartData}>
+                <defs>
+                  <linearGradient id="subGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b2bff" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#8b2bff" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="merchGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  stroke="#666"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="#666"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: '#1a1a1a',
+                    border: '1px solid #333',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                  }}
+                  formatter={(value) => [`$${Number(value).toLocaleString()}`, '']}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="subscription"
+                  stackId="1"
+                  stroke="#8b2bff"
+                  fill="url(#subGradient)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="merch"
+                  stackId="1"
+                  stroke="#22c55e"
+                  fill="url(#merchGradient)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Health Indicators */}
+        <div className="analytics-chart-container">
+          <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '16px' }}>Health Indicators</h3>
+          <div className="analytics-health-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+            <div className="analytics-health-item">
+              <span className="analytics-health-label">Overall</span>
+              <span className={`analytics-health-value ${overview.health.overall}`}>
+                {overview.health.overall.replace('_', ' ')}
+              </span>
+            </div>
+            <div className="analytics-health-item">
+              <span className="analytics-health-label">Revenue</span>
+              <span className={`analytics-health-value ${overview.health.revenue}`}>
+                {overview.health.revenue}
+              </span>
+            </div>
+            <div className="analytics-health-item">
+              <span className="analytics-health-label">Fans</span>
+              <span className={`analytics-health-value ${overview.health.fans}`}>
+                {overview.health.fans}
+              </span>
+            </div>
+            <div className="analytics-health-item">
+              <span className="analytics-health-label">Engagement</span>
+              <span className={`analytics-health-value ${overview.health.engagement}`}>
+                {overview.health.engagement}
+              </span>
+            </div>
+          </div>
+
+          {/* Quick Stats */}
+          <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>MRR</span>
+              <span style={{ fontSize: '13px', fontWeight: 600 }}>{formatCurrency(revenue.byTier.supporter.gross + revenue.byTier.superfan.gross)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Paying Fans</span>
+              <span style={{ fontSize: '13px', fontWeight: 600 }}>{fanLadder.payingFans.toLocaleString()}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Conversion Rate</span>
+              <span style={{ fontSize: '13px', fontWeight: 600 }}>{fanLadder.conversionRate}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Fan Ladder Preview */}
+      <div>
+        <div className="analytics-section-header">
+          <h2>Fan Ladder</h2>
+          <Link href="/artist-portal/analytics/fans" className="analytics-section-link">
+            View Details →
+          </Link>
+        </div>
+        <div className="analytics-fan-ladder">
+          {fanLadder.tiers.map((tier) => (
+            <div key={tier.tier} className="analytics-ladder-tier">
+              <div className="analytics-ladder-name">
+                <div className="analytics-ladder-dot" style={{ background: tier.color }} />
+                <span>{tier.displayName}</span>
+              </div>
+              <div className="analytics-ladder-bar">
+                <div
+                  className="analytics-ladder-bar-fill"
+                  style={{ width: `${tier.percent}%`, background: tier.color }}
+                />
+              </div>
+              <span className="analytics-ladder-count">{tier.count.toLocaleString()}</span>
+              <span className="analytics-ladder-mfs">${tier.avgMonthlySpend}/mo</span>
+              <span className="analytics-ladder-percent">{tier.percent}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Top Drops Preview */}
+      <div>
+        <div className="analytics-section-header">
+          <h2>Top Performing Drops</h2>
+          <Link href="/artist-portal/analytics/drops" className="analytics-section-link">
+            View All →
+          </Link>
+        </div>
+        <div className="analytics-drops-table">
+          <div className="analytics-drops-header">
+            <span>Title</span>
+            <span>Views</span>
+            <span>Eng.</span>
+            <span>Revenue</span>
+            <span>Performance</span>
+          </div>
+          {drops.topPerformers.slice(0, 4).map((drop) => {
+            const performanceScore = Math.min(100, Math.max(0, drop.vsAverage.views));
+            const performanceClass = performanceScore >= 100 ? 'excellent' : performanceScore >= 70 ? 'good' : performanceScore >= 40 ? 'average' : 'poor';
+
+            return (
+              <div key={drop.dropId} className="analytics-drops-row">
+                <div className="analytics-drops-title">
+                  <span className="analytics-drops-type">{drop.type}</span>
+                  <span className="analytics-drops-name">{drop.title}</span>
+                </div>
+                <span className="analytics-drops-views">{formatCompactNumber(drop.views)}</span>
+                <span className="analytics-drops-engagement">{drop.conversionRate.toFixed(1)}%</span>
+                <span className="analytics-drops-revenue">{drop.revenue > 0 ? formatCurrency(drop.revenue) : '—'}</span>
+                <div className="analytics-drops-performance">
+                  <div className="analytics-drops-performance-bar">
+                    <div
+                      className={`analytics-drops-performance-fill ${performanceClass}`}
+                      style={{ width: `${Math.min(100, performanceScore)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }

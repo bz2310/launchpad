@@ -1,0 +1,292 @@
+'use client';
+
+import { useState } from 'react';
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+import { getAnalyticsData } from '@/data/analytics-data';
+import { formatCurrency, formatCompactNumber } from '@/lib/analytics-utils';
+
+const ChevronRightIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="9 18 15 12 9 6" />
+  </svg>
+);
+
+export default function FansAnalyticsPage() {
+  const data = getAnalyticsData();
+  const { fanLadder, mfs, fanFlow, fansByGeo } = data;
+  const [expandedCountries, setExpandedCountries] = useState<Set<string>>(new Set());
+
+  const toggleCountry = (countryCode: string) => {
+    const newExpanded = new Set(expandedCountries);
+    if (newExpanded.has(countryCode)) {
+      newExpanded.delete(countryCode);
+    } else {
+      newExpanded.add(countryCode);
+    }
+    setExpandedCountries(newExpanded);
+  };
+
+  // MFS trend data
+  const mfsTrendData = mfs.mfsTrend.slice(-14).map(point => ({
+    date: new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    mfs: point.value,
+  }));
+
+  // Churn by reason data
+  const churnReasonData = fanFlow.churnReasons?.map(reason => ({
+    name: reason.reason.length > 15 ? reason.reason.substring(0, 15) + '...' : reason.reason,
+    value: reason.count,
+    percent: reason.percent,
+  })) || [];
+
+  return (
+    <div className="analytics-overview">
+      {/* Fan Summary Cards */}
+      <div className="analytics-kpi-grid">
+        <div className="analytics-kpi-card">
+          <div className="analytics-kpi-label">Total Fans</div>
+          <div className="analytics-kpi-value">{formatCompactNumber(fanLadder.totalFans)}</div>
+          <div className="analytics-kpi-change positive">
+            +{fanFlow.newFans} new this period
+          </div>
+        </div>
+        <div className="analytics-kpi-card">
+          <div className="analytics-kpi-label">Paying Fans</div>
+          <div className="analytics-kpi-value">{formatCompactNumber(fanLadder.payingFans)}</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '8px' }}>
+            {((fanLadder.payingFans / fanLadder.totalFans) * 100).toFixed(1)}% of total
+          </div>
+        </div>
+        <div className="analytics-kpi-card">
+          <div className="analytics-kpi-label">Monthly Fan Spend</div>
+          <div className="analytics-kpi-value">${mfs.mfs.toFixed(2)}</div>
+          <div className={`analytics-kpi-change ${mfs.changePercent >= 0 ? 'positive' : 'negative'}`}>
+            {mfs.changePercent >= 0 ? '+' : ''}{mfs.changePercent}% vs last period
+          </div>
+        </div>
+        <div className="analytics-kpi-card">
+          <div className="analytics-kpi-label">Conversion Rate</div>
+          <div className="analytics-kpi-value">{fanLadder.conversionRate}%</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '8px' }}>
+            Avg {fanLadder.avgTimeToConvert} days to convert
+          </div>
+        </div>
+      </div>
+
+      {/* Fan Ladder */}
+      <div>
+        <div className="analytics-section-header">
+          <h2>Fan Ladder</h2>
+          <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+            {fanLadder.ladderHealth === 'growing' ? '📈 Growing' :
+             fanLadder.ladderHealth === 'stable' ? '➡️ Stable' : '📉 Shrinking'}
+          </span>
+        </div>
+        <div className="analytics-fan-ladder">
+          {fanLadder.tiers.map((tier) => (
+            <div key={tier.tier} className="analytics-ladder-tier">
+              <div className="analytics-ladder-name">
+                <div className="analytics-ladder-dot" style={{ background: tier.color }} />
+                <span>{tier.displayName}</span>
+              </div>
+              <div className="analytics-ladder-bar">
+                <div
+                  className="analytics-ladder-bar-fill"
+                  style={{ width: `${tier.percent}%`, background: tier.color }}
+                />
+              </div>
+              <span className="analytics-ladder-count">{tier.count.toLocaleString()}</span>
+              <span className="analytics-ladder-mfs">${tier.avgMonthlySpend}/mo</span>
+              <span className="analytics-ladder-percent">{tier.percent}%</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Tier Movement Summary */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginTop: '16px' }}>
+          {fanLadder.tiers.filter(t => t.tier !== 'free').map((tier) => (
+            <div key={tier.tier} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{tier.displayName} Movement</div>
+              <div style={{ display: 'flex', gap: '12px', fontSize: '12px' }}>
+                <div>
+                  <span style={{ color: '#22c55e' }}>↑ {tier.upgradedFrom}</span>
+                </div>
+                <div>
+                  <span style={{ color: '#ef4444' }}>↓ {tier.downgradedTo}</span>
+                </div>
+                <div>
+                  <span style={{ color: 'var(--text-secondary)' }}>✕ {tier.churned}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Charts Row */}
+      <div className="analytics-charts-row">
+        {/* MFS Trend */}
+        <div className="analytics-chart-container">
+          <div className="analytics-chart-header">
+            <h3>Monthly Fan Spend Trend</h3>
+            {mfs.benchmarkComparison && (
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                {mfs.benchmarkComparison.percentile}th percentile (median: ${mfs.benchmarkComparison.median})
+              </span>
+            )}
+          </div>
+          <div style={{ height: 200 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={mfsTrendData}>
+                <defs>
+                  <linearGradient id="mfsGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b2bff" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#8b2bff" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                <XAxis dataKey="date" stroke="#666" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis stroke="#666" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v}`} />
+                <Tooltip
+                  contentStyle={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px' }}
+                  formatter={(value) => [`$${Number(value).toFixed(2)}`, 'MFS']}
+                />
+                <Area type="monotone" dataKey="mfs" stroke="#8b2bff" fill="url(#mfsGradient)" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Fan Flow */}
+        <div className="analytics-chart-container">
+          <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '16px' }}>Fan Flow</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ padding: '16px', background: 'rgba(34, 197, 94, 0.1)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '24px', fontWeight: 700, color: '#22c55e' }}>+{fanFlow.newFans}</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>New Fans</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '8px' }}>
+                Organic: {fanFlow.newBySource.organic} | Referral: {fanFlow.newBySource.referral}
+              </div>
+            </div>
+            <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '24px', fontWeight: 700, color: '#ef4444' }}>-{fanFlow.churned}</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Churned</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '8px' }}>
+                Churn rate: {fanFlow.churnRate}%
+              </div>
+            </div>
+          </div>
+          <div style={{ marginTop: '16px', padding: '16px', background: 'var(--bg-primary)', borderRadius: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Net Growth</span>
+              <span style={{ fontSize: '18px', fontWeight: 700, color: fanFlow.netGrowth >= 0 ? '#22c55e' : '#ef4444' }}>
+                {fanFlow.netGrowth >= 0 ? '+' : ''}{fanFlow.netGrowth}
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Retention Rate</span>
+              <span style={{ fontSize: '14px', fontWeight: 600 }}>{fanFlow.retentionRate}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Churn Reasons */}
+      {churnReasonData.length > 0 && (
+        <div className="analytics-chart-container">
+          <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '16px' }}>Churn Reasons</h3>
+          <div style={{ height: 200 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={churnReasonData} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={false} />
+                <XAxis type="number" stroke="#666" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis type="category" dataKey="name" stroke="#666" fontSize={11} tickLine={false} axisLine={false} width={120} />
+                <Tooltip
+                  contentStyle={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px' }}
+                  formatter={(value, _name, props) => {
+                    const percent = (props?.payload as { percent?: number })?.percent ?? 0;
+                    return [`${value} (${percent}%)`, 'Churned'];
+                  }}
+                />
+                <Bar dataKey="value" fill="#ef4444" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* Geographic Breakdown */}
+      <div className="analytics-geo-section">
+        <h3>Fans by Geography</h3>
+        <div className="analytics-geo-table">
+          <div className="analytics-geo-row header">
+            <span>Region / Country</span>
+            <span>Fans</span>
+            <span>Share</span>
+            <span>Change</span>
+          </div>
+          {fansByGeo.map((region) => (
+            <div key={region.regionId}>
+              <div className="analytics-geo-row">
+                <div className="analytics-geo-name">
+                  <strong>{region.region}</strong>
+                </div>
+                <span className="analytics-geo-value">{formatCompactNumber(region.fans || 0)}</span>
+                <span>{region.percent}%</span>
+                <span className={`analytics-geo-change ${(region.change || 0) >= 0 ? 'positive' : 'negative'}`}>
+                  {(region.change || 0) >= 0 ? '+' : ''}{region.change}%
+                </span>
+              </div>
+              {region.countries.map((country) => (
+                <div key={country.countryCode}>
+                  <div className="analytics-geo-row" style={{ paddingLeft: '20px' }}>
+                    <div className="analytics-geo-name">
+                      <button
+                        className={`analytics-geo-expand ${expandedCountries.has(country.countryCode) ? 'expanded' : ''}`}
+                        onClick={() => toggleCountry(country.countryCode)}
+                        style={{ visibility: country.metros.length > 0 ? 'visible' : 'hidden' }}
+                      >
+                        <ChevronRightIcon />
+                      </button>
+                      <span className="analytics-geo-flag">{country.flag}</span>
+                      <span>{country.country}</span>
+                    </div>
+                    <span className="analytics-geo-value">{formatCompactNumber(country.fans || 0)}</span>
+                    <span>{country.percent}%</span>
+                    <span className={`analytics-geo-change ${(country.change || 0) >= 0 ? 'positive' : 'negative'}`}>
+                      {(country.change || 0) >= 0 ? '+' : ''}{country.change}%
+                    </span>
+                  </div>
+                  {expandedCountries.has(country.countryCode) && country.metros.length > 0 && (
+                    <div className="analytics-metro-rows">
+                      {country.metros.map((metro) => (
+                        <div key={metro.metroId} className="analytics-metro-row">
+                          <span style={{ paddingLeft: '20px' }}>{metro.displayName}</span>
+                          <span>{formatCompactNumber(metro.fans || 0)}</span>
+                          <span>{metro.percent}%</span>
+                          <span className={`analytics-geo-change ${(metro.change || 0) >= 0 ? 'positive' : 'negative'}`}>
+                            {(metro.change || 0) >= 0 ? '+' : ''}{metro.change}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
