@@ -43,6 +43,33 @@ export default function CreatePage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
+  // Poll-specific state
+  const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
+  const [pollDuration, setPollDuration] = useState(24); // hours
+  const [allowMultipleVotes, setAllowMultipleVotes] = useState(false);
+
+  // Event-specific state
+  const [eventLocation, setEventLocation] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [eventTime, setEventTime] = useState('');
+  const [eventType, setEventType] = useState<'in_person' | 'virtual' | 'hybrid'>('in_person');
+  const [ticketLink, setTicketLink] = useState('');
+  const [rsvpEnabled, setRsvpEnabled] = useState(true);
+
+  // Merch-specific state
+  const [merchPrice, setMerchPrice] = useState(25.00);
+  const [merchInventory, setMerchInventory] = useState(100);
+  const [merchSizes, setMerchSizes] = useState<string[]>(['S', 'M', 'L', 'XL']);
+  const [merchColors, setMerchColors] = useState<string[]>(['Black']);
+
+  // Audio-specific state
+  const [audioType, setAudioType] = useState<'single' | 'ep' | 'album'>('single');
+  const [isExplicit, setIsExplicit] = useState(false);
+
+  // Video-specific state
+  const [videoDuration, setVideoDuration] = useState('');
+  const [videoType, setVideoType] = useState<'music_video' | 'behind_scenes' | 'live' | 'other'>('music_video');
+
   const dropTypes: { id: DropType; label: string; icon: ReactNode }[] = [
     {
       id: 'audio',
@@ -117,6 +144,34 @@ export default function CreatePage() {
     { id: 'inactive', label: 'Inactive (30+ days)' },
   ];
 
+  // Poll option helpers
+  const addPollOption = () => {
+    if (pollOptions.length < 6) {
+      setPollOptions([...pollOptions, '']);
+    }
+  };
+
+  const removePollOption = (index: number) => {
+    if (pollOptions.length > 2) {
+      setPollOptions(pollOptions.filter((_, i) => i !== index));
+    }
+  };
+
+  const updatePollOption = (index: number, value: string) => {
+    const newOptions = [...pollOptions];
+    newOptions[index] = value;
+    setPollOptions(newOptions);
+  };
+
+  // Merch size/color helpers
+  const toggleMerchSize = (size: string) => {
+    if (merchSizes.includes(size)) {
+      setMerchSizes(merchSizes.filter(s => s !== size));
+    } else {
+      setMerchSizes([...merchSizes, size]);
+    }
+  };
+
   const handleSaveDraft = () => {
     console.log('Saving draft...', { dropType, accessType, monetization, timing, title, description });
   };
@@ -151,41 +206,298 @@ export default function CreatePage() {
             <h2>Content</h2>
             <div className="content-inputs">
               <div className="input-group">
-                <label>Title</label>
+                <label>{dropType === 'poll' ? 'Poll Question' : 'Title'}</label>
                 <input
                   type="text"
-                  placeholder="Enter drop title..."
+                  placeholder={dropType === 'poll' ? 'Ask your fans a question...' : 'Enter drop title...'}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
-              <div className="input-group">
-                <label>Description</label>
-                <textarea
-                  placeholder="Describe your drop..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={4}
-                />
-              </div>
-              <div className="upload-area">
-                <div className="upload-icon">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
+
+              {/* Poll-specific: Poll Options */}
+              {dropType === 'poll' && (
+                <div className="input-group poll-options-group">
+                  <label>Poll Options</label>
+                  <div className="poll-options-list">
+                    {pollOptions.map((option, index) => (
+                      <div key={index} className="poll-option-input">
+                        <span className="poll-option-number">{index + 1}</span>
+                        <input
+                          type="text"
+                          placeholder={`Option ${index + 1}`}
+                          value={option}
+                          onChange={(e) => updatePollOption(index, e.target.value)}
+                        />
+                        {pollOptions.length > 2 && (
+                          <button
+                            type="button"
+                            className="remove-option-btn"
+                            onClick={() => removePollOption(index)}
+                            title="Remove option"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <line x1="18" y1="6" x2="6" y2="18" />
+                              <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    {pollOptions.length < 6 && (
+                      <button type="button" className="add-option-btn" onClick={addPollOption}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Add Option
+                      </button>
+                    )}
+                  </div>
+                  <div className="poll-settings">
+                    <div className="poll-setting">
+                      <label>Poll Duration</label>
+                      <select value={pollDuration} onChange={(e) => setPollDuration(parseInt(e.target.value))}>
+                        <option value={6}>6 hours</option>
+                        <option value={12}>12 hours</option>
+                        <option value={24}>24 hours</option>
+                        <option value={48}>2 days</option>
+                        <option value={72}>3 days</option>
+                        <option value={168}>1 week</option>
+                      </select>
+                    </div>
+                    <label className="checkbox-option poll-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={allowMultipleVotes}
+                        onChange={(e) => setAllowMultipleVotes(e.target.checked)}
+                      />
+                      <span>Allow multiple selections</span>
+                    </label>
+                  </div>
                 </div>
-                <p>Drag & drop or click to upload</p>
-                <span className="upload-hint">
-                  {dropType === 'audio' && 'MP3, WAV, FLAC up to 100MB'}
-                  {dropType === 'video' && 'MP4, MOV, WebM up to 2GB'}
-                  {dropType === 'post' && 'JPG, PNG, GIF up to 20MB'}
-                  {dropType === 'merch' && 'Product images (JPG, PNG)'}
-                  {dropType === 'event' && 'Cover image (JPG, PNG)'}
-                  {dropType === 'poll' && 'Optional cover image'}
-                </span>
-              </div>
+              )}
+
+              {/* Event-specific: Event Details */}
+              {dropType === 'event' && (
+                <div className="input-group event-details-group">
+                  <div className="event-type-selector">
+                    <label>Event Type</label>
+                    <div className="event-type-options">
+                      <button
+                        type="button"
+                        className={`event-type-btn ${eventType === 'in_person' ? 'active' : ''}`}
+                        onClick={() => setEventType('in_person')}
+                      >
+                        In-Person
+                      </button>
+                      <button
+                        type="button"
+                        className={`event-type-btn ${eventType === 'virtual' ? 'active' : ''}`}
+                        onClick={() => setEventType('virtual')}
+                      >
+                        Virtual
+                      </button>
+                      <button
+                        type="button"
+                        className={`event-type-btn ${eventType === 'hybrid' ? 'active' : ''}`}
+                        onClick={() => setEventType('hybrid')}
+                      >
+                        Hybrid
+                      </button>
+                    </div>
+                  </div>
+                  <div className="event-datetime">
+                    <div className="input-group">
+                      <label>Date</label>
+                      <input
+                        type="date"
+                        value={eventDate}
+                        onChange={(e) => setEventDate(e.target.value)}
+                      />
+                    </div>
+                    <div className="input-group">
+                      <label>Time</label>
+                      <input
+                        type="time"
+                        value={eventTime}
+                        onChange={(e) => setEventTime(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  {(eventType === 'in_person' || eventType === 'hybrid') && (
+                    <div className="input-group">
+                      <label>Location / Venue</label>
+                      <input
+                        type="text"
+                        placeholder="Enter venue name and address..."
+                        value={eventLocation}
+                        onChange={(e) => setEventLocation(e.target.value)}
+                      />
+                    </div>
+                  )}
+                  <div className="input-group">
+                    <label>Ticket / RSVP Link (optional)</label>
+                    <input
+                      type="url"
+                      placeholder="https://..."
+                      value={ticketLink}
+                      onChange={(e) => setTicketLink(e.target.value)}
+                    />
+                  </div>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={rsvpEnabled}
+                      onChange={(e) => setRsvpEnabled(e.target.checked)}
+                    />
+                    <span>Enable RSVP tracking</span>
+                  </label>
+                </div>
+              )}
+
+              {/* Merch-specific: Product Details */}
+              {dropType === 'merch' && (
+                <div className="input-group merch-details-group">
+                  <div className="merch-pricing">
+                    <div className="input-group">
+                      <label>Price</label>
+                      <div className="price-input">
+                        <span className="currency">$</span>
+                        <input
+                          type="number"
+                          value={merchPrice}
+                          onChange={(e) => setMerchPrice(parseFloat(e.target.value) || 0)}
+                          step="0.01"
+                          min="0.99"
+                        />
+                      </div>
+                    </div>
+                    <div className="input-group">
+                      <label>Inventory</label>
+                      <input
+                        type="number"
+                        value={merchInventory}
+                        onChange={(e) => setMerchInventory(parseInt(e.target.value) || 0)}
+                        min="1"
+                        placeholder="Quantity available"
+                      />
+                    </div>
+                  </div>
+                  <div className="input-group">
+                    <label>Available Sizes</label>
+                    <div className="size-options">
+                      {['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'].map(size => (
+                        <button
+                          key={size}
+                          type="button"
+                          className={`size-btn ${merchSizes.includes(size) ? 'active' : ''}`}
+                          onClick={() => toggleMerchSize(size)}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="input-group">
+                    <label>Colors</label>
+                    <input
+                      type="text"
+                      placeholder="Enter colors separated by commas (e.g., Black, White, Navy)"
+                      value={merchColors.join(', ')}
+                      onChange={(e) => setMerchColors(e.target.value.split(',').map(c => c.trim()).filter(c => c))}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Audio-specific: Release Type */}
+              {dropType === 'audio' && (
+                <div className="input-group audio-details-group">
+                  <div className="audio-type-selector">
+                    <label>Release Type</label>
+                    <div className="audio-type-options">
+                      <button
+                        type="button"
+                        className={`audio-type-btn ${audioType === 'single' ? 'active' : ''}`}
+                        onClick={() => setAudioType('single')}
+                      >
+                        Single
+                      </button>
+                      <button
+                        type="button"
+                        className={`audio-type-btn ${audioType === 'ep' ? 'active' : ''}`}
+                        onClick={() => setAudioType('ep')}
+                      >
+                        EP
+                      </button>
+                      <button
+                        type="button"
+                        className={`audio-type-btn ${audioType === 'album' ? 'active' : ''}`}
+                        onClick={() => setAudioType('album')}
+                      >
+                        Album
+                      </button>
+                    </div>
+                  </div>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={isExplicit}
+                      onChange={(e) => setIsExplicit(e.target.checked)}
+                    />
+                    <span>Contains explicit content</span>
+                  </label>
+                </div>
+              )}
+
+              {/* Video-specific: Video Type */}
+              {dropType === 'video' && (
+                <div className="input-group video-details-group">
+                  <div className="video-type-selector">
+                    <label>Video Type</label>
+                    <select value={videoType} onChange={(e) => setVideoType(e.target.value as typeof videoType)}>
+                      <option value="music_video">Music Video</option>
+                      <option value="behind_scenes">Behind the Scenes</option>
+                      <option value="live">Live Performance</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {dropType !== 'poll' && (
+                <div className="input-group">
+                  <label>Description</label>
+                  <textarea
+                    placeholder="Describe your drop..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={4}
+                  />
+                </div>
+              )}
+
+              {/* Upload area - not for polls */}
+              {dropType !== 'poll' && (
+                <div className="upload-area">
+                  <div className="upload-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                  </div>
+                  <p>Drag & drop or click to upload</p>
+                  <span className="upload-hint">
+                    {dropType === 'audio' && 'MP3, WAV, FLAC up to 100MB'}
+                    {dropType === 'video' && 'MP4, MOV, WebM up to 2GB'}
+                    {dropType === 'post' && 'JPG, PNG, GIF up to 20MB'}
+                    {dropType === 'merch' && 'Product images (JPG, PNG)'}
+                    {dropType === 'event' && 'Cover image (JPG, PNG)'}
+                  </span>
+                </div>
+              )}
             </div>
           </section>
 
@@ -578,26 +890,58 @@ export default function CreatePage() {
               {dropType === 'merch' && (
                 <div className="preview-merch">
                   <div className="merch-placeholder" />
-                  {monetization === 'paid' && (
-                    <span className="merch-price">${unlockPrice.toFixed(2)}</span>
+                  <span className="merch-price">${merchPrice.toFixed(2)}</span>
+                  {merchSizes.length > 0 && (
+                    <span className="merch-sizes-preview">{merchSizes.join(' / ')}</span>
                   )}
                 </div>
               )}
               {dropType === 'event' && (
                 <div className="preview-event">
                   <div className="event-placeholder" />
+                  <div className="event-preview-details">
+                    {eventDate && (
+                      <span className="event-preview-date">
+                        {new Date(eventDate + 'T' + (eventTime || '00:00')).toLocaleDateString('en-US', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: eventTime ? 'numeric' : undefined,
+                          minute: eventTime ? '2-digit' : undefined,
+                        })}
+                      </span>
+                    )}
+                    {eventLocation && <span className="event-preview-location">{eventLocation}</span>}
+                    <span className="event-preview-type">{eventType === 'in_person' ? 'In-Person' : eventType === 'virtual' ? 'Virtual' : 'Hybrid'}</span>
+                  </div>
                 </div>
               )}
               {dropType === 'poll' && (
                 <div className="preview-poll">
-                  <div className="poll-option">Option 1</div>
-                  <div className="poll-option">Option 2</div>
+                  {pollOptions.map((option, index) => (
+                    <div key={index} className="poll-option-preview">
+                      <span className="poll-option-text">{option || `Option ${index + 1}`}</span>
+                      <div className="poll-option-bar" />
+                    </div>
+                  ))}
+                  <span className="poll-duration-preview">
+                    {pollDuration < 24 ? `${pollDuration} hours` : pollDuration === 24 ? '1 day' : pollDuration === 48 ? '2 days' : pollDuration === 72 ? '3 days' : '1 week'}
+                  </span>
                 </div>
               )}
             </div>
             <div className="preview-card-footer">
-              <h4>{title || 'Untitled Drop'}</h4>
-              <p>{description || 'Add a description...'}</p>
+              <h4>{title || (dropType === 'poll' ? 'Ask your fans...' : 'Untitled Drop')}</h4>
+              {dropType !== 'poll' && <p>{description || 'Add a description...'}</p>}
+              {dropType === 'audio' && (
+                <div className="preview-audio-meta">
+                  <span className="audio-type-badge">{audioType}</span>
+                  {isExplicit && <span className="explicit-badge">E</span>}
+                </div>
+              )}
+              {dropType === 'video' && (
+                <span className="video-type-label">{videoType.replace('_', ' ')}</span>
+              )}
             </div>
           </div>
 

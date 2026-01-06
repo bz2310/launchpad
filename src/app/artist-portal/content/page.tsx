@@ -1,9 +1,14 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { ArtistLayout } from '@/components/artist-portal';
 import { getArtistPortalData } from '@/data/artist-portal-data';
+
+interface MonthDay {
+  date: Date;
+  isCurrentMonth: boolean;
+}
 
 type TabType = 'library' | 'calendar';
 type FilterType = 'all' | 'music' | 'video' | 'post' | 'image';
@@ -20,6 +25,101 @@ export default function ContentPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [monetizedFilter, setMonetizedFilter] = useState<boolean | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  // Calendar state - initialized empty to avoid hydration mismatch
+  const [monthDays, setMonthDays] = useState<MonthDay[]>([]);
+  const [currentMonthLabel, setCurrentMonthLabel] = useState('');
+  const [todayString, setTodayString] = useState('');
+  const [viewingYear, setViewingYear] = useState<number | null>(null);
+  const [viewingMonth, setViewingMonth] = useState<number | null>(null);
+  const [isCurrentMonth, setIsCurrentMonth] = useState(true);
+
+  // Initialize calendar on client side
+  useEffect(() => {
+    const today = new Date();
+    setTodayString(today.toDateString());
+    setViewingYear(today.getFullYear());
+    setViewingMonth(today.getMonth());
+  }, []);
+
+  // Generate month days whenever viewing month changes
+  useEffect(() => {
+    if (viewingYear === null || viewingMonth === null) return;
+
+    const today = new Date();
+    const year = viewingYear;
+    const month = viewingMonth;
+
+    // Check if viewing current month
+    setIsCurrentMonth(year === today.getFullYear() && month === today.getMonth());
+
+    // Set month label
+    const labelDate = new Date(year, month, 1);
+    setCurrentMonthLabel(labelDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
+
+    // Get first day of month and last day of month
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    // Get the day of week for the first day (0 = Sunday)
+    const startDayOfWeek = firstDay.getDay();
+
+    // Get total days in current month
+    const totalDays = lastDay.getDate();
+
+    // Calculate how many days we need from next month to complete the grid
+    const totalCells = Math.ceil((startDayOfWeek + totalDays) / 7) * 7;
+    const daysFromNextMonth = totalCells - startDayOfWeek - totalDays;
+
+    const days: MonthDay[] = [];
+
+    // Previous month days
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+      const date = new Date(year, month, -i);
+      days.push({ date, isCurrentMonth: false });
+    }
+
+    // Current month days
+    for (let i = 1; i <= totalDays; i++) {
+      const date = new Date(year, month, i);
+      days.push({ date, isCurrentMonth: true });
+    }
+
+    // Next month days
+    for (let i = 1; i <= daysFromNextMonth; i++) {
+      const date = new Date(year, month + 1, i);
+      days.push({ date, isCurrentMonth: false });
+    }
+
+    setMonthDays(days);
+  }, [viewingYear, viewingMonth]);
+
+  // Calendar navigation functions
+  const goToPrevMonth = () => {
+    if (viewingYear === null || viewingMonth === null) return;
+    if (viewingMonth === 0) {
+      setViewingYear(viewingYear - 1);
+      setViewingMonth(11);
+    } else {
+      setViewingMonth(viewingMonth - 1);
+    }
+  };
+
+  const goToNextMonth = () => {
+    if (viewingYear === null || viewingMonth === null) return;
+    if (viewingMonth === 11) {
+      setViewingYear(viewingYear + 1);
+      setViewingMonth(0);
+    } else {
+      setViewingMonth(viewingMonth + 1);
+    }
+  };
+
+  const goToToday = () => {
+    const today = new Date();
+    setViewingYear(today.getFullYear());
+    setViewingMonth(today.getMonth());
+  };
 
   // Filter and sort content by date
   const filteredContent = useMemo(() => {
@@ -50,52 +150,6 @@ export default function ContentPage() {
   const scheduledContent = useMemo(() => {
     return content.filter(item => item.status === 'scheduled' && item.scheduledFor);
   }, [content]);
-
-  // Generate month days for calendar
-  const getMonthDays = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-
-    // Get first day of month and last day of month
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
-    // Get the day of week for the first day (0 = Sunday)
-    const startDayOfWeek = firstDay.getDay();
-
-    // Get total days in current month
-    const totalDays = lastDay.getDate();
-
-    // Calculate how many days we need from next month to complete the grid
-    const totalCells = Math.ceil((startDayOfWeek + totalDays) / 7) * 7;
-    const daysFromNextMonth = totalCells - startDayOfWeek - totalDays;
-
-    const days: { date: Date; isCurrentMonth: boolean }[] = [];
-
-    // Previous month days
-    for (let i = startDayOfWeek - 1; i >= 0; i--) {
-      const date = new Date(year, month, -i);
-      days.push({ date, isCurrentMonth: false });
-    }
-
-    // Current month days
-    for (let i = 1; i <= totalDays; i++) {
-      const date = new Date(year, month, i);
-      days.push({ date, isCurrentMonth: true });
-    }
-
-    // Next month days
-    for (let i = 1; i <= daysFromNextMonth; i++) {
-      const date = new Date(year, month + 1, i);
-      days.push({ date, isCurrentMonth: false });
-    }
-
-    return days;
-  };
-
-  const monthDays = getMonthDays();
-  const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   const getDropsForDay = (date: Date) => {
     return scheduledContent.filter(item => {
@@ -370,8 +424,24 @@ export default function ContentPage() {
             {/* Month Calendar */}
             <div className="month-calendar">
               <div className="calendar-header">
-                <h3>This Month</h3>
-                <span className="calendar-month-label">{currentMonth}</span>
+                <div className="calendar-nav">
+                  <button className="calendar-nav-btn" onClick={goToPrevMonth} title="Previous month">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                  <span className="calendar-month-label">{currentMonthLabel}</span>
+                  <button className="calendar-nav-btn" onClick={goToNextMonth} title="Next month">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                </div>
+                {!isCurrentMonth && (
+                  <button className="calendar-today-btn" onClick={goToToday}>
+                    Today
+                  </button>
+                )}
               </div>
 
               {/* Day headers */}
@@ -384,7 +454,7 @@ export default function ContentPage() {
               <div className="calendar-month-grid">
                 {monthDays.map((dayInfo, index) => {
                   const drops = getDropsForDay(dayInfo.date);
-                  const isToday = dayInfo.date.toDateString() === new Date().toDateString();
+                  const isToday = todayString && dayInfo.date.toDateString() === todayString;
 
                   return (
                     <div

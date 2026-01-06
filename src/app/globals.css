@@ -10207,15 +10207,321 @@ a.leaderboard-item {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    padding: 16px;
 }
 
-.poll-option {
+.poll-option-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     padding: 12px 16px;
     background: var(--bg-secondary);
     border: 1px solid var(--border);
     border-radius: 8px;
+}
+
+.poll-option-text {
     font-size: 14px;
     color: var(--text-primary);
+}
+
+.poll-option-bar {
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+}
+
+.poll-duration-preview {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 8px;
+}
+
+/* Poll Options in Create Form */
+.poll-options-group {
+    margin-top: 16px;
+}
+
+.poll-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.poll-option-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.poll-option-number {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.poll-option-input input {
+    flex: 1;
+}
+
+.remove-option-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.remove-option-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.add-option-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.add-option-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(139, 43, 255, 0.05);
+}
+
+.poll-settings {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.poll-setting {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.poll-setting label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.poll-setting select {
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+.poll-checkbox {
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Event-specific fields */
+.event-details-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.event-type-selector label,
+.audio-type-selector label,
+.video-type-selector label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.event-type-options,
+.audio-type-options {
+    display: flex;
+    gap: 8px;
+}
+
+.event-type-btn,
+.audio-type-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.event-type-btn:hover,
+.audio-type-btn:hover {
+    border-color: var(--text-secondary);
+}
+
+.event-type-btn.active,
+.audio-type-btn.active {
+    background: rgba(139, 43, 255, 0.1);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.event-datetime {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.event-preview-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.event-preview-date {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.event-preview-location {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.event-preview-type {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Merch-specific fields */
+.merch-details-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.merch-pricing {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.size-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.size-btn {
+    padding: 8px 16px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.size-btn:hover {
+    border-color: var(--text-secondary);
+}
+
+.size-btn.active {
+    background: rgba(139, 43, 255, 0.1);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.merch-sizes-preview {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+}
+
+/* Audio-specific fields */
+.audio-details-group,
+.video-details-group {
+    margin-top: 16px;
+}
+
+.video-type-selector select {
+    width: 100%;
+}
+
+.preview-audio-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.audio-type-badge {
+    padding: 2px 8px;
+    background: var(--primary);
+    color: white;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.explicit-badge {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #666;
+    color: white;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.video-type-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+    margin-top: 8px;
+    display: block;
 }
 
 .preview-card-footer {
@@ -12909,18 +13215,59 @@ a.leaderboard-item {
 .month-calendar .calendar-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
     margin-bottom: 16px;
 }
 
-.month-calendar .calendar-header h3 {
-    font-size: 18px;
-    font-weight: 600;
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.calendar-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.calendar-nav-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
 }
 
 .calendar-month-label {
-    font-size: 14px;
-    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 160px;
+    text-align: center;
+}
+
+.calendar-today-btn {
+    padding: 6px 12px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.calendar-today-btn:hover {
+    background: var(--primary-hover);
 }
 
 .calendar-weekdays {

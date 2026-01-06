@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ArtistLayout } from '@/components/artist-portal';
 import { getArtistMessages } from '@/lib/data';
 import type { ArtistMessage } from '@/data/dashboard-data';
@@ -8,12 +9,41 @@ import type { FanTier } from '@/types/artist-portal';
 
 type MessageFilter = 'all' | 'unread' | FanTier;
 
-export default function ArtistMessagesPage() {
+function MessagesContent() {
+  const searchParams = useSearchParams();
+  const chatId = searchParams.get('chat');
   const allMessages = getArtistMessages();
-  const [selectedChat, setSelectedChat] = useState<ArtistMessage | null>(allMessages[0] || null);
+
+  // Find the chat to select based on URL param, or default to first message
+  const getInitialChat = (): ArtistMessage | null => {
+    if (chatId) {
+      const found = allMessages.find(m => m.id === chatId);
+      if (found) return found;
+    }
+    return allMessages[0] || null;
+  };
+
+  const [selectedChat, setSelectedChat] = useState<ArtistMessage | null>(getInitialChat);
   const [messageInput, setMessageInput] = useState('');
   const [conversations, setConversations] = useState(allMessages);
   const [filter, setFilter] = useState<MessageFilter>('all');
+
+  // Update selected chat when URL changes (chatId from query param)
+  useEffect(() => {
+    if (chatId) {
+      setConversations(prevConversations => {
+        const found = prevConversations.find(m => m.id === chatId);
+        if (found) {
+          setSelectedChat(found);
+          // Mark as read when opened from link
+          return prevConversations.map(conv =>
+            conv.id === chatId ? { ...conv, unread: false } : conv
+          );
+        }
+        return prevConversations;
+      });
+    }
+  }, [chatId]);
 
   const filteredConversations = conversations.filter(conv => {
     if (filter === 'all') return true;
@@ -285,5 +315,33 @@ export default function ArtistMessagesPage() {
         </div>
       </div>
     </ArtistLayout>
+  );
+}
+
+export default function ArtistMessagesPage() {
+  return (
+    <Suspense fallback={
+      <ArtistLayout title="Messages">
+        <div className="artist-messages-container">
+          <div className="messages-sidebar">
+            <div className="messages-header">
+              <h3>Inbox</h3>
+            </div>
+            <div className="conversations-list">
+              <div className="empty-messages">
+                <p>Loading...</p>
+              </div>
+            </div>
+          </div>
+          <div className="chat-window-container">
+            <div className="no-chat-selected">
+              <p>Loading messages...</p>
+            </div>
+          </div>
+        </div>
+      </ArtistLayout>
+    }>
+      <MessagesContent />
+    </Suspense>
   );
 }

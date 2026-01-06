@@ -1227,46 +1227,63 @@ const milestones: MilestoneCelebration[] = [
 // Aggregated Portal Data Export
 // =====================
 
-export const getArtistPortalData = (): ArtistPortalData => ({
-  artist: {
-    id: 'artist_001',
-    name: 'Jeremy Elliot',
-    handle: '@jeremyelliot',
-    avatar: artistSettings.avatar,
-    verified: true,
-  },
-  settings: artistSettings,
-  overview: {
-    totalFans: 13201,
-    fansChange: 5.2,
-    totalRevenue: 59842.50,
-    revenueChange: 23.2,
-    totalViews: 892340,
-    viewsChange: 12.8,
-    engagementRate: 14.0,
-    engagementChange: 2.1,
-  },
-  pendingActions,
-  recentActivity,
-  milestones,
-  scheduledContent,
-  content,
-  contentAnalytics: contentPerformance,
-  fans,
-  fanSegments,
-  audienceMetrics,
-  revenueMetrics,
-  transactions,
-  payouts,
-  promoCodes,
-  subscriptionTiers,
-  subscriptionHealth,
-  channels,
-  members: communityMembers,
-  moderationQueue,
-  polls,
-  conversations,
-  shopifyConnection,
-  shopifyProducts,
-  teamMembers,
-});
+export const getArtistPortalData = (): ArtistPortalData => {
+  // Calculate overview stats from raw data
+  const totalFans = audienceMetrics.totalFans;
+  const totalRevenue = revenueMetrics.totalRevenue;
+  const totalViews = contentPerformance.totalViews;
+  const engagementRate = contentPerformance.avgEngagementRate;
+
+  // Calculate change percentages from raw metrics
+  const fansChange = audienceMetrics.newFans > 0
+    ? parseFloat(((audienceMetrics.newFans / (audienceMetrics.totalFans - audienceMetrics.newFans)) * 100).toFixed(1))
+    : 0;
+  const revenueChange = revenueMetrics.changePercent;
+  // Views change estimated from content metrics
+  const viewsChange = 12.8; // Would need historical data to calculate properly
+  const engagementChange = 2.1; // Would need historical data to calculate properly
+
+  return {
+    artist: {
+      id: 'artist_001',
+      name: 'Jeremy Elliot',
+      handle: '@jeremyelliot',
+      avatar: artistSettings.avatar,
+      verified: true,
+    },
+    settings: artistSettings,
+    overview: {
+      totalFans,
+      fansChange,
+      totalRevenue,
+      revenueChange,
+      totalViews,
+      viewsChange,
+      engagementRate,
+      engagementChange,
+    },
+    pendingActions,
+    recentActivity,
+    milestones,
+    scheduledContent,
+    content,
+    contentAnalytics: contentPerformance,
+    fans,
+    fanSegments,
+    audienceMetrics,
+    revenueMetrics,
+    transactions,
+    payouts,
+    promoCodes,
+    subscriptionTiers,
+    subscriptionHealth,
+    channels,
+    members: communityMembers,
+    moderationQueue,
+    polls,
+    conversations,
+    shopifyConnection,
+    shopifyProducts,
+    teamMembers,
+  };
+};
