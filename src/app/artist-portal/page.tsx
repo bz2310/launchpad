@@ -163,7 +163,7 @@ export default function ArtistPortalPage() {
     <ArtistLayout title="Home">
       <div className="artist-home">
         {/* Welcome Message */}
-        <p className="home-subtitle">Here&apos;s what&apos;s happening with your music today.</p>
+        <p className="home-subtitle">Here&apos;s what&apos;s been happening with your music over the past 30 days.</p>
 
         {/* Key Metrics Row - Clickable to Analytics */}
         <div className="overview-stats-grid">

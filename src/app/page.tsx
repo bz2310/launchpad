@@ -1,26 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout';
 import { FeedPost } from '@/components/feed';
-import { getFeedPosts, getFeaturedArtist, getQuickDiscoverArtists, getLiveEvents, getCurrentUser } from '@/lib/data';
+import { getFeedPosts, getQuickDiscoverArtists, getLiveEvents, getCurrentUser } from '@/lib/data';
 import Link from 'next/link';
 
 export default function HomePage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'feed' | 'events'>('feed');
   const posts = getFeedPosts();
-  const featuredArtist = getFeaturedArtist();
-  const quickDiscover = getQuickDiscoverArtists();
+  const featuredArtists = getQuickDiscoverArtists();
   const events = getLiveEvents();
   const user = getCurrentUser();
+  const carouselRef = useRef<HTMLDivElement>(null);
 
-  const relationship = user.supportRelationships?.[featuredArtist?.id || ''];
-  const isSupporting = relationship?.isSupporter;
+  // Auto-scroll carousel
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel || featuredArtists.length <= 1) return;
+
+    let scrollPosition = 0;
+    const cardWidth = 280; // Width of each card + gap
+    const maxScroll = (featuredArtists.length - 1) * cardWidth;
+
+    const interval = setInterval(() => {
+      scrollPosition += cardWidth;
+      if (scrollPosition > maxScroll) {
+        scrollPosition = 0;
+      }
+      carousel.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [featuredArtists.length]);
 
   return (
-    <MainLayout title="Home">
+    <MainLayout title="Home" showRightSidebar>
       {/* Tabs */}
       <div className="tabs-container">
         <button
@@ -40,99 +57,56 @@ export default function HomePage() {
       {/* Feed Tab Content */}
       {activeTab === 'feed' && (
         <>
-          {/* Featured Artist Section */}
-          {featuredArtist && (
+          {/* Featured Artists Carousel */}
+          {featuredArtists.length > 0 && (
             <div className="home-featured-section">
               <div className="home-featured-header">
-                <h3>Your Favorite Artist</h3>
+                <h3>Featured Artists</h3>
                 <Link href="/explore" className="see-all-link">Explore More</Link>
               </div>
-              <div
-                className="featured-artist-card home-featured-card cursor-pointer"
-                onClick={() => router.push(`/artist/${featuredArtist.id}`)}
-              >
-                <div
-                  className="featured-artist-banner"
-                  style={{ background: featuredArtist.bannerGradient }}
-                >
-                  <img
-                    src={featuredArtist.avatar}
-                    alt={featuredArtist.name}
-                    className="featured-artist-avatar"
-                  />
-                </div>
-                <div className="featured-artist-info">
-                  <h3>
-                    {featuredArtist.name}
-                    {featuredArtist.verified && <span className="verified-small">✓</span>}
-                  </h3>
-                  <p className="featured-artist-bio">{featuredArtist.bio}</p>
-                  <div className="featured-artist-stats">
-                    <span><strong>{featuredArtist.stats.supporters}</strong> supporters</span>
-                  </div>
-                  {featuredArtist.momentum && (
-                    <div className="momentum-wheel-sm">
-                      <div className="momentum-circle">
-                        <svg viewBox="0 0 36 36">
-                          <path
-                            className="momentum-bg"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                          />
-                          <path
-                            className="momentum-progress"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                            strokeDasharray={`${Math.round((featuredArtist.momentum.current / featuredArtist.momentum.target) * 100)}, 100`}
-                          />
-                        </svg>
-                        <div className="momentum-value">{Math.round((featuredArtist.momentum.current / featuredArtist.momentum.target) * 100)}%</div>
+              <div className="featured-carousel" ref={carouselRef}>
+                {featuredArtists.map((artist) => {
+                  const relationship = user.supportRelationships?.[artist.id];
+                  const isSupporting = relationship?.isSupporter;
+                  return (
+                    <div
+                      key={artist.id}
+                      className="featured-carousel-card cursor-pointer"
+                      onClick={() => router.push(`/artist/${artist.id}`)}
+                    >
+                      <div
+                        className="featured-carousel-banner"
+                        style={{ background: artist.bannerGradient }}
+                      >
+                        <img
+                          src={artist.avatar}
+                          alt={artist.name}
+                          className="featured-carousel-avatar"
+                        />
                       </div>
-                      <div className="momentum-info">
-                        <span className="momentum-label">Momentum</span>
-                        <span className="momentum-target">toward <strong>{featuredArtist.momentum.label}</strong></span>
+                      <div className="featured-carousel-info">
+                        <h4>
+                          {artist.name}
+                          {artist.verified && <span className="verified-small">✓</span>}
+                        </h4>
+                        <p className="featured-carousel-bio">{artist.bio}</p>
+                        <div className="featured-carousel-stats">
+                          <span>💜 {artist.stats.supporters} supporters</span>
+                        </div>
+                        <Link
+                          href={`/membership/${artist.id}`}
+                          className={`support-btn-small ${isSupporting ? 'supporting-btn' : ''}`}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {isSupporting ? 'Supporting' : 'Support'}
+                        </Link>
                       </div>
                     </div>
-                  )}
-                  {relationship?.isEarlySupporter && (
-                    <span className="relationship-signal">
-                      ✨ Early supporter since {relationship.supporterSince}
-                    </span>
-                  )}
-                  <Link
-                    href={`/membership/${featuredArtist.id}`}
-                    className={`support-btn-small ${isSupporting ? 'supporting-btn' : ''}`}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {isSupporting ? 'Supporting' : 'Support'}
-                  </Link>
-                </div>
+                  );
+                })}
               </div>
             </div>
           )}
-
-          {/* Quick Discover Section */}
-          <div className="quick-discover">
-            <div className="quick-discover-header">
-              <h3>Discover Artists</h3>
-              <Link href="/explore" className="see-all-link">See All</Link>
-            </div>
-            <div className="quick-discover-artists">
-              {quickDiscover.map((artist) => (
-                <Link
-                  key={artist.id}
-                  href={artist.profileUrl || `/artist/${artist.id}`}
-                  className="quick-artist-card"
-                >
-                  <img
-                    src={artist.avatar}
-                    alt={artist.name}
-                    className="quick-artist-avatar"
-                  />
-                  <span className="quick-artist-name">{artist.name}</span>
-                  <span className="quick-artist-badge">💜 {artist.stats.supporters} supporters</span>
-                </Link>
-              ))}
-            </div>
-          </div>
 
           {/* Feed Posts */}
           <div id="feed-posts-container">
