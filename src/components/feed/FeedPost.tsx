@@ -28,25 +28,26 @@ export function FeedPost({ post }: FeedPostProps) {
   const badge = getPostTypeBadge();
 
   return (
-    <article className="feed-item" data-type={post.type}>
-      {/* Header */}
-      <div className="post-header">
-        <Link href={`/artist/${artist.id}`}>
+    <Link href={`/content/${post.id}`} className="feed-item-link">
+      <article className="feed-item" data-type={post.type}>
+        {/* Header */}
+        <div className="post-header">
           <img src={artist.avatar} alt={artist.name} className="avatar-small" />
-        </Link>
-        <div className="post-info">
-          <h3>
-            <Link href={`/artist/${artist.id}`}>
+          <div className="post-info">
+            <h3>
               {artist.name}
-            </Link>
-            {artist.verified && <span className="verified-small">✓</span>}
-          </h3>
-          <span className="handle">{artist.handle}</span>
-          <span className="timestamp">{post.timestamp}</span>
+              {artist.verified && <span className="verified-small">✓</span>}
+            </h3>
+            <span className="handle">{artist.handle}</span>
+            <span className="timestamp">{post.timestamp}</span>
+          </div>
+          <span className={`post-type-badge ${badge.className}`}>{badge.label}</span>
+          {post.tierExclusive && (
+            <span className={`tier-badge ${post.tierExclusive}`}>
+              {post.tierExclusive === 'supporters' ? 'Supporters' : 'Superfans'}
+            </span>
+          )}
         </div>
-        <span className={`post-type-badge ${badge.className}`}>{badge.label}</span>
-        <button className="menu-btn">•••</button>
-      </div>
 
       {/* Content */}
       <p className="post-content">{post.content}</p>
@@ -112,7 +113,7 @@ export function FeedPost({ post }: FeedPostProps) {
       )}
 
       {/* Actions */}
-      <div className="post-actions">
+      <div className="post-actions" onClick={(e) => e.preventDefault()}>
         <button className="action-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -145,6 +146,7 @@ export function FeedPost({ post }: FeedPostProps) {
           </svg>
         </button>
       </div>
-    </article>
+      </article>
+    </Link>
   );
 }

@@ -894,16 +894,34 @@ function CreatePageContent() {
             <h3>Preview</h3>
           </div>
 
-          <div className="preview-card">
+          <div className={`preview-card ${accessType !== 'public' ? 'exclusive' : ''} ${monetization === 'paid' ? 'paid-content' : ''} ${monetization === 'limited' ? 'limited-content' : ''}`}>
+            {/* Access Badge Ribbon */}
+            {accessType !== 'public' && (
+              <div className={`preview-access-ribbon ${accessType === 'tier' && selectedTiers.includes('superfan') ? 'superfan' : accessType === 'tier' ? 'supporter' : accessType}`}>
+                {accessType === 'subscribers' && 'Subscribers Only'}
+                {accessType === 'tier' && selectedTiers.includes('superfan') && !selectedTiers.includes('supporter') && 'Superfans Only'}
+                {accessType === 'tier' && selectedTiers.includes('supporter') && !selectedTiers.includes('superfan') && 'Supporters Only'}
+                {accessType === 'tier' && selectedTiers.includes('supporter') && selectedTiers.includes('superfan') && 'Supporter+'}
+                {accessType === 'rank' && `Top ${rankValue}${rankType === 'percent' ? '%' : ''} Fans`}
+                {accessType === 'segment' && segments.find(s => s.id === selectedSegment)?.label}
+              </div>
+            )}
+
             <div className="preview-card-header">
               <div className="preview-artist">
                 <img src={artist.avatar} alt={artist.name} className="preview-avatar" />
                 <div className="preview-artist-info">
                   <span className="preview-artist-name">{artist.name}</span>
-                  <span className="preview-time">Just now</span>
+                  <span className="preview-time">
+                    {timing === 'scheduled' && scheduleDate
+                      ? `Scheduled: ${new Date(scheduleDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                      : 'Just now'}
+                  </span>
                 </div>
               </div>
-              <span className={`preview-type-badge ${dropType}`}>{dropType}</span>
+              <div className="preview-badges">
+                <span className={`preview-type-badge ${dropType}`}>{dropType}</span>
+              </div>
             </div>
             <div className="preview-card-content">
               {dropType === 'audio' && (
@@ -982,13 +1000,47 @@ function CreatePageContent() {
             <div className="preview-card-footer">
               <h4>{title || (dropType === 'poll' ? 'Ask your fans...' : 'Untitled Drop')}</h4>
               {dropType !== 'poll' && <p>{description || 'Add a description...'}</p>}
-              {dropType === 'audio' && (
-                <div className="preview-audio-meta">
+
+              {/* Meta info row */}
+              <div className="preview-meta-row">
+                {dropType === 'audio' && (
                   <span className="audio-type-badge">{audioType}</span>
+                )}
+                {dropType === 'video' && (
+                  <span className="video-type-label">{videoType.replace('_', ' ')}</span>
+                )}
+              </div>
+
+              {/* Monetization indicator */}
+              {monetization === 'paid' && (
+                <div className="preview-monetization paid">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 6v12M8 10h8M8 14h8" />
+                  </svg>
+                  <span>Unlock for ${unlockPrice.toFixed(2)}</span>
                 </div>
               )}
-              {dropType === 'video' && (
-                <span className="video-type-label">{videoType.replace('_', ' ')}</span>
+              {monetization === 'limited' && (
+                <div className="preview-monetization limited">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <span>Limited: {limitedQty} available</span>
+                </div>
+              )}
+
+              {/* Staged release indicator */}
+              {stagedRelease && (
+                <div className="preview-staged-release">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                    <path d="M2 12l10 5 10-5" />
+                  </svg>
+                  <span>{stagedTier === 'superfan' ? 'Superfans' : 'Supporters'} get {stagedHours}h early access</span>
+                </div>
               )}
             </div>
           </div>
