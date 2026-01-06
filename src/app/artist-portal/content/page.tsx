@@ -338,16 +338,18 @@ export default function ContentPage() {
                       />
                     </div>
                     <div className="td-title">
-                      <div className="title-content">
-                        <span className="content-title-text">{item.title}</span>
-                        <span className="content-date">
-                          {item.publishedAt
-                            ? new Date(item.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                            : item.scheduledFor
-                            ? `Scheduled: ${new Date(item.scheduledFor).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-                            : `Draft: ${new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
-                        </span>
-                      </div>
+                      <Link href={`/content/${item.id}`} className="content-title-link">
+                        <div className="title-content">
+                          <span className="content-title-text">{item.title}</span>
+                          <span className="content-date">
+                            {item.publishedAt
+                              ? new Date(item.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                              : item.scheduledFor
+                              ? `Scheduled: ${new Date(item.scheduledFor).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                              : `Draft: ${new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
+                          </span>
+                        </div>
+                      </Link>
                     </div>
                     <div className="td-type">
                       <span className={`type-badge ${item.type}`}>{item.type}</span>

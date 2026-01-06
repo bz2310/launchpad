@@ -1,7 +1,6 @@
 import {
   currentUser,
   artists,
-  posts,
   communities,
   notifications,
   chatConversations,
@@ -11,7 +10,9 @@ import {
   badgeDefinitions,
 } from '@/data/mock-data';
 import { artistDashboardData, artistMessages } from '@/data/dashboard-data';
+import { content as artistContent } from '@/data/artist-portal-data';
 import type { Artist, Post } from '@/types';
+import type { ContentItem } from '@/types/artist-portal';
 
 // User API
 export function getCurrentUser() {
@@ -80,15 +81,77 @@ export function getLeaderboard() {
   return { supported, discover };
 }
 
-// Posts API
+// Content API (unified content from artist portal)
+export function getArtistContent(): ContentItem[] {
+  return artistContent;
+}
+
+export function getContentById(id: string): ContentItem | undefined {
+  return artistContent.find(c => c.id === id);
+}
+
+export function getPublishedContent(): ContentItem[] {
+  return artistContent
+    .filter(c => c.status === 'published')
+    .sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime());
+}
+
+// Helper to convert content type to post type
+function contentTypeToPostType(type: string): 'text' | 'image' | 'audio' | 'video' | 'milestone' {
+  switch (type) {
+    case 'music': return 'audio';
+    case 'video': return 'video';
+    case 'image': return 'image';
+    case 'post': return 'text';
+    default: return 'text';
+  }
+}
+
+// Posts API - now derives from artist content
 export function getFeedPosts(): Post[] {
-  return posts
-    .filter(p => currentUser.supporting.includes(p.artistId))
-    .sort((a, b) => b.timestampDate.getTime() - a.timestampDate.getTime());
+  // Get published content from artist portal and transform to Post format
+  const publishedContent = getPublishedContent().filter(c => c.type !== 'event');
+
+  // The featured artist is artist_001 (Julia Michaels)
+  const artistId = 'artist_001';
+
+  return publishedContent.map(content => ({
+    id: content.id,
+    artistId: artistId,
+    type: contentTypeToPostType(content.type),
+    content: content.description || content.title,
+    image: content.type === 'post' || content.type === 'image' ? content.thumbnailUrl : undefined,
+    audioUrl: content.type === 'music' ? content.mediaUrl : undefined,
+    audioTitle: content.type === 'music' ? content.title : undefined,
+    audioDuration: content.duration ? `${Math.floor(content.duration / 60)}:${String(content.duration % 60).padStart(2, '0')}` : undefined,
+    videoThumbnail: content.type === 'video' ? content.thumbnailUrl : undefined,
+    videoDuration: content.type === 'video' && content.duration ? `${Math.floor(content.duration / 60)}:${String(content.duration % 60).padStart(2, '0')}` : undefined,
+    timestamp: formatTimeAgo(content.publishedAt || content.createdAt),
+    timestampDate: new Date(content.publishedAt || content.createdAt),
+    likes: content.likeCount,
+    comments: content.commentCount,
+    reposts: content.shareCount,
+    tierExclusive: content.accessLevel !== 'public' ? content.accessLevel : undefined,
+  }));
+}
+
+function formatTimeAgo(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffHours < 1) return 'Just now';
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 export function getArtistPosts(artistId: string): Post[] {
-  return posts.filter(p => p.artistId === artistId);
+  // For now, all content belongs to artist_001
+  if (artistId !== 'artist_001') return [];
+  return getFeedPosts();
 }
 
 // Community API

@@ -1,11 +1,24 @@
 'use client';
 
+import { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { formatCompactNumber, formatCurrency } from '@/lib/analytics-utils';
+import { getArtistContent } from '@/lib/data';
+
+type FilterType = 'all' | 'music' | 'video' | 'post' | 'image' | 'event';
+type AccessFilter = 'all' | 'public' | 'supporters' | 'superfans';
+type StatusFilter = 'all' | 'published' | 'scheduled' | 'draft';
 
 export default function DropsAnalyticsPage() {
   const { data } = useAnalytics();
-  const { drops, recentDrops } = data;
+  const { drops } = data;
+  const allContent = getArtistContent();
+
+  // Filters
+  const [typeFilter, setTypeFilter] = useState<FilterType>('all');
+  const [accessFilter, setAccessFilter] = useState<AccessFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   const getAccessLabel = (access: string) => {
     switch (access) {
@@ -16,25 +29,56 @@ export default function DropsAnalyticsPage() {
     }
   };
 
+  // Filter content
+  const filteredContent = useMemo(() => {
+    return allContent
+      .filter(item => {
+        if (typeFilter !== 'all' && item.type !== typeFilter) return false;
+        if (accessFilter !== 'all' && item.accessLevel !== accessFilter) return false;
+        if (statusFilter !== 'all' && item.status !== statusFilter) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        const dateA = a.publishedAt || a.scheduledFor || a.createdAt;
+        const dateB = b.publishedAt || b.scheduledFor || b.createdAt;
+        return new Date(dateB).getTime() - new Date(dateA).getTime();
+      });
+  }, [allContent, typeFilter, accessFilter, statusFilter]);
+
+  // Calculate summary stats from filtered content
+  const summaryStats = useMemo(() => {
+    const totalViews = filteredContent.reduce((sum, c) => sum + c.viewCount, 0);
+    const totalRevenue = filteredContent.reduce((sum, c) => sum + c.revenue, 0);
+    const totalEngagement = filteredContent.reduce((sum, c) => sum + c.likeCount + c.commentCount + c.shareCount, 0);
+    const avgEngagement = totalViews > 0 ? (totalEngagement / totalViews) * 100 : 0;
+
+    return {
+      totalDrops: filteredContent.length,
+      totalViews,
+      totalRevenue,
+      avgEngagement,
+    };
+  }, [filteredContent]);
+
   return (
     <div className="analytics-overview">
       {/* Summary Cards */}
       <div className="analytics-kpi-grid">
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Total Drops</div>
-          <div className="analytics-kpi-value">{drops.totalDrops}</div>
+          <div className="analytics-kpi-value">{summaryStats.totalDrops}</div>
         </div>
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Total Views</div>
-          <div className="analytics-kpi-value">{formatCompactNumber(drops.totalViews)}</div>
+          <div className="analytics-kpi-value">{formatCompactNumber(summaryStats.totalViews)}</div>
         </div>
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Avg Engagement</div>
-          <div className="analytics-kpi-value">{drops.avgEngagementRate.toFixed(1)}%</div>
+          <div className="analytics-kpi-value">{summaryStats.avgEngagement.toFixed(1)}%</div>
         </div>
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Total Revenue</div>
-          <div className="analytics-kpi-value">{formatCurrency(drops.totalRevenue)}</div>
+          <div className="analytics-kpi-value">{formatCurrency(summaryStats.totalRevenue)}</div>
         </div>
       </div>
 
@@ -62,6 +106,40 @@ export default function DropsAnalyticsPage() {
         <div className="analytics-section-header">
           <h2>All Drops</h2>
         </div>
+
+        {/* Filters */}
+        <div className="library-filters" style={{ marginBottom: '16px' }}>
+          <div className="filter-group">
+            <label>Type</label>
+            <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as FilterType)}>
+              <option value="all">All Types</option>
+              <option value="music">Audio</option>
+              <option value="video">Video</option>
+              <option value="post">Post</option>
+              <option value="image">Image</option>
+              <option value="event">Event</option>
+            </select>
+          </div>
+          <div className="filter-group">
+            <label>Access</label>
+            <select value={accessFilter} onChange={(e) => setAccessFilter(e.target.value as AccessFilter)}>
+              <option value="all">All Access</option>
+              <option value="public">Public</option>
+              <option value="supporters">Supporters</option>
+              <option value="superfans">Superfans</option>
+            </select>
+          </div>
+          <div className="filter-group">
+            <label>Status</label>
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}>
+              <option value="all">All Status</option>
+              <option value="published">Published</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="draft">Draft</option>
+            </select>
+          </div>
+        </div>
+
         <div className="analytics-content-table">
           <div className="analytics-content-header">
             <span className="th-title">Title</span>
@@ -75,40 +153,48 @@ export default function DropsAnalyticsPage() {
             <span className="th-engagement">Engagement</span>
           </div>
           <div className="analytics-content-body">
-            {recentDrops.map((drop) => {
-              const totalEngagement = drop.likes + drop.comments + drop.shares;
-              const engagementRate = drop.views > 0 ? ((totalEngagement / drop.views) * 100).toFixed(1) : '0.0';
+            {filteredContent.map((item) => {
+              const totalEngagement = item.likeCount + item.commentCount + item.shareCount;
+              const engagementRate = item.viewCount > 0 ? ((totalEngagement / item.viewCount) * 100).toFixed(1) : '0.0';
+              const isScheduled = item.status === 'scheduled';
+              const isDraft = item.status === 'draft';
 
               return (
-                <div key={drop.dropId} className="analytics-content-row">
+                <div key={item.id} className={`analytics-content-row ${isScheduled ? 'scheduled' : ''} ${isDraft ? 'draft' : ''}`}>
                   <div className="td-title">
-                    <div className="title-content">
-                      <span className="content-title-text">{drop.title}</span>
-                      <span className="content-date">
-                        {new Date(drop.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      </span>
-                    </div>
+                    <Link href={`/content/${item.id}`} className="content-title-link">
+                      <div className="title-content">
+                        <span className="content-title-text">{item.title}</span>
+                        <span className="content-date">
+                          {item.publishedAt
+                            ? new Date(item.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                            : item.scheduledFor
+                            ? `Scheduled: ${new Date(item.scheduledFor).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                            : `Draft: ${new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
+                        </span>
+                      </div>
+                    </Link>
                   </div>
                   <div className="td-type">
-                    <span className={`type-badge ${drop.type}`}>{drop.type}</span>
+                    <span className={`type-badge ${item.type}`}>{item.type}</span>
                   </div>
                   <div className="td-access">
-                    <span className={`access-badge ${drop.accessLevel}`}>{getAccessLabel(drop.accessLevel)}</span>
+                    <span className={`access-badge ${item.accessLevel}`}>{getAccessLabel(item.accessLevel)}</span>
                   </div>
                   <div className="td-revenue">
-                    {drop.revenue > 0 ? formatCurrency(drop.revenue) : '—'}
+                    {item.revenue > 0 ? formatCurrency(item.revenue) : '—'}
                   </div>
                   <div className="td-views">
-                    {drop.views > 0 ? formatCompactNumber(drop.views) : '—'}
+                    {item.viewCount > 0 ? formatCompactNumber(item.viewCount) : '—'}
                   </div>
                   <div className="td-likes">
-                    {drop.likes > 0 ? formatCompactNumber(drop.likes) : '—'}
+                    {item.likeCount > 0 ? formatCompactNumber(item.likeCount) : '—'}
                   </div>
                   <div className="td-comments">
-                    {drop.comments > 0 ? formatCompactNumber(drop.comments) : '—'}
+                    {item.commentCount > 0 ? formatCompactNumber(item.commentCount) : '—'}
                   </div>
                   <div className="td-shares">
-                    {drop.shares > 0 ? formatCompactNumber(drop.shares) : '—'}
+                    {item.shareCount > 0 ? formatCompactNumber(item.shareCount) : '—'}
                   </div>
                   <div className="td-engagement">
                     {engagementRate}%
@@ -118,6 +204,13 @@ export default function DropsAnalyticsPage() {
             })}
           </div>
         </div>
+
+        {filteredContent.length === 0 && (
+          <div className="empty-state">
+            <h3>No content found</h3>
+            <p>Try adjusting your filters.</p>
+          </div>
+        )}
       </div>
     </div>
   );
