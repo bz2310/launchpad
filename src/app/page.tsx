@@ -1,40 +1,36 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
 import { MainLayout } from '@/components/layout';
 import { FeedPost } from '@/components/feed';
-import { getFeedPosts, getQuickDiscoverArtists, getLiveEvents, getCurrentUser } from '@/lib/data';
+import { getFeedPosts, getQuickDiscoverArtists, getLiveEvents } from '@/lib/data';
 import Link from 'next/link';
 
 export default function HomePage() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'feed' | 'events'>('feed');
+  const [currentSlide, setCurrentSlide] = useState(0);
   const posts = getFeedPosts();
   const featuredArtists = getQuickDiscoverArtists();
   const events = getLiveEvents();
-  const user = getCurrentUser();
-  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % featuredArtists.length);
+  }, [featuredArtists.length]);
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + featuredArtists.length) % featuredArtists.length);
+  }, [featuredArtists.length]);
 
   // Auto-scroll carousel
   useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel || featuredArtists.length <= 1) return;
-
-    let scrollPosition = 0;
-    const cardWidth = 280; // Width of each card + gap
-    const maxScroll = (featuredArtists.length - 1) * cardWidth;
+    if (featuredArtists.length <= 1) return;
 
     const interval = setInterval(() => {
-      scrollPosition += cardWidth;
-      if (scrollPosition > maxScroll) {
-        scrollPosition = 0;
-      }
-      carousel.scrollTo({ left: scrollPosition, behavior: 'smooth' });
-    }, 4000);
+      nextSlide();
+    }, 5000);
 
     return () => clearInterval(interval);
-  }, [featuredArtists.length]);
+  }, [featuredArtists.length, nextSlide]);
 
   return (
     <MainLayout title="Home" showRightSidebar>
@@ -57,53 +53,58 @@ export default function HomePage() {
       {/* Feed Tab Content */}
       {activeTab === 'feed' && (
         <>
-          {/* Featured Artists Carousel */}
+          {/* Featured Artists Hero Carousel */}
           {featuredArtists.length > 0 && (
-            <div className="home-featured-section">
-              <div className="home-featured-header">
-                <h3>Featured Artists</h3>
-                <Link href="/explore" className="see-all-link">Explore More</Link>
-              </div>
-              <div className="featured-carousel" ref={carouselRef}>
-                {featuredArtists.map((artist) => {
-                  const relationship = user.supportRelationships?.[artist.id];
-                  const isSupporting = relationship?.isSupporter;
-                  return (
-                    <div
-                      key={artist.id}
-                      className="featured-carousel-card cursor-pointer"
-                      onClick={() => router.push(`/artist/${artist.id}`)}
-                    >
-                      <div
-                        className="featured-carousel-banner"
-                        style={{ background: artist.bannerGradient }}
-                      >
-                        <img
-                          src={artist.avatar}
-                          alt={artist.name}
-                          className="featured-carousel-avatar"
-                        />
+            <div className="hero-carousel">
+              <div className="hero-carousel-track">
+                {featuredArtists.map((artist, index) => (
+                  <div
+                    key={artist.id}
+                    className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
+                    style={{ backgroundImage: `url(${artist.avatar})` }}
+                  >
+                    <div className="hero-slide-overlay" style={{ background: artist.bannerGradient }} />
+                    <div className="hero-slide-content">
+                      <div className="hero-artwork">
+                        <img src={artist.avatar} alt={artist.name} />
                       </div>
-                      <div className="featured-carousel-info">
-                        <h4>
-                          {artist.name}
-                          {artist.verified && <span className="verified-small">✓</span>}
-                        </h4>
-                        <p className="featured-carousel-bio">{artist.bio}</p>
-                        <div className="featured-carousel-stats">
-                          <span>💜 {artist.stats.supporters} supporters</span>
-                        </div>
-                        <Link
-                          href={`/membership/${artist.id}`}
-                          className={`support-btn-small ${isSupporting ? 'supporting-btn' : ''}`}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {isSupporting ? 'Supporting' : 'Support'}
+                      <div className="hero-info">
+                        <h2 className="hero-title">{artist.name}</h2>
+                        <p className="hero-artist">
+                          {artist.bio}
+                          {artist.verified && <span className="verified-badge">✓</span>}
+                        </p>
+                        <span className="hero-badge">NEW RELEASE</span>
+                        <Link href={`/artist/${artist.id}`} className="hero-view-btn">
+                          View
                         </Link>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
+              </div>
+
+              {/* Navigation Arrows */}
+              <button className="hero-nav hero-nav-prev" onClick={prevSlide}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+              <button className="hero-nav hero-nav-next" onClick={nextSlide}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+
+              {/* Dot Indicators */}
+              <div className="hero-dots">
+                {featuredArtists.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`hero-dot ${index === currentSlide ? 'active' : ''}`}
+                    onClick={() => setCurrentSlide(index)}
+                  />
+                ))}
               </div>
             </div>
           )}
