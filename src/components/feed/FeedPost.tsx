@@ -149,6 +149,23 @@ export function FeedPost({ post }: FeedPostProps) {
               style={{ width: `${Math.min(100, (linkedGoal.currentValue / linkedGoal.targetValue) * 100)}%` }}
             />
           </div>
+          {/* Milestone Rewards */}
+          {linkedGoal.unlocks && linkedGoal.unlocks.length > 0 && (
+            <div className="post-goal-unlocks">
+              <h5>Unlock Rewards</h5>
+              {linkedGoal.unlocks.map((unlock) => (
+                <div key={unlock.id} className={`post-goal-unlock-item ${unlock.isUnlocked ? 'unlocked' : ''}`}>
+                  <span className="post-goal-unlock-threshold">{unlock.threshold}%</span>
+                  <span className="post-goal-unlock-title">{unlock.title}</span>
+                  {unlock.isUnlocked && (
+                    <svg className="post-goal-unlock-check" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                    </svg>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
