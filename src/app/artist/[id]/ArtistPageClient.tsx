@@ -200,7 +200,35 @@ export default function ArtistPageClient({ id }: ArtistPageClientProps) {
                 <span className="stat-number">{artist.stats.listeners}</span>
                 <span className="stat-label">Monthly Listeners</span>
               </div>
-              {artist.momentum && (
+              {/* Show Goal Marker if artist has active goal, otherwise show Momentum */}
+              {artist.activeGoal ? (
+                <div
+                  className="artist-goal-marker"
+                  style={{ '--goal-color': artist.activeGoal.color || '#8b2bff' } as React.CSSProperties}
+                >
+                  <div className="artist-goal-marker-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <circle cx="12" cy="12" r="6" />
+                      <circle cx="12" cy="12" r="2" />
+                    </svg>
+                  </div>
+                  <div className="artist-goal-marker-info">
+                    <div className="artist-goal-marker-title">{artist.activeGoal.title}</div>
+                    <div className="artist-goal-marker-progress">
+                      <div className="artist-goal-marker-bar">
+                        <div
+                          className="artist-goal-marker-fill"
+                          style={{ width: `${Math.min(100, (artist.activeGoal.currentValue / artist.activeGoal.targetValue) * 100)}%` }}
+                        />
+                      </div>
+                      <span className="artist-goal-marker-percent">
+                        {Math.round((artist.activeGoal.currentValue / artist.activeGoal.targetValue) * 100)}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : artist.momentum && (
                 <div className="momentum-wheel">
                   <div className="momentum-circle">
                     <svg viewBox="0 0 36 36">

@@ -17955,4 +17955,585 @@ a.leaderboard-item {
     margin-bottom: 24px;
 }
 
+/* =====================
+   My Artists Page Styles
+   ===================== */
+
+.my-artists-page {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    min-height: calc(100vh - 200px);
+}
+
+.my-artists-selector {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 16px;
+    height: fit-content;
+    position: sticky;
+    top: 24px;
+}
+
+.my-artists-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.my-artist-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    width: 100%;
+}
+
+.my-artist-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.my-artist-item.active {
+    background: rgba(139, 43, 255, 0.1);
+    border-color: var(--primary);
+}
+
+.my-artist-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.my-artist-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.my-artist-name {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.my-artist-tier {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.my-artist-goal-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: rgba(139, 43, 255, 0.1);
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--goal-color, var(--primary));
+}
+
+.my-artist-goal-badge svg {
+    color: var(--goal-color, var(--primary));
+}
+
+.my-artist-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.my-artist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+}
+
+.my-artist-header-info {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.my-artist-detail-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.my-artist-header-info h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.my-artist-handle {
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.my-artist-since {
+    font-size: 12px;
+    color: var(--primary);
+}
+
+.my-artist-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-tertiary);
+}
+
+.my-artist-membership {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.membership-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.membership-card-header h3 {
+    font-size: 16px;
+}
+
+.tier-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.tier-badge.supporter, .tier-badge.supporters {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.tier-badge.superfan, .tier-badge.superfans {
+    background: rgba(139, 43, 255, 0.15);
+    color: var(--primary);
+}
+
+.membership-stats {
+    display: flex;
+    gap: 32px;
+}
+
+.membership-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.membership-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.membership-stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.my-artist-goal-section h3,
+.my-artist-content-section h3 {
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.my-artist-goal-card {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(139, 43, 255, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.my-artist-goal-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.my-artist-goal-header svg {
+    color: var(--goal-color, var(--primary));
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.my-artist-goal-info {
+    flex: 1;
+}
+
+.my-artist-goal-info h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.my-artist-goal-info p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.my-artist-goal-percent {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--goal-color, var(--primary));
+}
+
+.my-artist-goal-progress {
+    margin-bottom: 16px;
+}
+
+.my-artist-goal-bar {
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.my-artist-goal-fill {
+    height: 100%;
+    background: var(--goal-color, var(--primary));
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+.my-artist-goal-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.my-artist-goal-contribute {
+    width: 100%;
+    padding: 12px;
+    background: var(--goal-color, var(--primary));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.my-artist-goal-contribute:hover {
+    opacity: 0.9;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.my-artist-content-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.my-artist-content-card {
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.2s;
+}
+
+.my-artist-content-card:hover {
+    transform: translateY(-2px);
+}
+
+.my-artist-content-card .content-thumbnail {
+    position: relative;
+    aspect-ratio: 16/9;
+}
+
+.my-artist-content-card .content-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.my-artist-content-card .content-type-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.my-artist-content-card .content-type-badge.music {
+    background: var(--primary);
+    color: white;
+}
+
+.my-artist-content-card .content-type-badge.video {
+    background: #ef4444;
+    color: white;
+}
+
+.my-artist-content-card .content-type-badge.post {
+    background: #3b82f6;
+    color: white;
+}
+
+.my-artist-content-card .content-info {
+    padding: 12px;
+}
+
+.my-artist-content-card .content-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.my-artist-content-card .content-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* =====================
+   Portfolio / Under Construction Page
+   ===================== */
+
+.under-construction-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+}
+
+.under-construction-content {
+    text-align: center;
+    max-width: 500px;
+    padding: 40px;
+}
+
+.under-construction-icon {
+    margin-bottom: 24px;
+}
+
+.under-construction-icon svg {
+    color: var(--primary);
+}
+
+.under-construction-content h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.under-construction-content h2 {
+    font-size: 18px;
+    color: var(--primary);
+    margin-bottom: 16px;
+}
+
+.under-construction-description {
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.under-construction-features {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.feature-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+}
+
+.feature-preview svg {
+    color: var(--primary);
+}
+
+.feature-preview span {
+    font-weight: 500;
+}
+
+.under-construction-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* Artist Profile Goal Marker */
+.artist-goal-marker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(139, 43, 255, 0.08);
+    border: 1px solid rgba(139, 43, 255, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.artist-goal-marker:hover {
+    background: rgba(139, 43, 255, 0.12);
+    border-color: var(--goal-color, var(--primary));
+}
+
+.artist-goal-marker-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--goal-color, var(--primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.artist-goal-marker-info {
+    flex: 1;
+}
+
+.artist-goal-marker-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.artist-goal-marker-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.artist-goal-marker-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.artist-goal-marker-fill {
+    height: 100%;
+    background: var(--goal-color, var(--primary));
+    border-radius: 2px;
+}
+
+.artist-goal-marker-percent {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--goal-color, var(--primary));
+    min-width: 36px;
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .my-artists-page {
+        grid-template-columns: 1fr;
+    }
+
+    .my-artists-selector {
+        position: static;
+    }
+
+    .my-artists-list {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+
+    .my-artist-item {
+        flex-shrink: 0;
+        width: auto;
+    }
+
+    .my-artist-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .my-artist-actions {
+        width: 100%;
+    }
+
+    .my-artist-actions a {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .my-artist-content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 } /* End @layer base */

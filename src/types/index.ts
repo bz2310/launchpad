@@ -92,6 +92,17 @@ export interface Activity {
 }
 
 // Artist Types
+export interface ArtistGoal {
+  id: string;
+  title: string;
+  description?: string;
+  currentValue: number;
+  targetValue: number;
+  metric: string;
+  color?: string;
+  status: 'active' | 'completed';
+}
+
 export interface Artist {
   id: string;
   name: string;
@@ -108,6 +119,7 @@ export interface Artist {
   profileUrl: string;
   socialLinks?: SocialLinks;
   momentum?: MomentumTarget;
+  activeGoal?: ArtistGoal;
   badges?: ArtistBadgeInfo[];
   milestones?: Milestone[];
   membershipTiers?: MembershipTier[];
