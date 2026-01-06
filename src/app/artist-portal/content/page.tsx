@@ -319,6 +319,7 @@ export default function ContentPage() {
                 <div className="th-access">Access</div>
                 <div className="th-revenue">Revenue</div>
                 <div className="th-views">Views</div>
+                <div className="th-likes">Likes</div>
                 <div className="th-shares">Shares</div>
                 <div className="th-status">Status</div>
                 <div className="th-actions">Actions</div>
@@ -344,7 +345,7 @@ export default function ContentPage() {
                             ? new Date(item.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                             : item.scheduledFor
                             ? `Scheduled: ${new Date(item.scheduledFor).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-                            : 'Draft'}
+                            : `Draft: ${new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
                         </span>
                       </div>
                     </div>
@@ -359,6 +360,9 @@ export default function ContentPage() {
                     </div>
                     <div className="td-views">
                       {item.viewCount > 0 ? item.viewCount.toLocaleString() : '—'}
+                    </div>
+                    <div className="td-likes">
+                      {item.likeCount > 0 ? item.likeCount.toLocaleString() : '—'}
                     </div>
                     <div className="td-shares">
                       {item.shareCount > 0 ? item.shareCount.toLocaleString() : '—'}

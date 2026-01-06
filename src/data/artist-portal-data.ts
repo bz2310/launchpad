@@ -1154,15 +1154,6 @@ const pendingActions: PendingAction[] = [
     createdAt: daysAgo(0),
   },
   {
-    id: 'action_003',
-    type: 'moderation',
-    title: '2 items need review',
-    description: 'Flagged content in community channels',
-    priority: 'medium',
-    actionUrl: '/artist-portal/community?tab=moderation',
-    createdAt: daysAgo(1),
-  },
-  {
     id: 'action_004',
     type: 'content',
     title: 'Scheduled content tomorrow',

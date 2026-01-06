@@ -7,6 +7,15 @@ export default function DropsAnalyticsPage() {
   const { data } = useAnalytics();
   const { drops, recentDrops } = data;
 
+  const getAccessLabel = (access: string) => {
+    switch (access) {
+      case 'public': return 'Public';
+      case 'supporters': return 'Supporters';
+      case 'superfans': return 'Superfans';
+      default: return access;
+    }
+  };
+
   return (
     <div className="analytics-overview">
       {/* Summary Cards */}
@@ -27,25 +36,6 @@ export default function DropsAnalyticsPage() {
           <div className="analytics-kpi-label">Total Revenue</div>
           <div className="analytics-kpi-value">{formatCurrency(drops.totalRevenue)}</div>
         </div>
-      </div>
-
-      {/* By Type */}
-      <div className="analytics-section-header">
-        <h2>Performance by Type</h2>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-        {Object.entries(drops.byType).map(([type, stats]) => (
-          <div key={type} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px' }}>
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '8px' }}>{type}</div>
-            <div style={{ fontSize: '20px', fontWeight: 700, marginBottom: '4px' }}>{stats.count} drops</div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-              {formatCompactNumber(stats.views)} views
-            </div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-              {stats.revenue > 0 ? formatCurrency(stats.revenue) : '—'} revenue
-            </div>
-          </div>
-        ))}
       </div>
 
       {/* By Access Level */}
@@ -72,45 +62,61 @@ export default function DropsAnalyticsPage() {
         <div className="analytics-section-header">
           <h2>All Drops</h2>
         </div>
-        <div className="analytics-drops-table analytics-drops-table-wide">
-          <div className="analytics-drops-header">
-            <span>Title</span>
-            <span>Date</span>
-            <span>Views</span>
-            <span>Engagement</span>
-            <span>Revenue</span>
-            <span>vs Average</span>
+        <div className="analytics-content-table">
+          <div className="analytics-content-header">
+            <span className="th-title">Title</span>
+            <span className="th-type">Type</span>
+            <span className="th-access">Access</span>
+            <span className="th-revenue">Revenue</span>
+            <span className="th-views">Views</span>
+            <span className="th-likes">Likes</span>
+            <span className="th-comments">Comments</span>
+            <span className="th-shares">Shares</span>
+            <span className="th-engagement">Engagement</span>
           </div>
-          {recentDrops.map((drop) => {
-            const performanceScore = Math.min(100, Math.max(0, drop.vsAverage.views));
-            const performanceClass = performanceScore >= 100 ? 'excellent' : performanceScore >= 70 ? 'good' : performanceScore >= 40 ? 'average' : 'poor';
+          <div className="analytics-content-body">
+            {recentDrops.map((drop) => {
+              const totalEngagement = drop.likes + drop.comments + drop.shares;
+              const engagementRate = drop.views > 0 ? ((totalEngagement / drop.views) * 100).toFixed(1) : '0.0';
 
-            return (
-              <div key={drop.dropId} className="analytics-drops-row">
-                <div className="analytics-drops-title">
-                  <span className="analytics-drops-type">{drop.type}</span>
-                  <span className="analytics-drops-name">{drop.title}</span>
-                </div>
-                <span className="analytics-drops-date">
-                  {new Date(drop.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </span>
-                <span className="analytics-drops-views">{formatCompactNumber(drop.views)}</span>
-                <span className="analytics-drops-engagement">{drop.conversionRate.toFixed(1)}%</span>
-                <span className="analytics-drops-revenue">{drop.revenue > 0 ? formatCurrency(drop.revenue) : '—'}</span>
-                <div className="analytics-drops-performance">
-                  <div className="analytics-drops-performance-bar">
-                    <div
-                      className={`analytics-drops-performance-fill ${performanceClass}`}
-                      style={{ width: `${Math.min(100, performanceScore)}%` }}
-                    />
+              return (
+                <div key={drop.dropId} className="analytics-content-row">
+                  <div className="td-title">
+                    <div className="title-content">
+                      <span className="content-title-text">{drop.title}</span>
+                      <span className="content-date">
+                        {new Date(drop.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </span>
+                    </div>
                   </div>
-                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)', minWidth: '40px' }}>
-                    {drop.vsAverage.views >= 0 ? '+' : ''}{drop.vsAverage.views}%
-                  </span>
+                  <div className="td-type">
+                    <span className={`type-badge ${drop.type}`}>{drop.type}</span>
+                  </div>
+                  <div className="td-access">
+                    <span className={`access-badge ${drop.accessLevel}`}>{getAccessLabel(drop.accessLevel)}</span>
+                  </div>
+                  <div className="td-revenue">
+                    {drop.revenue > 0 ? formatCurrency(drop.revenue) : '—'}
+                  </div>
+                  <div className="td-views">
+                    {drop.views > 0 ? formatCompactNumber(drop.views) : '—'}
+                  </div>
+                  <div className="td-likes">
+                    {drop.likes > 0 ? formatCompactNumber(drop.likes) : '—'}
+                  </div>
+                  <div className="td-comments">
+                    {drop.comments > 0 ? formatCompactNumber(drop.comments) : '—'}
+                  </div>
+                  <div className="td-shares">
+                    {drop.shares > 0 ? formatCompactNumber(drop.shares) : '—'}
+                  </div>
+                  <div className="td-engagement">
+                    {engagementRate}%
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

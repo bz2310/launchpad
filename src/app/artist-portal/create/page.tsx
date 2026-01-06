@@ -42,9 +42,8 @@ function CreatePageContent() {
   const [stagedRelease, setStagedRelease] = useState(false);
   const [stagedHours, setStagedHours] = useState(24);
 
-  // Extras
-  const [referralBonus, setReferralBonus] = useState(false);
-  const [giftEnabled, setGiftEnabled] = useState(false);
+  // Staged release tier
+  const [stagedTier, setStagedTier] = useState<'superfan' | 'supporter'>('superfan');
 
   // Content
   const [title, setTitle] = useState('');
@@ -71,7 +70,6 @@ function CreatePageContent() {
 
   // Audio-specific state
   const [audioType, setAudioType] = useState<'single' | 'ep' | 'album'>('single');
-  const [isExplicit, setIsExplicit] = useState(false);
 
   // Video-specific state
   const [videoDuration, setVideoDuration] = useState('');
@@ -520,14 +518,6 @@ function CreatePageContent() {
                       </button>
                     </div>
                   </div>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={isExplicit}
-                      onChange={(e) => setIsExplicit(e.target.checked)}
-                    />
-                    <span>Contains explicit content</span>
-                  </label>
                 </div>
               )}
 
@@ -868,12 +858,20 @@ function CreatePageContent() {
                 />
                 <div className="checkbox-content">
                   <span className="checkbox-label">Staged Release</span>
-                  <span className="checkbox-desc">Top fans get early access</span>
+                  <span className="checkbox-desc">Select tier gets early access</span>
                 </div>
               </label>
               {stagedRelease && (
                 <div className="sub-options staged-options">
-                  <span>Top fans get</span>
+                  <select
+                    value={stagedTier}
+                    onChange={(e) => setStagedTier(e.target.value as 'superfan' | 'supporter')}
+                    className="staged-tier-select"
+                  >
+                    <option value="superfan">Superfans</option>
+                    <option value="supporter">Supporters & above</option>
+                  </select>
+                  <span>get</span>
                   <input
                     type="number"
                     className="inline-input"
@@ -888,35 +886,6 @@ function CreatePageContent() {
             </div>
           </section>
 
-          {/* Extras Section */}
-          <section className="create-section">
-            <h2>Extras</h2>
-            <div className="extras-options">
-              <label className="checkbox-option">
-                <input
-                  type="checkbox"
-                  checked={referralBonus}
-                  onChange={(e) => setReferralBonus(e.target.checked)}
-                />
-                <div className="checkbox-content">
-                  <span className="checkbox-label">Referral Bonus</span>
-                  <span className="checkbox-desc">Reward fans who share this drop</span>
-                </div>
-              </label>
-
-              <label className="checkbox-option">
-                <input
-                  type="checkbox"
-                  checked={giftEnabled}
-                  onChange={(e) => setGiftEnabled(e.target.checked)}
-                />
-                <div className="checkbox-content">
-                  <span className="checkbox-label">Gift</span>
-                  <span className="checkbox-desc">Allow fans to gift this drop</span>
-                </div>
-              </label>
-            </div>
-          </section>
         </div>
 
         {/* Preview Panel */}
@@ -1016,7 +985,6 @@ function CreatePageContent() {
               {dropType === 'audio' && (
                 <div className="preview-audio-meta">
                   <span className="audio-type-badge">{audioType}</span>
-                  {isExplicit && <span className="explicit-badge">E</span>}
                 </div>
               )}
               {dropType === 'video' && (
