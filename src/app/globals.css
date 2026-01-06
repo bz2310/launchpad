@@ -3757,6 +3757,15 @@ body {
     margin-bottom: 20px;
 }
 
+.leaderboard-category-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
 .category-title {
     font-size: 12px;
     font-weight: 600;
