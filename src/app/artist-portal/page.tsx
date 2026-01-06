@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArtistLayout } from '@/components/artist-portal';
 import { getArtistPortalData } from '@/data/artist-portal-data';
+import { getAnalyticsData } from '@/data/analytics-data';
 import { getArtistMessages } from '@/lib/data';
 import type { FanTier } from '@/types/artist-portal';
 
@@ -30,8 +31,21 @@ const getTierColor = (tier: FanTier): string => {
 
 export default function ArtistPortalPage() {
   const portalData = getArtistPortalData();
-  const { content, overview } = portalData;
+  const { content } = portalData;
   const messages = getArtistMessages();
+
+  // Use analytics data for overview stats (same source as Analytics tab)
+  const analyticsData = getAnalyticsData({ dateRange: { start: '', end: '', preset: '30d', granularity: 'day' } });
+  const overview = {
+    totalFans: analyticsData.overview.fans.total,
+    fansChange: analyticsData.overview.fans.changePercent,
+    totalRevenue: analyticsData.overview.revenue.total,
+    revenueChange: analyticsData.overview.revenue.changePercent,
+    totalViews: analyticsData.overview.views.total,
+    viewsChange: analyticsData.overview.views.changePercent,
+    engagementRate: analyticsData.overview.engagement.rate,
+    engagementChange: analyticsData.overview.engagement.change,
+  };
 
   // Get superfan/inner circle messages (unread first, then recent)
   const superfanMessages = messages
@@ -317,7 +331,7 @@ export default function ArtistPortalPage() {
                   {scheduledDrops.map(drop => (
                     <Link
                       key={drop.id}
-                      href={`/artist-portal/content?item=${drop.id}`}
+                      href={`/artist-portal/create?edit=${drop.id}`}
                       className="upcoming-item"
                     >
                       <span className="upcoming-icon drop-icon">{getDropTypeIcon(drop.type)}</span>

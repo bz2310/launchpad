@@ -14,36 +14,41 @@ function MessagesContent() {
   const chatId = searchParams.get('chat');
   const allMessages = getArtistMessages();
 
-  // Find the chat to select based on URL param, or default to first message
-  const getInitialChat = (): ArtistMessage | null => {
-    if (chatId) {
-      const found = allMessages.find(m => m.id === chatId);
-      if (found) return found;
-    }
-    return allMessages[0] || null;
-  };
-
-  const [selectedChat, setSelectedChat] = useState<ArtistMessage | null>(getInitialChat);
+  const [selectedChat, setSelectedChat] = useState<ArtistMessage | null>(null);
   const [messageInput, setMessageInput] = useState('');
   const [conversations, setConversations] = useState(allMessages);
   const [filter, setFilter] = useState<MessageFilter>('all');
+  const [initialized, setInitialized] = useState(false);
 
-  // Update selected chat when URL changes (chatId from query param)
+  // Initialize and update selected chat when URL changes or on mount
   useEffect(() => {
+    // Find the chat by ID from URL, or default to first message
+    let targetChat: ArtistMessage | null = null;
+
     if (chatId) {
-      setConversations(prevConversations => {
-        const found = prevConversations.find(m => m.id === chatId);
-        if (found) {
-          setSelectedChat(found);
-          // Mark as read when opened from link
-          return prevConversations.map(conv =>
+      const found = conversations.find(m => m.id === chatId);
+      if (found) {
+        targetChat = found;
+        // Mark as read when opened from link
+        setConversations(prev =>
+          prev.map(conv =>
             conv.id === chatId ? { ...conv, unread: false } : conv
-          );
-        }
-        return prevConversations;
-      });
+          )
+        );
+      }
     }
-  }, [chatId]);
+
+    // If no chat found by ID (or no ID), default to first message
+    if (!targetChat && !initialized) {
+      targetChat = conversations[0] || null;
+    }
+
+    if (targetChat) {
+      setSelectedChat(targetChat);
+    }
+
+    setInitialized(true);
+  }, [chatId, conversations, initialized]);
 
   const filteredConversations = conversations.filter(conv => {
     if (filter === 'all') return true;

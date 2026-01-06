@@ -1,17 +1,24 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useState, useEffect, Suspense, type ReactNode } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ArtistLayout } from '@/components/artist-portal';
 import { getArtistDashboardData } from '@/lib/data';
+import { getArtistPortalData } from '@/data/artist-portal-data';
 
 type DropType = 'audio' | 'video' | 'post' | 'merch' | 'event' | 'poll';
 type AccessType = 'public' | 'subscribers' | 'tier' | 'rank' | 'segment';
 type MonetizationType = 'included' | 'paid' | 'limited';
 type TimingType = 'now' | 'scheduled';
 
-export default function CreatePage() {
+function CreatePageContent() {
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit');
+
   const dashboardData = getArtistDashboardData();
   const artist = dashboardData.artist;
+  const portalData = getArtistPortalData();
+  const allContent = portalData.content;
 
   // Drop Type
   const [dropType, setDropType] = useState<DropType>('audio');
@@ -69,6 +76,61 @@ export default function CreatePage() {
   // Video-specific state
   const [videoDuration, setVideoDuration] = useState('');
   const [videoType, setVideoType] = useState<'music_video' | 'behind_scenes' | 'live' | 'other'>('music_video');
+
+  // Edit mode state
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingContentId, setEditingContentId] = useState<string | null>(null);
+
+  // Load content data when editing
+  useEffect(() => {
+    if (editId) {
+      const contentItem = allContent.find(c => c.id === editId);
+      if (contentItem) {
+        setIsEditMode(true);
+        setEditingContentId(contentItem.id);
+
+        // Set title and description
+        setTitle(contentItem.title);
+        setDescription(contentItem.description || '');
+
+        // Map content type to drop type
+        const typeMap: Record<string, DropType> = {
+          'music': 'audio',
+          'video': 'video',
+          'post': 'post',
+          'image': 'post',
+        };
+        setDropType(typeMap[contentItem.type] || 'audio');
+
+        // Set access level
+        if (contentItem.accessLevel === 'public') {
+          setAccessType('public');
+        } else if (contentItem.accessLevel === 'supporters') {
+          setAccessType('tier');
+          setSelectedTiers(['supporter']);
+        } else if (contentItem.accessLevel === 'superfans') {
+          setAccessType('tier');
+          setSelectedTiers(['superfan']);
+        }
+
+        // Set timing based on status
+        if (contentItem.status === 'scheduled' && contentItem.scheduledFor) {
+          setTiming('scheduled');
+          const schedDate = new Date(contentItem.scheduledFor);
+          setScheduleDate(schedDate.toISOString().split('T')[0]);
+          setScheduleTime(schedDate.toTimeString().slice(0, 5));
+        } else {
+          setTiming('now');
+        }
+
+        // Set monetization if has revenue
+        if (contentItem.revenue > 0) {
+          setMonetization('paid');
+          setUnlockPrice(contentItem.revenue);
+        }
+      }
+    }
+  }, [editId, allContent]);
 
   const dropTypes: { id: DropType; label: string; icon: ReactNode }[] = [
     {
@@ -181,7 +243,7 @@ export default function CreatePage() {
   };
 
   return (
-    <ArtistLayout title="Create">
+    <ArtistLayout title={isEditMode ? "Edit Drop" : "Create"}>
       <div className="create-page">
         <div className="create-content">
           {/* Drop Type Section */}
@@ -951,11 +1013,33 @@ export default function CreatePage() {
               Save Draft
             </button>
             <button className="btn-primary" onClick={handlePublish}>
-              {timing === 'scheduled' ? 'Schedule Drop' : 'Publish Drop'}
+              {isEditMode
+                ? 'Update Drop'
+                : timing === 'scheduled'
+                ? 'Schedule Drop'
+                : 'Publish Drop'}
             </button>
           </div>
         </div>
       </div>
     </ArtistLayout>
+  );
+}
+
+export default function CreatePage() {
+  return (
+    <Suspense fallback={
+      <ArtistLayout title="Create">
+        <div className="create-page">
+          <div className="create-content">
+            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+              Loading...
+            </div>
+          </div>
+        </div>
+      </ArtistLayout>
+    }>
+      <CreatePageContent />
+    </Suspense>
   );
 }
