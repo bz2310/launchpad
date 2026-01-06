@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ArtistLayout } from '@/components/artist-portal';
 import { getArtistPortalData } from '@/data/artist-portal-data';
 import { getAnalyticsData } from '@/data/analytics-data';
-import { getArtistMessages } from '@/lib/data';
+import { getArtistMessages, getActiveGoals } from '@/lib/data';
 import type { FanTier } from '@/types/artist-portal';
 
 // Helper to get display label for tier
@@ -69,6 +69,18 @@ export default function ArtistPortalPage() {
     .filter(item => item.type === 'event' && item.status === 'scheduled' && item.scheduledFor)
     .sort((a, b) => new Date(a.scheduledFor!).getTime() - new Date(b.scheduledFor!).getTime())
     .slice(0, 4);
+
+  // Get active goals for summary
+  const activeGoals = getActiveGoals().slice(0, 3);
+
+  // Helper to calculate days remaining for goals
+  const getGoalDaysRemaining = (deadline?: string): number | null => {
+    if (!deadline) return null;
+    const now = new Date();
+    const end = new Date(deadline);
+    const diff = end.getTime() - now.getTime();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  };
 
   const formatScheduledDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -252,6 +264,48 @@ export default function ArtistPortalPage() {
             New Drop
           </Link>
         </div>
+
+        {/* Active Goals Summary */}
+        {activeGoals.length > 0 && (
+          <div className="home-goals-summary">
+            <div className="home-section-header">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="6" />
+                  <circle cx="12" cy="12" r="2" />
+                </svg>
+                Active Goals
+              </h3>
+              <Link href="/artist-portal/goals" className="view-all-link">View All</Link>
+            </div>
+            <div className="goals-summary-list">
+              {activeGoals.map(goal => {
+                const progress = Math.round((goal.currentValue / goal.targetValue) * 100);
+                const daysLeft = getGoalDaysRemaining(goal.deadline);
+                return (
+                  <Link
+                    key={goal.id}
+                    href={`/artist-portal/goals/${goal.id}`}
+                    className="goal-summary-item"
+                    style={{ '--goal-color': goal.color || '#8b2bff' } as React.CSSProperties}
+                  >
+                    <div className="goal-summary-header">
+                      <span className="goal-summary-title">{goal.title}</span>
+                      <span className="goal-summary-percent">{progress}%</span>
+                    </div>
+                    <div className="goal-summary-bar">
+                      <div className="goal-summary-fill" style={{ width: `${progress}%` }} />
+                    </div>
+                    {daysLeft !== null && (
+                      <span className="goal-summary-days">{daysLeft} days left</span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Two Column Layout: Messages + Upcoming */}
         <div className="home-two-column">
