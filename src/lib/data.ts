@@ -10,9 +10,9 @@ import {
   badgeDefinitions,
 } from '@/data/mock-data';
 import { artistDashboardData, artistMessages } from '@/data/dashboard-data';
-import { content as artistContent } from '@/data/artist-portal-data';
+import { content as artistContent, getArtistPortalData } from '@/data/artist-portal-data';
 import type { Artist, Post } from '@/types';
-import type { ContentItem } from '@/types/artist-portal';
+import type { ContentItem, Goal } from '@/types/artist-portal';
 
 // User API
 export function getCurrentUser() {
@@ -206,4 +206,21 @@ export function getArtistMessages() {
 
 export function getArtistMessage(id: string) {
   return artistMessages.find(m => m.id === id);
+}
+
+// Goals API
+export function getGoals(): Goal[] {
+  return getArtistPortalData().goals;
+}
+
+export function getGoal(id: string): Goal | undefined {
+  return getGoals().find(g => g.id === id);
+}
+
+export function getActiveGoals(): Goal[] {
+  return getGoals().filter(g => g.status === 'active');
+}
+
+export function getCompletedGoals(): Goal[] {
+  return getGoals().filter(g => g.status === 'completed');
 }

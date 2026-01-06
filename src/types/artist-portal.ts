@@ -576,6 +576,80 @@ export interface ProfitEstimatorOutput {
 }
 
 // =====================
+// Goals & Campaigns Types
+// =====================
+
+export type GoalMetric = 'followers' | 'subscribers' | 'album_sales' | 'ticket_sales' | 'merch_sales' | 'streams' | 'revenue' | 'custom';
+export type GoalStatus = 'draft' | 'active' | 'paused' | 'completed' | 'expired';
+export type DropRole = 'cta' | 'update' | 'reward';
+export type CtaType = 'subscribe' | 'share' | 'buy' | 'rsvp' | 'stream' | 'follow';
+export type UnlockThreshold = 25 | 50 | 75 | 100;
+
+export interface Goal extends DatabaseRecord {
+  title: string;
+  description?: string;
+  metric: GoalMetric;
+  targetValue: number;
+  currentValue: number;
+  startDate: string;
+  deadline?: string;
+  status: GoalStatus;
+
+  // Milestone unlocks (rewards at thresholds)
+  unlocks: GoalUnlock[];
+
+  // Associated drops
+  dropIds: string[];
+
+  // Visual customization
+  color?: string;
+  coverImage?: string;
+
+  // Stats
+  contributorCount: number;
+  topContributors?: GoalContributor[];
+
+  // Attribution tracking
+  referralEnabled: boolean;
+  referralCount?: number;
+}
+
+export interface GoalUnlock {
+  id: string;
+  threshold: UnlockThreshold;
+  title: string;
+  description?: string;
+  rewardType: 'content' | 'merch_discount' | 'early_access' | 'exclusive_event' | 'custom';
+  rewardContentId?: string;
+  deliverTo: 'all_contributors' | 'subscribers' | 'top_percent';
+  topPercentValue?: number; // e.g., top 10%
+  isUnlocked: boolean;
+  unlockedAt?: string;
+}
+
+export interface GoalContributor {
+  fanId: string;
+  fanName: string;
+  fanAvatar: string;
+  contribution: number; // actions/purchases/etc.
+  rank: number;
+}
+
+export interface GoalDrop {
+  dropId: string;
+  goalId: string;
+  role: DropRole;
+
+  // For CTA drops
+  ctaType?: CtaType;
+  referralTracking?: boolean;
+
+  // For Reward drops
+  unlockThreshold?: UnlockThreshold;
+  autoDeliver?: boolean;
+}
+
+// =====================
 // Dashboard & Activity Types
 // =====================
 
@@ -689,6 +763,9 @@ export interface ArtistPortalData {
 
   // Messages
   conversations: Conversation[];
+
+  // Goals
+  goals: Goal[];
 
   // Shopify
   shopifyConnection?: ShopifyConnection;

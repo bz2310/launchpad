@@ -3,8 +3,9 @@
 import { useState, useEffect, Suspense, type ReactNode } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ArtistLayout } from '@/components/artist-portal';
-import { getArtistDashboardData } from '@/lib/data';
+import { getArtistDashboardData, getActiveGoals } from '@/lib/data';
 import { getArtistPortalData } from '@/data/artist-portal-data';
+import type { DropRole, CtaType, UnlockThreshold } from '@/types/artist-portal';
 
 type DropType = 'audio' | 'video' | 'post' | 'merch' | 'event' | 'poll';
 type AccessType = 'public' | 'subscribers' | 'tier' | 'rank' | 'segment';
@@ -74,6 +75,25 @@ function CreatePageContent() {
   // Video-specific state
   const [videoDuration, setVideoDuration] = useState('');
   const [videoType, setVideoType] = useState<'music_video' | 'behind_scenes' | 'live' | 'other'>('music_video');
+
+  // Goal/Campaign state
+  const [selectedGoalId, setSelectedGoalId] = useState<string>('');
+  const [dropRole, setDropRole] = useState<DropRole>('update');
+  const [ctaType, setCtaType] = useState<CtaType>('subscribe');
+  const [referralTracking, setReferralTracking] = useState(false);
+  const [unlockThreshold, setUnlockThreshold] = useState<UnlockThreshold>(50);
+  const [autoDeliver, setAutoDeliver] = useState(true);
+
+  // Get active goals
+  const activeGoals = getActiveGoals();
+
+  // Check for goal param in URL
+  const goalIdFromUrl = searchParams.get('goal');
+  useEffect(() => {
+    if (goalIdFromUrl && activeGoals.some(g => g.id === goalIdFromUrl)) {
+      setSelectedGoalId(goalIdFromUrl);
+    }
+  }, [goalIdFromUrl, activeGoals]);
 
   // Edit mode state
   const [isEditMode, setIsEditMode] = useState(false);
@@ -882,6 +902,142 @@ function CreatePageContent() {
                   />
                   <span>hours early</span>
                 </div>
+              )}
+            </div>
+          </section>
+
+          {/* Campaign / Goal Section */}
+          <section className="create-section">
+            <h2>Campaign / Goal</h2>
+            <p className="section-description">Link this drop to an active goal to track its impact.</p>
+
+            <div className="goal-selector">
+              <div className="input-group">
+                <label>Select Goal (Optional)</label>
+                <select
+                  value={selectedGoalId}
+                  onChange={(e) => setSelectedGoalId(e.target.value)}
+                  className="goal-select"
+                >
+                  <option value="">No goal selected</option>
+                  {activeGoals.map(goal => (
+                    <option key={goal.id} value={goal.id}>
+                      {goal.title} ({Math.round((goal.currentValue / goal.targetValue) * 100)}% complete)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {selectedGoalId && (
+                <>
+                  {/* Drop Role */}
+                  <div className="input-group">
+                    <label>Drop Role</label>
+                    <div className="drop-role-options">
+                      <button
+                        type="button"
+                        className={`drop-role-btn ${dropRole === 'cta' ? 'active' : ''}`}
+                        onClick={() => setDropRole('cta')}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                          <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                        CTA
+                        <span className="role-desc">Drive action</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`drop-role-btn ${dropRole === 'update' ? 'active' : ''}`}
+                        onClick={() => setDropRole('update')}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="16" x2="12" y2="12" />
+                          <line x1="12" y1="8" x2="12.01" y2="8" />
+                        </svg>
+                        Update
+                        <span className="role-desc">Share progress</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`drop-role-btn ${dropRole === 'reward' ? 'active' : ''}`}
+                        onClick={() => setDropRole('reward')}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="8" r="7" />
+                          <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                        </svg>
+                        Reward
+                        <span className="role-desc">Unlock at threshold</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* CTA-specific options */}
+                  {dropRole === 'cta' && (
+                    <div className="role-options cta-options">
+                      <div className="input-group">
+                        <label>Primary CTA Type</label>
+                        <select
+                          value={ctaType}
+                          onChange={(e) => setCtaType(e.target.value as CtaType)}
+                          className="cta-type-select"
+                        >
+                          <option value="subscribe">Subscribe</option>
+                          <option value="share">Share</option>
+                          <option value="buy">Buy</option>
+                          <option value="rsvp">RSVP</option>
+                          <option value="stream">Stream</option>
+                          <option value="follow">Follow</option>
+                        </select>
+                      </div>
+                      <label className="checkbox-option">
+                        <input
+                          type="checkbox"
+                          checked={referralTracking}
+                          onChange={(e) => setReferralTracking(e.target.checked)}
+                        />
+                        <div className="checkbox-content">
+                          <span className="checkbox-label">Enable Referral Tracking</span>
+                          <span className="checkbox-desc">Track which fans share and drive actions</span>
+                        </div>
+                      </label>
+                    </div>
+                  )}
+
+                  {/* Reward-specific options */}
+                  {dropRole === 'reward' && (
+                    <div className="role-options reward-options">
+                      <div className="input-group">
+                        <label>Unlock at Threshold</label>
+                        <div className="threshold-options">
+                          {([25, 50, 75, 100] as UnlockThreshold[]).map(threshold => (
+                            <button
+                              key={threshold}
+                              type="button"
+                              className={`threshold-btn ${unlockThreshold === threshold ? 'active' : ''}`}
+                              onClick={() => setUnlockThreshold(threshold)}
+                            >
+                              {threshold}%
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <label className="checkbox-option">
+                        <input
+                          type="checkbox"
+                          checked={autoDeliver}
+                          onChange={(e) => setAutoDeliver(e.target.checked)}
+                        />
+                        <div className="checkbox-content">
+                          <span className="checkbox-label">Auto-deliver when unlocked</span>
+                          <span className="checkbox-desc">Automatically publish when threshold is reached</span>
+                        </div>
+                      </label>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </section>
