@@ -476,49 +476,92 @@ export const communities: Community[] = [
   },
 ];
 
-// Notifications
+// Notifications (fan notifications are about artist drops only)
 export const notifications: Notification[] = [
   {
     id: 'notif_001',
-    type: 'like',
-    fromArtistId: 'artist_002',
-    message: 'liked your post',
+    type: 'drop',
+    fromArtistId: 'artist_001',
+    message: 'dropped a new track "Midnight Dreams"',
     timestamp: '2 hours ago',
   },
   {
     id: 'notif_002',
-    type: 'support',
-    fromArtistId: 'artist_003',
-    message: 'started supporting you',
+    type: 'drop',
+    fromArtistId: 'artist_002',
+    message: 'posted exclusive behind-the-scenes content',
     timestamp: '5 hours ago',
   },
   {
     id: 'notif_003',
-    type: 'mention',
-    fromArtistId: 'artist_004',
-    message: 'mentioned you in a post',
+    type: 'drop',
+    fromArtistId: 'artist_003',
+    message: 'released a new video "Summer Vibes"',
     timestamp: '1 day ago',
+  },
+  {
+    id: 'notif_004',
+    type: 'channel',
+    fromArtistId: 'artist_001',
+    message: 'posted in their channel: "Big announcement coming!"',
+    timestamp: '3 hours ago',
+  },
+  {
+    id: 'notif_005',
+    type: 'drop',
+    fromArtistId: 'artist_004',
+    message: 'shared new photos from the studio',
+    timestamp: '2 days ago',
   },
 ];
 
-// Chat Conversations
+// Chat Conversations (fans chat with artists and artist channels only)
 export const chatConversations: ChatConversation[] = [
+  {
+    id: 'channel_001',
+    recipientId: 'artist_001',
+    recipientName: 'Julia Michaels Channel',
+    recipientAvatar: 'https://i.pravatar.cc/150?img=47',
+    lastMessage: '🎉 Big announcement: New album dropping next week!',
+    timestamp: '1h',
+    unread: true,
+    isChannel: true,
+  },
   {
     id: 'chat_001',
     recipientId: 'artist_001',
-    recipientName: 'Luna Ray',
+    recipientName: 'Julia Michaels',
     recipientAvatar: 'https://i.pravatar.cc/150?img=47',
     lastMessage: 'Thanks for the support! New content coming soon',
     timestamp: '2h',
     unread: true,
   },
   {
+    id: 'channel_002',
+    recipientId: 'artist_002',
+    recipientName: 'Nova Chen Channel',
+    recipientAvatar: 'https://i.pravatar.cc/150?img=32',
+    lastMessage: 'Behind the scenes from tonight\'s show 🎤',
+    timestamp: '4h',
+    unread: false,
+    isChannel: true,
+  },
+  {
     id: 'chat_002',
-    recipientId: 'user_002',
-    recipientName: 'Music Fan 42',
-    recipientAvatar: 'https://i.pravatar.cc/150?img=12',
-    lastMessage: 'Have you heard the new track?',
+    recipientId: 'artist_002',
+    recipientName: 'Nova Chen',
+    recipientAvatar: 'https://i.pravatar.cc/150?img=32',
+    lastMessage: 'So glad you could make it to the show!',
     timestamp: '1d',
+    unread: false,
+  },
+  {
+    id: 'chat_003',
+    recipientId: 'artist_003',
+    recipientName: 'Marcus Wright',
+    recipientAvatar: 'https://i.pravatar.cc/150?img=68',
+    lastMessage: 'Your feedback means everything 🙏',
+    timestamp: '3d',
     unread: false,
   },
 ];

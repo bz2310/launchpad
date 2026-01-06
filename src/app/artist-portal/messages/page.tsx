@@ -138,6 +138,28 @@ function MessagesContent() {
             )}
           </div>
 
+          {/* My Channel - Always at top */}
+          <div className="my-channel-section">
+            <div className="my-channel-item">
+              <div className="channel-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z"/>
+                </svg>
+              </div>
+              <div className="my-channel-info">
+                <h4>My Channel</h4>
+                <p>Broadcast to all your fans</p>
+              </div>
+              <button className="broadcast-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+                New Broadcast
+              </button>
+            </div>
+          </div>
+
           {/* Filters */}
           <div className="messages-filters">
             <button

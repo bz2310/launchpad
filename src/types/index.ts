@@ -230,7 +230,7 @@ export interface MessageAttachment {
 // Notification Types
 export interface Notification {
   id: string;
-  type: 'like' | 'support' | 'mention' | 'milestone' | 'release';
+  type: 'like' | 'support' | 'mention' | 'milestone' | 'release' | 'drop' | 'channel';
   fromArtistId: string;
   message: string;
   timestamp: string;
@@ -246,6 +246,7 @@ export interface ChatConversation {
   lastMessage: string;
   timestamp: string;
   unread: boolean;
+  isChannel?: boolean;
 }
 
 // Genre Type
