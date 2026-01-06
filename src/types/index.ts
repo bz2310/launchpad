@@ -256,6 +256,7 @@ export interface Genre {
   name: string;
   gradient: string;
   artistCount: string;
+  image?: string;
 }
 
 // Trending Tag Type
@@ -263,6 +264,19 @@ export interface TrendingTag {
   tag: string;
   posts: string;
   trending: boolean;
+}
+
+// Trending Content Type (content from artists you don't support)
+export interface TrendingContent {
+  id: string;
+  artistId: string;
+  artistName: string;
+  artistAvatar: string;
+  title: string;
+  type: 'music' | 'video' | 'post';
+  thumbnail?: string;
+  engagement: string;
+  timestamp: string;
 }
 
 // Event Type

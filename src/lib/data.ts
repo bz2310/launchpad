@@ -6,6 +6,7 @@ import {
   chatConversations,
   genres,
   trendingTags,
+  trendingContent,
   liveEvents,
   badgeDefinitions,
 } from '@/data/mock-data';
@@ -181,6 +182,10 @@ export function getGenres() {
 
 export function getTrendingTags() {
   return trendingTags;
+}
+
+export function getTrendingContent() {
+  return trendingContent;
 }
 
 export function getLiveEvents() {

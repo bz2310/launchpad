@@ -6,6 +6,7 @@ import type {
   ChatConversation,
   Genre,
   TrendingTag,
+  TrendingContent,
   LiveEvent,
   BadgeDefinition,
 } from '@/types';
@@ -563,12 +564,12 @@ export const chatConversations: ChatConversation[] = [
 
 // Genres
 export const genres: Genre[] = [
-  { name: 'Electronic', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', artistCount: '2.4K' },
-  { name: 'Hip-Hop', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', artistCount: '3.1K' },
-  { name: 'Indie', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', artistCount: '1.8K' },
-  { name: 'R&B', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', artistCount: '1.5K' },
-  { name: 'Pop', gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', artistCount: '4.2K' },
-  { name: 'Rock', gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', artistCount: '2.1K' },
+  { name: 'Electronic', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', artistCount: '2.4K', image: 'https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?w=400&h=300&fit=crop' },
+  { name: 'Hip-Hop', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', artistCount: '3.1K', image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop' },
+  { name: 'Indie', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', artistCount: '1.8K', image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=300&fit=crop' },
+  { name: 'R&B', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', artistCount: '1.5K', image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=300&fit=crop' },
+  { name: 'Pop', gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', artistCount: '4.2K', image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=400&h=300&fit=crop' },
+  { name: 'Rock', gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', artistCount: '2.1K', image: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=400&h=300&fit=crop' },
 ];
 
 // Trending Tags
@@ -577,6 +578,54 @@ export const trendingTags: TrendingTag[] = [
   { tag: '#IndieArtists', posts: '8.7K', trending: true },
   { tag: '#BehindTheMusic', posts: '5.2K', trending: false },
   { tag: '#SupportLocal', posts: '3.9K', trending: true },
+];
+
+// Trending Content (from artists you don't support)
+export const trendingContent: TrendingContent[] = [
+  {
+    id: 'trending_001',
+    artistId: 'artist_006',
+    artistName: 'Dua Lipa',
+    artistAvatar: 'https://i.scdn.co/image/ab6761610000e5eb1bbee4a02f85ecc58d385c3e',
+    title: 'Training Season (Official Video)',
+    type: 'video',
+    thumbnail: 'https://picsum.photos/seed/dualipa1/400/225',
+    engagement: '2.4M views',
+    timestamp: '2 days ago',
+  },
+  {
+    id: 'trending_002',
+    artistId: 'artist_007',
+    artistName: 'Drake',
+    artistAvatar: 'https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9',
+    title: 'New single dropping this Friday...',
+    type: 'post',
+    thumbnail: 'https://picsum.photos/seed/drake1/400/300',
+    engagement: '156K likes',
+    timestamp: '5 hours ago',
+  },
+  {
+    id: 'trending_003',
+    artistId: 'artist_006',
+    artistName: 'Dua Lipa',
+    artistAvatar: 'https://i.scdn.co/image/ab6761610000e5eb1bbee4a02f85ecc58d385c3e',
+    title: 'Illusion',
+    type: 'music',
+    thumbnail: 'https://picsum.photos/seed/dualipa2/400/400',
+    engagement: '890K streams',
+    timestamp: '1 week ago',
+  },
+  {
+    id: 'trending_004',
+    artistId: 'artist_007',
+    artistName: 'Drake',
+    artistAvatar: 'https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9',
+    title: 'Studio session with the team',
+    type: 'video',
+    thumbnail: 'https://picsum.photos/seed/drake2/400/225',
+    engagement: '1.2M views',
+    timestamp: '3 days ago',
+  },
 ];
 
 // Live Events

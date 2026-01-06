@@ -1,7 +1,7 @@
 'use client';
 
 import { MainLayout } from '@/components/layout';
-import { getRisingStars, getSuggestedArtists, getGenres, getTrendingTags, getFeaturedArtist, getCurrentUser } from '@/lib/data';
+import { getRisingStars, getSuggestedArtists, getGenres, getTrendingContent, getFeaturedArtist, getCurrentUser } from '@/lib/data';
 import Link from 'next/link';
 
 export default function ExplorePage() {
@@ -9,7 +9,7 @@ export default function ExplorePage() {
   const risingStars = getRisingStars();
   const suggestedArtists = getSuggestedArtists();
   const genres = getGenres();
-  const trendingTags = getTrendingTags();
+  const trendingContent = getTrendingContent();
   const user = getCurrentUser();
 
   const relationship = user.supportRelationships?.[featuredArtist?.id || ''];
@@ -85,11 +85,17 @@ export default function ExplorePage() {
             <div
               key={genre.name}
               className="genre-card"
-              style={{ background: genre.gradient }}
+              style={{
+                backgroundImage: genre.image ? `url(${genre.image})` : undefined,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
             >
-              <span className="genre-icon">🎵</span>
-              <h4>{genre.name}</h4>
-              <p>{genre.artistCount} artists</p>
+              <div className="genre-card-overlay" style={{ background: genre.gradient }} />
+              <div className="genre-card-content">
+                <h4>{genre.name}</h4>
+                <p>{genre.artistCount} artists</p>
+              </div>
             </div>
           ))}
         </div>
@@ -149,14 +155,33 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      {/* Trending Topics */}
+      {/* Trending Content */}
       <div className="explore-section">
         <h2 className="explore-section-title">Trending Right Now</h2>
-        <div className="trending-tags">
-          {trendingTags.map((tag) => (
-            <a key={tag.tag} href="#" className="trending-tag">
-              {tag.tag} <span>{tag.posts}</span>
-            </a>
+        <div className="trending-content-grid">
+          {trendingContent.map((content) => (
+            <Link key={content.id} href={`/artist/${content.artistId}`} className="trending-content-card">
+              {content.thumbnail && (
+                <div className="trending-content-thumbnail">
+                  <img src={content.thumbnail} alt={content.title} />
+                  <span className={`trending-content-type ${content.type}`}>
+                    {content.type === 'music' ? '♪' : content.type === 'video' ? '▶' : '✎'}
+                  </span>
+                </div>
+              )}
+              <div className="trending-content-info">
+                <div className="trending-content-artist">
+                  <img src={content.artistAvatar} alt={content.artistName} />
+                  <span>{content.artistName}</span>
+                </div>
+                <h4>{content.title}</h4>
+                <p className="trending-content-meta">
+                  <span>{content.engagement}</span>
+                  <span>•</span>
+                  <span>{content.timestamp}</span>
+                </p>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
