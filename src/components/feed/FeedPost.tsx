@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { getArtist } from '@/lib/data';
+import { getArtist, getGoal } from '@/lib/data';
 import { formatNumber } from '@/lib/utils';
 import type { Post } from '@/types';
 
@@ -13,6 +13,9 @@ interface FeedPostProps {
 export function FeedPost({ post }: FeedPostProps) {
   const artist = getArtist(post.artistId);
   if (!artist) return null;
+
+  // Get linked goal if any
+  const linkedGoal = post.goalId ? getGoal(post.goalId) : null;
 
   // Map post type to badge class
   const getPostTypeBadge = () => {
@@ -45,6 +48,19 @@ export function FeedPost({ post }: FeedPostProps) {
           {post.tierExclusive && (
             <span className={`tier-badge ${post.tierExclusive}`}>
               {post.tierExclusive === 'supporters' ? 'Supporters' : 'Superfans'}
+            </span>
+          )}
+          {linkedGoal && (
+            <span
+              className="goal-badge"
+              style={{ '--goal-color': linkedGoal.color || '#8b2bff' } as React.CSSProperties}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
+              {linkedGoal.title}
             </span>
           )}
         </div>

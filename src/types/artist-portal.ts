@@ -102,6 +102,9 @@ export interface ContentItem extends DatabaseRecord {
   tags: string[];
   duration?: number; // seconds for audio/video
 
+  // Goal linkage
+  goalId?: string;
+
   // Analytics (denormalized for quick access)
   viewCount: number;
   likeCount: number;

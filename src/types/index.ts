@@ -181,6 +181,7 @@ export interface Post {
   comments: number;
   reposts: number;
   tierExclusive?: string;
+  goalId?: string;
 }
 
 // Community Types

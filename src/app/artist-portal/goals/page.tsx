@@ -157,10 +157,10 @@ export default function GoalsPage() {
               </span>
             </div>
           </div>
-          <button className="goals-create-btn">
+          <Link href="/artist-portal/goals/new" className="goals-create-btn">
             <PlusIcon />
             New Goal
-          </button>
+          </Link>
         </div>
 
         {/* Filter Tabs */}
@@ -198,10 +198,10 @@ export default function GoalsPage() {
               <TargetIcon />
               <h3>No goals yet</h3>
               <p>Create your first goal to start engaging your fans with campaigns and rewards.</p>
-              <button className="goals-create-btn-secondary">
+              <Link href="/artist-portal/goals/new" className="goals-create-btn-secondary">
                 <PlusIcon />
                 Create Goal
-              </button>
+              </Link>
             </div>
           ) : (
             filteredGoals.map(goal => (

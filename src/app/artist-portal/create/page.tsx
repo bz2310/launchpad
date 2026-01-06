@@ -1178,7 +1178,7 @@ function CreatePageContent() {
             )}
 
             {/* Monetization/Access indicators below content */}
-            {(monetization !== 'included' || stagedRelease) && (
+            {(monetization !== 'included' || stagedRelease || selectedGoalId) && (
               <div className="preview-indicators">
                 {monetization === 'paid' && (
                   <div className="indicator paid">
@@ -1208,6 +1208,22 @@ function CreatePageContent() {
                     <span>{stagedTier === 'superfan' ? 'Superfans' : 'Supporters'} get {stagedHours}h early access</span>
                   </div>
                 )}
+                {selectedGoalId && (() => {
+                  const selectedGoal = activeGoals.find(g => g.id === selectedGoalId);
+                  if (!selectedGoal) return null;
+                  const progress = Math.round((selectedGoal.currentValue / selectedGoal.targetValue) * 100);
+                  const roleLabels = { cta: 'CTA', update: 'Update', reward: 'Reward' };
+                  return (
+                    <div className="indicator goal" style={{ '--goal-color': selectedGoal.color || '#8b2bff' } as React.CSSProperties}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <circle cx="12" cy="12" r="6" />
+                        <circle cx="12" cy="12" r="2" />
+                      </svg>
+                      <span>{selectedGoal.title} • {roleLabels[dropRole]} • {progress}%</span>
+                    </div>
+                  );
+                })()}
               </div>
             )}
 

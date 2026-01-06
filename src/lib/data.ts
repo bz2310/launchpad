@@ -132,6 +132,7 @@ export function getFeedPosts(): Post[] {
     comments: content.commentCount,
     reposts: content.shareCount,
     tierExclusive: content.accessLevel !== 'public' ? content.accessLevel : undefined,
+    goalId: content.goalId,
   }));
 }
 
