@@ -15818,8 +15818,9 @@ a.leaderboard-item {
    ===================== */
 
 .goals-page {
-    max-width: 100%;
-    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
 .goals-header {
@@ -16417,7 +16418,9 @@ a.leaderboard-item {
    ===================== */
 
 .new-goal-page {
-    max-width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
 .back-link {
@@ -16774,7 +16777,9 @@ a.leaderboard-item {
    ===================== */
 
 .goal-detail-page {
-    max-width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
 .goal-detail-header {
