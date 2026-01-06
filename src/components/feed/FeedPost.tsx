@@ -60,20 +60,6 @@ export function FeedPost({ post }: FeedPostProps) {
               {post.tierExclusive === 'supporters' ? 'Supporters' : 'Superfans'}
             </span>
           )}
-          {linkedGoal && (
-            <button
-              className="goal-badge"
-              style={{ '--goal-color': linkedGoal.color || '#8b2bff' } as React.CSSProperties}
-              onClick={handleGoalClick}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="12" r="6" />
-                <circle cx="12" cy="12" r="2" />
-              </svg>
-              {linkedGoal.title}
-            </button>
-          )}
         </div>
 
       {/* Content */}
@@ -136,6 +122,33 @@ export function FeedPost({ post }: FeedPostProps) {
             <polyline points="22 4 12 14.01 9 11.01" />
           </svg>
           Milestone Reached!
+        </div>
+      )}
+
+      {/* Goal Progress */}
+      {linkedGoal && (
+        <div
+          className="post-goal-section"
+          style={{ '--goal-color': linkedGoal.color || '#8b2bff' } as React.CSSProperties}
+          onClick={handleGoalClick}
+        >
+          <div className="post-goal-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="12" r="6" />
+              <circle cx="12" cy="12" r="2" />
+            </svg>
+            <span className="post-goal-title">{linkedGoal.title}</span>
+            <span className="post-goal-percent">
+              {Math.round((linkedGoal.currentValue / linkedGoal.targetValue) * 100)}%
+            </span>
+          </div>
+          <div className="post-goal-bar">
+            <div
+              className="post-goal-fill"
+              style={{ width: `${Math.min(100, (linkedGoal.currentValue / linkedGoal.targetValue) * 100)}%` }}
+            />
+          </div>
         </div>
       )}
 

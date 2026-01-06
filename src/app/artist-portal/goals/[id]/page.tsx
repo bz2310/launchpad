@@ -220,7 +220,6 @@ export default async function GoalDetailPage({ params }: { params: Promise<{ id:
                 <div
                   key={unlock.id}
                   className={`goal-detail-milestone ${unlock.isUnlocked ? 'unlocked' : ''}`}
-                  style={{ left: `${unlock.threshold}%` }}
                 >
                   <div className="goal-detail-milestone-marker">
                     {unlock.isUnlocked ? <CheckIcon /> : <span>{unlock.threshold}%</span>}
