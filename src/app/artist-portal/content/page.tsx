@@ -51,19 +51,51 @@ export default function ContentPage() {
     return content.filter(item => item.status === 'scheduled' && item.scheduledFor);
   }, [content]);
 
-  // Generate week days for calendar
-  const getWeekDays = () => {
+  // Generate month days for calendar
+  const getMonthDays = () => {
     const today = new Date();
-    const days = [];
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      days.push(date);
+    const year = today.getFullYear();
+    const month = today.getMonth();
+
+    // Get first day of month and last day of month
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    // Get the day of week for the first day (0 = Sunday)
+    const startDayOfWeek = firstDay.getDay();
+
+    // Get total days in current month
+    const totalDays = lastDay.getDate();
+
+    // Calculate how many days we need from next month to complete the grid
+    const totalCells = Math.ceil((startDayOfWeek + totalDays) / 7) * 7;
+    const daysFromNextMonth = totalCells - startDayOfWeek - totalDays;
+
+    const days: { date: Date; isCurrentMonth: boolean }[] = [];
+
+    // Previous month days
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+      const date = new Date(year, month, -i);
+      days.push({ date, isCurrentMonth: false });
     }
+
+    // Current month days
+    for (let i = 1; i <= totalDays; i++) {
+      const date = new Date(year, month, i);
+      days.push({ date, isCurrentMonth: true });
+    }
+
+    // Next month days
+    for (let i = 1; i <= daysFromNextMonth; i++) {
+      const date = new Date(year, month + 1, i);
+      days.push({ date, isCurrentMonth: false });
+    }
+
     return days;
   };
 
-  const weekDays = getWeekDays();
+  const monthDays = getMonthDays();
+  const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   const getDropsForDay = (date: Date) => {
     return scheduledContent.filter(item => {
@@ -71,10 +103,6 @@ export default function ContentPage() {
       const schedDate = new Date(item.scheduledFor);
       return schedDate.toDateString() === date.toDateString();
     });
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
 
   const toggleSelectItem = (id: string) => {
@@ -339,68 +367,54 @@ export default function ContentPage() {
               </div>
             )}
 
-            {/* Week Calendar */}
-            <div className="week-calendar">
+            {/* Month Calendar */}
+            <div className="month-calendar">
               <div className="calendar-header">
-                <h3>This Week</h3>
-                <div className="calendar-nav">
-                  <button className="calendar-nav-btn" disabled>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="15 18 9 12 15 6" />
-                    </svg>
-                  </button>
-                  <span className="calendar-range">
-                    {formatDate(weekDays[0])} - {formatDate(weekDays[6])}
-                  </span>
-                  <button className="calendar-nav-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  </button>
-                </div>
+                <h3>This Month</h3>
+                <span className="calendar-month-label">{currentMonth}</span>
               </div>
 
-              <div className="calendar-grid">
-                {weekDays.map((day, index) => {
-                  const drops = getDropsForDay(day);
-                  const isToday = day.toDateString() === new Date().toDateString();
+              {/* Day headers */}
+              <div className="calendar-weekdays">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="weekday-header">{day}</div>
+                ))}
+              </div>
+
+              <div className="calendar-month-grid">
+                {monthDays.map((dayInfo, index) => {
+                  const drops = getDropsForDay(dayInfo.date);
+                  const isToday = dayInfo.date.toDateString() === new Date().toDateString();
 
                   return (
-                    <div key={index} className={`calendar-day ${isToday ? 'today' : ''}`}>
-                      <div className="day-header">
-                        <span className="day-name">{day.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                        <span className="day-number">{day.getDate()}</span>
+                    <div
+                      key={index}
+                      className={`calendar-month-day ${isToday ? 'today' : ''} ${!dayInfo.isCurrentMonth ? 'other-month' : ''}`}
+                    >
+                      <div className="month-day-header">
+                        <span className="month-day-number">{dayInfo.date.getDate()}</span>
                       </div>
-                      <div className="day-content">
-                        {drops.length > 0 ? (
-                          drops.map(drop => (
-                            <div key={drop.id} className={`calendar-drop ${drop.type}`}>
-                              <span className="drop-type-icon">
-                                {drop.type === 'music' && '🎵'}
-                                {drop.type === 'video' && '🎬'}
-                                {drop.type === 'post' && '📝'}
-                                {drop.type === 'image' && '🖼️'}
-                              </span>
-                              <span className="drop-title">{drop.title}</span>
-                              {drop.scheduledFor && (
-                                <span className="drop-time">
-                                  {new Date(drop.scheduledFor).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                                </span>
-                              )}
-                            </div>
-                          ))
-                        ) : (
-                          <div className="no-drops">
-                            <span>No drops</span>
+                      <div className="month-day-content">
+                        {drops.slice(0, 2).map(drop => (
+                          <div key={drop.id} className={`calendar-drop-mini ${drop.type}`}>
+                            <span className="drop-type-icon-mini">
+                              {drop.type === 'music' && '🎵'}
+                              {drop.type === 'video' && '🎬'}
+                              {drop.type === 'post' && '📝'}
+                              {drop.type === 'image' && '🖼️'}
+                            </span>
+                            <span className="drop-title-mini">{drop.title}</span>
                           </div>
+                        ))}
+                        {drops.length > 2 && (
+                          <span className="more-drops">+{drops.length - 2} more</span>
                         )}
                       </div>
-                      <button className="add-drop-btn" onClick={() => window.location.href = '/artist-portal/create'}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                      </button>
+                      {dayInfo.isCurrentMonth && (
+                        <button className="add-drop-btn-mini" onClick={() => window.location.href = '/artist-portal/create'}>
+                          +
+                        </button>
+                      )}
                     </div>
                   );
                 })}
