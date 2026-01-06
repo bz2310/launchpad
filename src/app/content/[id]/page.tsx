@@ -1,5 +1,5 @@
 import { content as artistContent } from '@/data/artist-portal-data';
-import { artists } from '@/data/mock-data';
+import { getArtist } from '@/lib/data';
 import ContentDetailClient from './ContentDetailClient';
 
 // Generate static params for all content items
@@ -18,7 +18,7 @@ export default async function ContentDetailPage({ params }: ContentDetailPagePro
 
   // Fetch data at build time (server component)
   const content = artistContent.find(c => c.id === id);
-  const artist = artists['artist_001']; // All content belongs to Julia Michaels
+  const artist = getArtist('artist_001'); // All content belongs to Jeremy Elliot
 
   return <ContentDetailClient content={content} artist={artist} />;
 }
