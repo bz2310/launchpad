@@ -452,7 +452,19 @@ export const content: ContentItem[] = [
     id: 'content_012',
     type: 'post',
     title: 'New Goal: Album Pre-Save Campaign Launched!',
-    description: 'Big news! I\'m launching an Album Pre-Save Campaign with exclusive rewards for everyone who joins. Pre-save the EP and help unlock album art reveals, the track list, a bonus track, and even a signed digital booklet. Let\'s do this together!',
+    description: `Big news! I'm launching an Album Pre-Save Campaign and I need YOUR help to make this happen!
+
+Here's what we can unlock together as we hit each milestone:
+
+🎨 25% - Album Art Reveal: Be the first to see the official album artwork before anyone else
+
+📋 50% - Track List Reveal: Get the complete track list with descriptions of each song and the stories behind them
+
+🎵 75% - Exclusive Bonus Track: Unlock a never-before-heard bonus track only available to pre-savers (supporters only!)
+
+📝 100% - Signed Digital Booklet: Receive a digital booklet with exclusive photos, handwritten notes, and lyrics
+
+Every pre-save counts! Let's do this together and make this album release unforgettable. Click the goal below to join the campaign!`,
     status: 'published',
     accessLevel: 'public',
     publishedAt: daysAgo(85),
