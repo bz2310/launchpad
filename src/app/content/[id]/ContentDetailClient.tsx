@@ -2,18 +2,15 @@
 
 import Link from 'next/link';
 import { MainLayout } from '@/components/layout';
-import { getContentById, getArtist } from '@/lib/data';
+import type { ContentItem } from '@/types/artist-portal';
+import type { Artist } from '@/types';
 
 interface ContentDetailClientProps {
-  contentId: string;
+  content: ContentItem | undefined;
+  artist: Artist | undefined;
 }
 
-export default function ContentDetailClient({ contentId }: ContentDetailClientProps) {
-  const content = getContentById(contentId);
-
-  // Content belongs to artist_001 (Julia Michaels)
-  const artist = getArtist('artist_001');
-
+export default function ContentDetailClient({ content, artist }: ContentDetailClientProps) {
   if (!content) {
     return (
       <MainLayout title="Content Not Found">
