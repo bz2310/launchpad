@@ -58,29 +58,17 @@ export default function ArtistPortalPage() {
     })
     .slice(0, 4);
 
-  // Get scheduled drops (upcoming)
+  // Get scheduled drops (upcoming) - excluding events
   const scheduledDrops = content
-    .filter(item => item.status === 'scheduled' && item.scheduledFor)
+    .filter(item => item.status === 'scheduled' && item.scheduledFor && item.type !== 'event')
     .sort((a, b) => new Date(a.scheduledFor!).getTime() - new Date(b.scheduledFor!).getTime())
     .slice(0, 4);
 
-  // Mock upcoming events data (could be extended to pull from a real events source)
-  const upcomingEvents = [
-    {
-      id: 'event_001',
-      title: 'Album Listening Party',
-      type: 'live_stream',
-      scheduledFor: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-      description: 'Exclusive first listen with Q&A',
-    },
-    {
-      id: 'event_002',
-      title: 'Los Angeles Show',
-      type: 'concert',
-      scheduledFor: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-      description: 'The Troubadour',
-    },
-  ];
+  // Get upcoming events from content data
+  const upcomingEvents = content
+    .filter(item => item.type === 'event' && item.status === 'scheduled' && item.scheduledFor)
+    .sort((a, b) => new Date(a.scheduledFor!).getTime() - new Date(b.scheduledFor!).getTime())
+    .slice(0, 4);
 
   const formatScheduledDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -130,33 +118,33 @@ export default function ArtistPortalPage() {
     }
   };
 
-  const getEventTypeIcon = (type: string) => {
-    switch (type) {
-      case 'live_stream':
-        return (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M23 7l-7 5 7 5V7z" />
-            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-          </svg>
-        );
-      case 'concert':
-        return (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M9 18V5l12-2v13" />
-            <circle cx="6" cy="18" r="3" />
-            <circle cx="18" cy="16" r="3" />
-          </svg>
-        );
-      default:
-        return (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-        );
+  const getEventTypeIcon = (tags: string[]) => {
+    // Check tags to determine event type icon
+    if (tags.some(t => t.includes('live_stream') || t.includes('listening'))) {
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M23 7l-7 5 7 5V7z" />
+          <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+        </svg>
+      );
     }
+    if (tags.some(t => t.includes('concert') || t.includes('live show'))) {
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M9 18V5l12-2v13" />
+          <circle cx="6" cy="18" r="3" />
+          <circle cx="18" cy="16" r="3" />
+        </svg>
+      );
+    }
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+      </svg>
+    );
   };
 
   return (
@@ -354,15 +342,15 @@ export default function ArtistPortalPage() {
                   {upcomingEvents.map(event => (
                     <Link
                       key={event.id}
-                      href="/artist-portal/community"
+                      href={`/artist-portal/create?edit=${event.id}`}
                       className="upcoming-item"
                     >
-                      <span className="upcoming-icon event-icon">{getEventTypeIcon(event.type)}</span>
+                      <span className="upcoming-icon event-icon">{getEventTypeIcon(event.tags)}</span>
                       <div className="upcoming-details">
                         <span className="upcoming-title">{event.title}</span>
                         <span className="upcoming-meta">{event.description}</span>
                       </div>
-                      <span className="upcoming-date">{formatScheduledDate(event.scheduledFor)}</span>
+                      <span className="upcoming-date">{formatScheduledDate(event.scheduledFor!)}</span>
                     </Link>
                   ))}
                 </div>

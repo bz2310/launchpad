@@ -80,7 +80,7 @@ export interface FanSegmentFilter {
 // Content Management Types
 // =====================
 
-export type ContentType = 'music' | 'video' | 'post' | 'image';
+export type ContentType = 'music' | 'video' | 'post' | 'image' | 'event';
 export type ContentStatus = 'draft' | 'scheduled' | 'published' | 'archived';
 export type AccessLevel = 'public' | 'supporters' | 'superfans';
 

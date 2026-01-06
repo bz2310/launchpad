@@ -99,8 +99,26 @@ function CreatePageContent() {
           'video': 'video',
           'post': 'post',
           'image': 'post',
+          'event': 'event',
         };
         setDropType(typeMap[contentItem.type] || 'audio');
+
+        // For events, populate event-specific fields from tags
+        if (contentItem.type === 'event') {
+          // Check tags for event type
+          if (contentItem.tags.some(t => t.includes('live_stream') || t.includes('listening') || t.includes('virtual'))) {
+            setEventType('virtual');
+          } else if (contentItem.tags.some(t => t.includes('concert') || t.includes('live show'))) {
+            setEventType('in_person');
+          }
+
+          // Set event date/time from scheduledFor if available
+          if (contentItem.scheduledFor) {
+            const schedDate = new Date(contentItem.scheduledFor);
+            setEventDate(schedDate.toISOString().split('T')[0]);
+            setEventTime(schedDate.toTimeString().slice(0, 5));
+          }
+        }
 
         // Set access level
         if (contentItem.accessLevel === 'public') {

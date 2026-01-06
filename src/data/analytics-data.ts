@@ -1009,6 +1009,7 @@ const buildDropsOverview = (days: number): DropsOverviewMetrics => {
       video: { count: drops.filter(d => d.type === 'video').length, views: 24780, engagement: 4800, revenue: 0, avgPerformance: 78 },
       post: { count: drops.filter(d => d.type === 'post').length, views: 14000, engagement: 3200, revenue: 0, avgPerformance: 72 },
       image: { count: 0, views: 0, engagement: 0, revenue: 0, avgPerformance: 0 },
+      event: { count: drops.filter(d => d.type === 'event').length, views: 0, engagement: 0, revenue: 0, avgPerformance: 0 },
     },
     byAccessLevel: {
       public: { count: drops.filter(d => d.accessLevel === 'public').length, views: 73570, conversionRate: 0.15 },
