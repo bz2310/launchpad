@@ -484,20 +484,23 @@ export const notifications: Notification[] = [
     fromArtistId: 'artist_001',
     message: 'dropped a new track "Midnight Dreams"',
     timestamp: '2 hours ago',
+    contentId: 'content_001',
   },
   {
     id: 'notif_002',
     type: 'drop',
-    fromArtistId: 'artist_002',
+    fromArtistId: 'artist_001',
     message: 'posted exclusive behind-the-scenes content',
     timestamp: '5 hours ago',
+    contentId: 'content_003',
   },
   {
     id: 'notif_003',
     type: 'drop',
-    fromArtistId: 'artist_003',
+    fromArtistId: 'artist_001',
     message: 'released a new video "Summer Vibes"',
     timestamp: '1 day ago',
+    contentId: 'content_002',
   },
   {
     id: 'notif_004',
@@ -509,9 +512,10 @@ export const notifications: Notification[] = [
   {
     id: 'notif_005',
     type: 'drop',
-    fromArtistId: 'artist_004',
+    fromArtistId: 'artist_001',
     message: 'shared new photos from the studio',
     timestamp: '2 days ago',
+    contentId: 'content_004',
   },
 ];
 

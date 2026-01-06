@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { getArtistDashboardData } from '@/lib/data';
+import { getArtistDashboardData, getArtistMessages } from '@/lib/data';
 
 // Icons as separate components for cleaner code
 const CreateIcon = () => (
@@ -89,10 +89,10 @@ interface NavItem {
   name: string;
   href: string;
   icon: React.ReactNode;
-  badge?: string;
+  badge?: number;
 }
 
-const navItems: NavItem[] = [
+const getNavItems = (unreadMessages: number): NavItem[] => [
   {
     name: 'Home',
     href: '/artist-portal',
@@ -117,7 +117,7 @@ const navItems: NavItem[] = [
     name: 'Messages',
     href: '/artist-portal/messages',
     icon: <MessagesIcon />,
-    badge: '12',
+    badge: unreadMessages > 0 ? unreadMessages : undefined,
   },
   {
     name: 'Analytics',
@@ -141,6 +141,8 @@ export function ArtistSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dashboardData = getArtistDashboardData();
   const artist = dashboardData.artist;
+  const messages = getArtistMessages();
+  const unreadCount = messages.filter(m => m.unread).length;
 
   const isNavItemActive = (item: NavItem) => {
     if (item.href === '/artist-portal') {
@@ -177,7 +179,7 @@ export function ArtistSidebar() {
 
       {/* Navigation */}
       <nav className="nav-menu">
-        {navItems.map((item) => {
+        {getNavItems(unreadCount).map((item) => {
           const isActive = isNavItemActive(item);
           return (
             <Link
@@ -188,8 +190,8 @@ export function ArtistSidebar() {
             >
               {item.icon}
               {!isCollapsed && <span>{item.name}</span>}
-              {item.badge && !isCollapsed && <span className="nav-badge">{item.badge}</span>}
-              {item.badge && isCollapsed && <span className="nav-badge-dot" />}
+              {item.badge !== undefined && !isCollapsed && <span className="nav-badge">{item.badge}</span>}
+              {item.badge !== undefined && isCollapsed && <span className="nav-badge-dot" />}
             </Link>
           );
         })}

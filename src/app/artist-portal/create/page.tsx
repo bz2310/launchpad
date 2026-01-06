@@ -892,156 +892,199 @@ function CreatePageContent() {
         <div className="preview-panel">
           <div className="preview-header">
             <h3>Preview</h3>
+            <span className="preview-subtitle">How fans will see this drop</span>
           </div>
 
-          <div className={`preview-card ${accessType !== 'public' ? 'exclusive' : ''} ${monetization === 'paid' ? 'paid-content' : ''} ${monetization === 'limited' ? 'limited-content' : ''}`}>
-            {/* Access Badge Ribbon */}
-            {accessType !== 'public' && (
-              <div className={`preview-access-ribbon ${accessType === 'tier' && selectedTiers.includes('superfan') ? 'superfan' : accessType === 'tier' ? 'supporter' : accessType}`}>
-                {accessType === 'subscribers' && 'Subscribers Only'}
-                {accessType === 'tier' && selectedTiers.includes('superfan') && !selectedTiers.includes('supporter') && 'Superfans Only'}
-                {accessType === 'tier' && selectedTiers.includes('supporter') && !selectedTiers.includes('superfan') && 'Supporters Only'}
-                {accessType === 'tier' && selectedTiers.includes('supporter') && selectedTiers.includes('superfan') && 'Supporter+'}
-                {accessType === 'rank' && `Top ${rankValue}${rankType === 'percent' ? '%' : ''} Fans`}
-                {accessType === 'segment' && segments.find(s => s.id === selectedSegment)?.label}
+          {/* Feed Item Preview - matches actual fan feed appearance */}
+          <div className="feed-item preview-feed-item">
+            {/* Post Header */}
+            <div className="post-header">
+              <img src={artist.avatar} alt={artist.name} className="avatar-small" />
+              <div className="post-info">
+                <h3>
+                  {artist.name}
+                  <span className="verified-small">✓</span>
+                </h3>
+                <span className="handle">@{artist.name.toLowerCase().replace(/\s+/g, '')}</span>
+                <span className="timestamp">
+                  {timing === 'scheduled' && scheduleDate
+                    ? `Scheduled: ${new Date(scheduleDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                    : 'Just now'}
+                </span>
+              </div>
+              <span className={`post-type-badge ${dropType === 'audio' ? 'music' : dropType}`}>
+                {dropType === 'audio' ? 'Music' : dropType === 'video' ? 'Video' : dropType === 'post' ? 'Post' : dropType === 'event' ? 'Event' : dropType === 'poll' ? 'Poll' : dropType === 'merch' ? 'Merch' : 'Post'}
+              </span>
+              {accessType !== 'public' && (
+                <span className={`tier-badge ${accessType === 'tier' && selectedTiers.includes('superfan') ? 'superfans' : 'supporters'}`}>
+                  {accessType === 'subscribers' && 'Subscribers'}
+                  {accessType === 'tier' && selectedTiers.includes('superfan') && !selectedTiers.includes('supporter') && 'Superfans'}
+                  {accessType === 'tier' && selectedTiers.includes('supporter') && 'Supporters'}
+                  {accessType === 'rank' && `Top ${rankValue}${rankType === 'percent' ? '%' : ''}`}
+                  {accessType === 'segment' && 'Exclusive'}
+                </span>
+              )}
+            </div>
+
+            {/* Post Content (description) */}
+            <p className="post-content">{description || 'Add a description for your drop...'}</p>
+
+            {/* Media Content */}
+            {dropType === 'audio' && (
+              <div className="music-player">
+                <img
+                  src={`https://api.dicebear.com/7.x/shapes/svg?seed=${title || 'preview'}`}
+                  alt="Track art"
+                  className="track-art"
+                />
+                <div className="track-info">
+                  <h4>{title || 'Untitled Track'}</h4>
+                  <p>{artist.name}</p>
+                  <div className="waveform">
+                    {[...Array(10)].map((_, i) => (
+                      <div key={i} className="waveform-bar"></div>
+                    ))}
+                  </div>
+                </div>
+                <button className="play-btn">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                </button>
               </div>
             )}
 
-            <div className="preview-card-header">
-              <div className="preview-artist">
-                <img src={artist.avatar} alt={artist.name} className="preview-avatar" />
-                <div className="preview-artist-info">
-                  <span className="preview-artist-name">{artist.name}</span>
-                  <span className="preview-time">
-                    {timing === 'scheduled' && scheduleDate
-                      ? `Scheduled: ${new Date(scheduleDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-                      : 'Just now'}
-                  </span>
+            {dropType === 'video' && (
+              <div className="video-preview">
+                <div className="video-placeholder-preview">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                </div>
+                <span className="video-duration">0:00</span>
+              </div>
+            )}
+
+            {dropType === 'post' && (
+              <div className="post-text-preview">
+                <p>{title || 'Your post content will appear here...'}</p>
+              </div>
+            )}
+
+            {dropType === 'event' && (
+              <div className="event-card-preview">
+                <div className="event-image" style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)' }}></div>
+                <div className="event-details">
+                  <h3>{title || 'Event Title'}</h3>
+                  {eventDate && (
+                    <p className="event-date">
+                      {new Date(eventDate + 'T' + (eventTime || '00:00')).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: eventTime ? 'numeric' : undefined,
+                        minute: eventTime ? '2-digit' : undefined,
+                      })}
+                    </p>
+                  )}
+                  {eventLocation && <p className="event-location">{eventLocation}</p>}
+                  <button className="event-btn">Get Tickets</button>
                 </div>
               </div>
-              <div className="preview-badges">
-                <span className={`preview-type-badge ${dropType}`}>{dropType}</span>
+            )}
+
+            {dropType === 'poll' && (
+              <div className="poll-preview">
+                <h4>{title || 'Ask your fans...'}</h4>
+                {pollOptions.map((option, index) => (
+                  <div key={index} className="poll-option">
+                    <span>{option || `Option ${index + 1}`}</span>
+                    <div className="poll-bar"></div>
+                  </div>
+                ))}
+                <span className="poll-duration">
+                  {pollDuration < 24 ? `${pollDuration} hours left` : pollDuration === 24 ? '1 day left' : pollDuration === 48 ? '2 days left' : pollDuration === 72 ? '3 days left' : '1 week left'}
+                </span>
               </div>
-            </div>
-            <div className="preview-card-content">
-              {dropType === 'audio' && (
-                <div className="preview-audio">
-                  <div className="audio-waveform" />
-                  <div className="audio-controls">
-                    <button className="play-btn">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <polygon points="5 3 19 12 5 21 5 3" />
-                      </svg>
-                    </button>
-                    <div className="audio-progress">
-                      <div className="audio-bar" />
-                    </div>
-                    <span className="audio-time">0:00 / 3:42</span>
-                  </div>
-                </div>
-              )}
-              {dropType === 'video' && (
-                <div className="preview-video">
-                  <div className="video-placeholder">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
-                      <polygon points="5 3 19 12 5 21 5 3" />
-                    </svg>
-                  </div>
-                </div>
-              )}
-              {dropType === 'post' && (
-                <div className="preview-post">
-                  <div className="post-placeholder" />
-                </div>
-              )}
-              {dropType === 'merch' && (
-                <div className="preview-merch">
-                  <div className="merch-placeholder" />
+            )}
+
+            {dropType === 'merch' && (
+              <div className="merch-preview">
+                <div className="merch-image-placeholder"></div>
+                <div className="merch-details">
+                  <h4>{title || 'Merch Item'}</h4>
                   <span className="merch-price">${merchPrice.toFixed(2)}</span>
                   {merchSizes.length > 0 && (
-                    <span className="merch-sizes-preview">{merchSizes.join(' / ')}</span>
+                    <span className="merch-sizes">{merchSizes.join(' / ')}</span>
                   )}
                 </div>
-              )}
-              {dropType === 'event' && (
-                <div className="preview-event">
-                  <div className="event-placeholder" />
-                  <div className="event-preview-details">
-                    {eventDate && (
-                      <span className="event-preview-date">
-                        {new Date(eventDate + 'T' + (eventTime || '00:00')).toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: eventTime ? 'numeric' : undefined,
-                          minute: eventTime ? '2-digit' : undefined,
-                        })}
-                      </span>
-                    )}
-                    {eventLocation && <span className="event-preview-location">{eventLocation}</span>}
-                    <span className="event-preview-type">{eventType === 'in_person' ? 'In-Person' : eventType === 'virtual' ? 'Virtual' : 'Hybrid'}</span>
-                  </div>
-                </div>
-              )}
-              {dropType === 'poll' && (
-                <div className="preview-poll">
-                  {pollOptions.map((option, index) => (
-                    <div key={index} className="poll-option-preview">
-                      <span className="poll-option-text">{option || `Option ${index + 1}`}</span>
-                      <div className="poll-option-bar" />
-                    </div>
-                  ))}
-                  <span className="poll-duration-preview">
-                    {pollDuration < 24 ? `${pollDuration} hours` : pollDuration === 24 ? '1 day' : pollDuration === 48 ? '2 days' : pollDuration === 72 ? '3 days' : '1 week'}
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="preview-card-footer">
-              <h4>{title || (dropType === 'poll' ? 'Ask your fans...' : 'Untitled Drop')}</h4>
-              {dropType !== 'poll' && <p>{description || 'Add a description...'}</p>}
+              </div>
+            )}
 
-              {/* Meta info row */}
-              <div className="preview-meta-row">
-                {dropType === 'audio' && (
-                  <span className="audio-type-badge">{audioType}</span>
+            {/* Monetization/Access indicators below content */}
+            {(monetization !== 'included' || stagedRelease) && (
+              <div className="preview-indicators">
+                {monetization === 'paid' && (
+                  <div className="indicator paid">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 6v12M8 10h8M8 14h8" />
+                    </svg>
+                    <span>Unlock for ${unlockPrice.toFixed(2)}</span>
+                  </div>
                 )}
-                {dropType === 'video' && (
-                  <span className="video-type-label">{videoType.replace('_', ' ')}</span>
+                {monetization === 'limited' && (
+                  <div className="indicator limited">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    <span>Limited: {limitedQty} available</span>
+                  </div>
+                )}
+                {stagedRelease && (
+                  <div className="indicator staged">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                      <path d="M2 17l10 5 10-5" />
+                      <path d="M2 12l10 5 10-5" />
+                    </svg>
+                    <span>{stagedTier === 'superfan' ? 'Superfans' : 'Supporters'} get {stagedHours}h early access</span>
+                  </div>
                 )}
               </div>
+            )}
 
-              {/* Monetization indicator */}
-              {monetization === 'paid' && (
-                <div className="preview-monetization paid">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 6v12M8 10h8M8 14h8" />
-                  </svg>
-                  <span>Unlock for ${unlockPrice.toFixed(2)}</span>
-                </div>
-              )}
-              {monetization === 'limited' && (
-                <div className="preview-monetization limited">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  <span>Limited: {limitedQty} available</span>
-                </div>
-              )}
-
-              {/* Staged release indicator */}
-              {stagedRelease && (
-                <div className="preview-staged-release">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                    <path d="M2 17l10 5 10-5" />
-                    <path d="M2 12l10 5 10-5" />
-                  </svg>
-                  <span>{stagedTier === 'superfan' ? 'Superfans' : 'Supporters'} get {stagedHours}h early access</span>
-                </div>
-              )}
+            {/* Post Actions */}
+            <div className="post-actions">
+              <button className="action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+                <span>0</span>
+              </button>
+              <button className="action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>0</span>
+              </button>
+              <button className="action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M17 1l4 4-4 4"></path>
+                  <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                  <path d="M7 23l-4-4 4-4"></path>
+                  <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                </svg>
+                <span>0</span>
+              </button>
+              <button className="action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                  <polyline points="16 6 12 2 8 6"></polyline>
+                  <line x1="12" y1="2" x2="12" y2="15"></line>
+                </svg>
+              </button>
             </div>
           </div>
 

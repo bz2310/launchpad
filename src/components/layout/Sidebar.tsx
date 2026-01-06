@@ -2,6 +2,22 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { getCurrentUser } from '@/lib/data';
+
+const CollapseIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="11 17 6 12 11 7" />
+    <polyline points="18 17 13 12 18 7" />
+  </svg>
+);
+
+const ExpandIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="13 17 18 12 13 7" />
+    <polyline points="6 17 11 12 6 7" />
+  </svg>
+);
 
 const navItems = [
   {
@@ -57,9 +73,11 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const user = getCurrentUser();
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       {/* Logo */}
       <Link href="/" className="logo">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -67,8 +85,19 @@ export function Sidebar() {
           <rect x="12" y="4" width="8" height="24" fill="#8b2bff" />
           <rect x="20" y="8" width="8" height="20" fill="#b366ff" />
         </svg>
-        <span>Launchpad</span>
+        {!isCollapsed && <span>Launchpad</span>}
       </Link>
+
+      {/* User Profile Mini */}
+      <div className="artist-profile-mini">
+        <img src={user.avatar} alt={user.name} className="artist-mini-avatar" />
+        {!isCollapsed && (
+          <div className="artist-mini-info">
+            <span className="artist-mini-name">{user.name}</span>
+            <span className="artist-mini-handle">{user.handle}</span>
+          </div>
+        )}
+      </div>
 
       {/* Navigation */}
       <nav className="nav-menu">
@@ -79,9 +108,10 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={`nav-item ${isActive ? 'active' : ''}`}
+              title={isCollapsed ? item.name : undefined}
             >
               {item.icon}
-              <span>{item.name}</span>
+              {!isCollapsed && <span>{item.name}</span>}
             </Link>
           );
         })}
@@ -90,15 +120,28 @@ export function Sidebar() {
         <Link
           href="/artist-portal"
           className="nav-item artist-portal-link"
+          title={isCollapsed ? 'Artist Portal' : undefined}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 18V5l12-2v13" />
             <circle cx="6" cy="18" r="3" />
             <circle cx="18" cy="16" r="3" />
           </svg>
-          <span>Artist Portal</span>
+          {!isCollapsed && <span>Artist Portal</span>}
         </Link>
       </nav>
+
+      {/* Sidebar Footer */}
+      <div className="sidebar-footer">
+        <button
+          className="collapse-toggle"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {isCollapsed ? <ExpandIcon /> : <CollapseIcon />}
+          {!isCollapsed && <span>Collapse</span>}
+        </button>
+      </div>
     </aside>
   );
 }

@@ -15,10 +15,12 @@ function MessagesContent() {
   const allMessages = getArtistMessages();
 
   const [selectedChat, setSelectedChat] = useState<ArtistMessage | null>(null);
+  const [isChannelSelected, setIsChannelSelected] = useState(false);
   const [messageInput, setMessageInput] = useState('');
   const [conversations, setConversations] = useState(allMessages);
   const [filter, setFilter] = useState<MessageFilter>('all');
   const [initialized, setInitialized] = useState(false);
+  const [channelBroadcast, setChannelBroadcast] = useState('');
 
   // Initialize and update selected chat when URL changes or on mount
   useEffect(() => {
@@ -138,28 +140,6 @@ function MessagesContent() {
             )}
           </div>
 
-          {/* My Channel - Always at top */}
-          <div className="my-channel-section">
-            <div className="my-channel-item">
-              <div className="channel-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z"/>
-                </svg>
-              </div>
-              <div className="my-channel-info">
-                <h4>My Channel</h4>
-                <p>Broadcast to all your fans</p>
-              </div>
-              <button className="broadcast-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="22" y1="2" x2="11" y2="13" />
-                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                </svg>
-                New Broadcast
-              </button>
-            </div>
-          </div>
-
           {/* Filters */}
           <div className="messages-filters">
             <button
@@ -196,14 +176,47 @@ function MessagesContent() {
 
           {/* Conversation List */}
           <div className="conversations-list">
+            {/* Pinned Channel */}
+            {filter === 'all' && (
+              <div
+                className={`conversation-item channel-item pinned ${isChannelSelected ? 'active' : ''}`}
+                onClick={() => {
+                  setIsChannelSelected(true);
+                  setSelectedChat(null);
+                }}
+              >
+                <div className="conversation-avatar-wrapper">
+                  <div className="channel-avatar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  </div>
+                </div>
+                <div className="conversation-info">
+                  <div className="conversation-header">
+                    <span className="conversation-name">
+                      My Channel
+                      <svg className="pin-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/>
+                      </svg>
+                    </span>
+                    <span className="conversation-time">Broadcast</span>
+                  </div>
+                  <span className="fan-badge channel-badge">All Fans</span>
+                  <p className="conversation-preview">Send broadcasts to all your supporters</p>
+                </div>
+              </div>
+            )}
+
             {filteredConversations.map(conv => {
               const badge = getTierBadge(conv.fanTier);
               return (
                 <div
                   key={conv.id}
-                  className={`conversation-item ${selectedChat?.id === conv.id ? 'active' : ''} ${conv.unread ? 'unread' : ''}`}
+                  className={`conversation-item ${selectedChat?.id === conv.id && !isChannelSelected ? 'active' : ''} ${conv.unread ? 'unread' : ''}`}
                   onClick={() => {
                     setSelectedChat(conv);
+                    setIsChannelSelected(false);
                     markAsRead(conv.id);
                   }}
                 >
@@ -227,7 +240,7 @@ function MessagesContent() {
               );
             })}
 
-            {filteredConversations.length === 0 && (
+            {filteredConversations.length === 0 && filter !== 'all' && (
               <div className="empty-messages">
                 <p>No messages found</p>
               </div>
@@ -237,7 +250,57 @@ function MessagesContent() {
 
         {/* Chat Window */}
         <div className="chat-window-container">
-          {selectedChat ? (
+          {isChannelSelected ? (
+            <>
+              {/* Channel Header */}
+              <div className="chat-header">
+                <div className="chat-header-info">
+                  <div className="channel-avatar chat-avatar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  </div>
+                  <div className="chat-header-details">
+                    <h3>My Channel</h3>
+                    <span className="fan-badge channel-badge">Broadcast to All Fans</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Broadcast Compose */}
+              <div className="messages-container channel-compose">
+                <div className="broadcast-info">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                  </svg>
+                  <h3>Send a Broadcast</h3>
+                  <p>Your message will be sent to all your fans and supporters.</p>
+                </div>
+              </div>
+
+              {/* Broadcast Input */}
+              <div className="message-input-container">
+                <div className="input-wrapper">
+                  <textarea
+                    placeholder="Write your broadcast message..."
+                    value={channelBroadcast}
+                    onChange={(e) => setChannelBroadcast(e.target.value)}
+                    rows={3}
+                  />
+                  <button
+                    className="send-btn broadcast-send"
+                    disabled={!channelBroadcast.trim()}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="22" y1="2" x2="11" y2="13" />
+                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                    Send Broadcast
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : selectedChat ? (
             <>
               {/* Chat Header */}
               <div className="chat-header">

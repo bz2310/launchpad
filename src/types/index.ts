@@ -235,6 +235,7 @@ export interface Notification {
   message: string;
   timestamp: string;
   read?: boolean;
+  contentId?: string;
 }
 
 // Chat Types

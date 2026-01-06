@@ -1,14 +1,12 @@
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
-import { RightSidebar } from './RightSidebar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
   title: string;
-  showRightSidebar?: boolean;
 }
 
-export function MainLayout({ children, title, showRightSidebar = true }: MainLayoutProps) {
+export function MainLayout({ children, title }: MainLayoutProps) {
   return (
     <div className="container">
       <Sidebar />
@@ -18,7 +16,6 @@ export function MainLayout({ children, title, showRightSidebar = true }: MainLay
           {children}
         </div>
       </main>
-      {showRightSidebar && <RightSidebar />}
     </div>
   );
 }
