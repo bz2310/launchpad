@@ -613,11 +613,24 @@ body {
     background-color: rgba(139, 43, 255, 0.08);
 }
 
+.notification-preview {
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.notification-thumbnail {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
 .notification-arrow {
     display: flex;
     align-items: center;
     color: var(--text-secondary);
     flex-shrink: 0;
+    margin-left: 8px;
 }
 
 .notification-link .notification-arrow {
@@ -681,11 +694,42 @@ body {
 .chat-header {
     padding: 16px 20px;
     border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .chat-header h3 {
     font-size: 15px;
     font-weight: 700;
+}
+
+.chat-header-link {
+    display: block;
+    flex-shrink: 0;
+}
+
+.chat-header-link:hover .avatar-small {
+    opacity: 0.8;
+}
+
+.chat-header-name-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.chat-header-name-link:hover h3 {
+    color: var(--primary);
+}
+
+.profile-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.profile-link:hover {
+    background: rgba(139, 43, 255, 0.1);
 }
 
 .messages {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { MainLayout } from '@/components/layout';
 import { getChatConversations } from '@/lib/data';
 
@@ -17,7 +18,7 @@ export default function ChatPage() {
   const [messageInput, setMessageInput] = useState('');
   const [chatMessages, setChatMessages] = useState<Record<string, { from: string; text: string }[]>>({
     'channel_001': [
-      { from: 'artist', text: '🎉 Big announcement: New album dropping next week!' },
+      { from: 'artist', text: '🎉 Big announcement: EP "II" listening party this weekend!' },
       { from: 'artist', text: 'Pre-save link coming tomorrow. Thank you all for the support!' },
     ],
     'chat_001': [
@@ -36,6 +37,10 @@ export default function ChatPage() {
     'chat_003': [
       { from: 'user', text: 'Your latest track is fire! 🔥' },
       { from: 'artist', text: 'Your feedback means everything 🙏' },
+    ],
+    'channel_005': [
+      { from: 'artist', text: 'New dark pop single dropping tomorrow 🖤' },
+      { from: 'artist', text: 'This one is different. Prepare yourselves.' },
     ],
   });
 
@@ -101,9 +106,13 @@ export default function ChatPage() {
           {activeChat ? (
             <>
               <div className="chat-header">
-                <img src={activeChat.recipientAvatar} alt="" className="avatar-small" />
+                <Link href={`/artist/${activeChat.recipientId}`} className="chat-header-link">
+                  <img src={activeChat.recipientAvatar} alt="" className="avatar-small" />
+                </Link>
                 <div>
-                  <h3>{activeChat.recipientName}</h3>
+                  <Link href={`/artist/${activeChat.recipientId}`} className="chat-header-name-link">
+                    <h3>{activeChat.recipientName}</h3>
+                  </Link>
                   {activeChat.isChannel && (
                     <span className="channel-subtitle">Broadcast channel · Read only</span>
                   )}

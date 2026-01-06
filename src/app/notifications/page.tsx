@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { MainLayout } from '@/components/layout';
-import { getNotifications, getArtist } from '@/lib/data';
+import { getNotifications, getArtist, getContentById } from '@/lib/data';
 
 export default function NotificationsPage() {
   const notifications = getNotifications();
@@ -14,6 +14,8 @@ export default function NotificationsPage() {
           const artist = getArtist(notification.fromArtistId);
           if (!artist) return null;
 
+          const contentItem = notification.contentId ? getContentById(notification.contentId) : null;
+
           const content = (
             <>
               <img src={artist.avatar} alt={artist.name} className="avatar-small" />
@@ -23,6 +25,11 @@ export default function NotificationsPage() {
                 </p>
                 <span className="notification-time">{notification.timestamp}</span>
               </div>
+              {notification.contentId && contentItem && (
+                <div className="notification-preview">
+                  <img src={contentItem.thumbnailUrl} alt="" className="notification-thumbnail" />
+                </div>
+              )}
               {notification.contentId && (
                 <span className="notification-arrow">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

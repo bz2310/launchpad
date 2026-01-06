@@ -519,14 +519,14 @@ export const notifications: Notification[] = [
   },
 ];
 
-// Chat Conversations (fans chat with artists and artist channels only)
+// Chat Conversations (fans chat with artists they follow and artist channels)
 export const chatConversations: ChatConversation[] = [
   {
     id: 'channel_001',
     recipientId: 'artist_001',
-    recipientName: 'Julia Michaels Channel',
-    recipientAvatar: 'https://i.pravatar.cc/150?img=47',
-    lastMessage: '🎉 Big announcement: New album dropping next week!',
+    recipientName: 'Jeremy Elliot Channel',
+    recipientAvatar: process.env.NODE_ENV === 'production' ? '/launchpad/jeremy-elliot-profile.jpg' : '/jeremy-elliot-profile.jpg',
+    lastMessage: '🎉 Big announcement: EP "II" listening party this weekend!',
     timestamp: '1h',
     unread: true,
     isChannel: true,
@@ -534,8 +534,8 @@ export const chatConversations: ChatConversation[] = [
   {
     id: 'chat_001',
     recipientId: 'artist_001',
-    recipientName: 'Julia Michaels',
-    recipientAvatar: 'https://i.pravatar.cc/150?img=47',
+    recipientName: 'Jeremy Elliot',
+    recipientAvatar: process.env.NODE_ENV === 'production' ? '/launchpad/jeremy-elliot-profile.jpg' : '/jeremy-elliot-profile.jpg',
     lastMessage: 'Thanks for the support! New content coming soon',
     timestamp: '2h',
     unread: true,
@@ -543,8 +543,8 @@ export const chatConversations: ChatConversation[] = [
   {
     id: 'channel_002',
     recipientId: 'artist_002',
-    recipientName: 'Nova Chen Channel',
-    recipientAvatar: 'https://i.pravatar.cc/150?img=32',
+    recipientName: 'Lady Gaga Channel',
+    recipientAvatar: 'https://i.scdn.co/image/ab6761610000e5ebc8d3d98a1bccbe71393dbfbf',
     lastMessage: 'Behind the scenes from tonight\'s show 🎤',
     timestamp: '4h',
     unread: false,
@@ -552,21 +552,31 @@ export const chatConversations: ChatConversation[] = [
   },
   {
     id: 'chat_002',
-    recipientId: 'artist_002',
-    recipientName: 'Nova Chen',
-    recipientAvatar: 'https://i.pravatar.cc/150?img=32',
+    recipientId: 'artist_003',
+    recipientName: 'The Weeknd',
+    recipientAvatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/The_Weeknd_Portrait_by_Brian_Ziff.jpg/220px-The_Weeknd_Portrait_by_Brian_Ziff.jpg',
     lastMessage: 'So glad you could make it to the show!',
     timestamp: '1d',
     unread: false,
   },
   {
     id: 'chat_003',
-    recipientId: 'artist_003',
-    recipientName: 'Marcus Wright',
-    recipientAvatar: 'https://i.pravatar.cc/150?img=68',
+    recipientId: 'artist_004',
+    recipientName: 'isti',
+    recipientAvatar: 'https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?w=150&h=150&fit=crop&crop=face',
     lastMessage: 'Your feedback means everything 🙏',
     timestamp: '3d',
     unread: false,
+  },
+  {
+    id: 'channel_005',
+    recipientId: 'artist_005',
+    recipientName: 'PRETTY BLEAK Channel',
+    recipientAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
+    lastMessage: 'New dark pop single dropping tomorrow 🖤',
+    timestamp: '5h',
+    unread: true,
+    isChannel: true,
   },
 ];
 
