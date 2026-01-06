@@ -350,6 +350,13 @@ body {
     font-weight: 600;
     background: color-mix(in srgb, var(--goal-color, #8b2bff) 20%, transparent);
     color: var(--goal-color, #8b2bff);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.goal-badge:hover {
+    background: color-mix(in srgb, var(--goal-color, #8b2bff) 35%, transparent);
 }
 
 .goal-badge svg {
@@ -15710,36 +15717,70 @@ a.leaderboard-item {
 }
 
 .content-detail-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    padding: 20px;
+    display: flex;
+    gap: 24px;
+    padding: 12px 16px;
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 24px;
+    border-radius: 8px;
+    margin-bottom: 20px;
 }
 
 .content-stat {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 4px;
-    text-align: center;
+    gap: 6px;
 }
 
 .content-stat svg {
     color: var(--text-secondary);
+    width: 16px;
+    height: 16px;
 }
 
 .content-stat-value {
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .content-stat-label {
     font-size: 12px;
     color: var(--text-secondary);
+}
+
+/* Goal Link in Content Detail */
+.content-goal-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: color-mix(in srgb, var(--goal-color, #8b2bff) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--goal-color, #8b2bff) 30%, transparent);
+    border-radius: 8px;
+    color: var(--goal-color, #8b2bff);
+    text-decoration: none;
+    font-size: 13px;
+    margin-top: 12px;
+    transition: all 0.2s;
+}
+
+.content-goal-link:hover {
+    background: color-mix(in srgb, var(--goal-color, #8b2bff) 25%, transparent);
+    border-color: var(--goal-color, #8b2bff);
+}
+
+.content-goal-title {
+    font-weight: 600;
+}
+
+.content-goal-progress {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.content-goal-arrow {
+    opacity: 0.6;
+    margin-left: auto;
 }
 
 .content-detail-actions {

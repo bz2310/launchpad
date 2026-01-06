@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getArtist, getGoal } from '@/lib/data';
 import { formatNumber } from '@/lib/utils';
 import type { Post } from '@/types';
@@ -11,11 +12,20 @@ interface FeedPostProps {
 }
 
 export function FeedPost({ post }: FeedPostProps) {
+  const router = useRouter();
   const artist = getArtist(post.artistId);
   if (!artist) return null;
 
   // Get linked goal if any
   const linkedGoal = post.goalId ? getGoal(post.goalId) : null;
+
+  const handleGoalClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (linkedGoal) {
+      router.push(`/artist-portal/goals/${linkedGoal.id}`);
+    }
+  };
 
   // Map post type to badge class
   const getPostTypeBadge = () => {
@@ -51,9 +61,10 @@ export function FeedPost({ post }: FeedPostProps) {
             </span>
           )}
           {linkedGoal && (
-            <span
+            <button
               className="goal-badge"
               style={{ '--goal-color': linkedGoal.color || '#8b2bff' } as React.CSSProperties}
+              onClick={handleGoalClick}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
@@ -61,7 +72,7 @@ export function FeedPost({ post }: FeedPostProps) {
                 <circle cx="12" cy="12" r="2" />
               </svg>
               {linkedGoal.title}
-            </span>
+            </button>
           )}
         </div>
 
