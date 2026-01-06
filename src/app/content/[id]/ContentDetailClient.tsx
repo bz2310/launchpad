@@ -152,30 +152,37 @@ export default function ContentDetailClient({ content, artist }: ContentDetailCl
               <span className="content-publish-date">Published {formatDate(content.publishedAt)}</span>
             )}
           </div>
-          {content.goalId && (() => {
-            const goal = getGoal(content.goalId);
-            if (!goal) return null;
-            const progress = Math.round((goal.currentValue / goal.targetValue) * 100);
-            return (
-              <Link
-                href={`/artist-portal/goals/${goal.id}`}
-                className="content-goal-link"
-                style={{ '--goal-color': goal.color || '#8b2bff' } as React.CSSProperties}
-              >
+        </div>
+
+        {/* Goal Progress Section */}
+        {content.goalId && (() => {
+          const goal = getGoal(content.goalId);
+          if (!goal) return null;
+          const progress = Math.round((goal.currentValue / goal.targetValue) * 100);
+          return (
+            <Link
+              href={`/artist-portal/goals/${goal.id}`}
+              className="content-goal-section"
+              style={{ '--goal-color': goal.color || '#8b2bff' } as React.CSSProperties}
+            >
+              <div className="content-goal-header">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10" />
                   <circle cx="12" cy="12" r="6" />
                   <circle cx="12" cy="12" r="2" />
                 </svg>
                 <span className="content-goal-title">{goal.title}</span>
-                <span className="content-goal-progress">{progress}%</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="content-goal-arrow">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </Link>
-            );
-          })()}
-        </div>
+                <span className="content-goal-percent">{progress}%</span>
+              </div>
+              <div className="content-goal-bar">
+                <div
+                  className="content-goal-fill"
+                  style={{ width: `${Math.min(100, progress)}%` }}
+                />
+              </div>
+            </Link>
+          );
+        })()}
 
         {/* Stats */}
         <div className="content-detail-stats">

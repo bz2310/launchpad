@@ -15648,6 +15648,7 @@ a.leaderboard-item {
 
 .content-audio-artwork {
     width: 100%;
+    max-width: 300px;
     aspect-ratio: 1;
     object-fit: cover;
 }
@@ -15759,11 +15760,14 @@ a.leaderboard-item {
 .content-image-container {
     border-radius: 12px;
     overflow: hidden;
+    max-width: 400px;
 }
 
 .content-image {
     width: 100%;
     display: block;
+    max-height: 300px;
+    object-fit: cover;
 }
 
 .content-detail-info {
@@ -15869,38 +15873,60 @@ a.leaderboard-item {
 }
 
 /* Goal Link in Content Detail */
-.content-goal-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    background: color-mix(in srgb, var(--goal-color, #8b2bff) 15%, transparent);
-    border: 1px solid color-mix(in srgb, var(--goal-color, #8b2bff) 30%, transparent);
-    border-radius: 8px;
-    color: var(--goal-color, #8b2bff);
+/* Content Goal Progress Section */
+.content-goal-section {
+    display: block;
+    background: rgba(139, 43, 255, 0.08);
+    border: 1px solid rgba(139, 43, 255, 0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
     text-decoration: none;
-    font-size: 13px;
-    margin-top: 12px;
     transition: all 0.2s;
 }
 
-.content-goal-link:hover {
-    background: color-mix(in srgb, var(--goal-color, #8b2bff) 25%, transparent);
-    border-color: var(--goal-color, #8b2bff);
+.content-goal-section:hover {
+    background: rgba(139, 43, 255, 0.12);
+    border-color: var(--goal-color, var(--primary));
+}
+
+.content-goal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.content-goal-header svg {
+    color: var(--goal-color, var(--primary));
+    flex-shrink: 0;
 }
 
 .content-goal-title {
+    font-size: 14px;
     font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
 }
 
-.content-goal-progress {
-    font-size: 12px;
-    opacity: 0.8;
+.content-goal-percent {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--goal-color, var(--primary));
 }
 
-.content-goal-arrow {
-    opacity: 0.6;
-    margin-left: auto;
+.content-goal-bar {
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.content-goal-fill {
+    height: 100%;
+    background: var(--goal-color, var(--primary));
+    border-radius: 4px;
+    transition: width 0.3s ease;
 }
 
 .content-detail-actions {
