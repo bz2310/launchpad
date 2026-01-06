@@ -3,14 +3,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { MainLayout } from '@/components/layout';
 import { FeedPost } from '@/components/feed';
-import { getFeedPosts, getQuickDiscoverArtists, getLiveEvents } from '@/lib/data';
+import { getFeedPosts, getAllArtists, getLiveEvents } from '@/lib/data';
 import Link from 'next/link';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'feed' | 'events'>('feed');
   const [currentSlide, setCurrentSlide] = useState(0);
   const posts = getFeedPosts();
-  const featuredArtists = getQuickDiscoverArtists();
+  const featuredArtists = getAllArtists();
   const events = getLiveEvents();
 
   const nextSlide = useCallback(() => {
