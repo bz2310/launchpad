@@ -18547,6 +18547,308 @@ a.leaderboard-item {
     color: var(--goal-color, var(--primary));
 }
 
+/* ===================== */
+/* Goal Page Styles */
+/* ===================== */
+
+.goal-page {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.goal-page-header {
+    margin-bottom: 24px;
+}
+
+.goal-artist-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    transition: background 0.2s;
+}
+
+.goal-artist-link:hover {
+    background: var(--bg-tertiary);
+}
+
+.goal-artist-avatar {
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.goal-artist-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.goal-artist-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.goal-artist-handle {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.goal-page-content {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.goal-page-wheel-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.goal-page-wheel {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin-bottom: 24px;
+}
+
+.goal-page-wheel svg {
+    width: 160px;
+    height: 160px;
+    transform: rotate(-90deg);
+}
+
+.goal-page-wheel-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 2.5;
+}
+
+.goal-page-wheel-progress {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke: var(--goal-color, var(--primary));
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--goal-color, var(--primary)) 50%, transparent));
+}
+
+.goal-page-wheel-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--goal-color, var(--primary));
+}
+
+.goal-page-stats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.goal-page-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.goal-page-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.goal-page-stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.goal-page-stat-divider {
+    font-size: 24px;
+    color: var(--text-tertiary);
+}
+
+.goal-page-info {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.goal-page-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.goal-page-description {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.goal-page-unlocks {
+    margin-bottom: 32px;
+}
+
+.goal-page-unlocks h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.goal-page-unlocks-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.goal-page-unlocks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.goal-page-unlock-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    opacity: 0.6;
+    transition: all 0.2s;
+}
+
+.goal-page-unlock-item.unlocked {
+    opacity: 1;
+    border-color: color-mix(in srgb, var(--goal-color, var(--primary)) 30%, transparent);
+    background: color-mix(in srgb, var(--goal-color, var(--primary)) 5%, var(--bg-tertiary));
+}
+
+.goal-page-unlock-threshold {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 48px;
+}
+
+.goal-page-unlock-threshold .threshold-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.goal-page-unlock-threshold .unlock-check {
+    color: var(--goal-color, var(--primary));
+}
+
+.goal-page-unlock-threshold .unlock-lock {
+    color: var(--text-tertiary);
+}
+
+.goal-page-unlock-info {
+    flex: 1;
+}
+
+.goal-page-unlock-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.goal-page-unlock-info p {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.goal-page-unlock-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    background: var(--goal-color, var(--primary));
+    color: white;
+    border-radius: 12px;
+}
+
+.goal-page-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.goal-page-contribute-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--goal-color, var(--primary));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.goal-page-contribute-btn:hover {
+    opacity: 0.9;
+}
+
+.goal-page-profile-link {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.goal-page-profile-link:hover {
+    color: var(--goal-color, var(--primary));
+}
+
+@media (max-width: 768px) {
+    .goal-page-content {
+        padding: 24px 16px;
+    }
+
+    .goal-page-wheel {
+        width: 120px;
+        height: 120px;
+    }
+
+    .goal-page-wheel svg {
+        width: 120px;
+        height: 120px;
+    }
+
+    .goal-page-wheel-value {
+        font-size: 28px;
+    }
+
+    .goal-page-stat-value {
+        font-size: 20px;
+    }
+
+    .goal-page-title {
+        font-size: 20px;
+    }
+}
+
 @media (max-width: 768px) {
     .my-artists-page {
         grid-template-columns: 1fr;

@@ -23,7 +23,7 @@ export function FeedPost({ post }: FeedPostProps) {
     e.preventDefault();
     e.stopPropagation();
     if (linkedGoal) {
-      router.push(`/artist-portal/goals/${linkedGoal.id}`);
+      router.push(`/goal/${linkedGoal.id}`);
     }
   };
 
