@@ -151,9 +151,39 @@ function formatTimeAgo(dateStr: string): string {
 }
 
 export function getArtistPosts(artistId: string): Post[] {
-  // For now, all content belongs to artist_001
-  if (artistId !== 'artist_001') return [];
-  return getFeedPosts();
+  const artist = getArtist(artistId);
+  if (!artist) return [];
+
+  // Get content posts (only for artist_001 who has content in the portal)
+  const contentPosts = artistId === 'artist_001' ? getFeedPosts() : [];
+
+  // Generate a goal post if the artist has an active goal
+  const goalPosts: Post[] = [];
+  if (artist.activeGoal) {
+    // Use deterministic values based on goal progress to avoid hydration issues
+    const progress = artist.activeGoal.currentValue / artist.activeGoal.targetValue;
+    const baseLikes = Math.floor(progress * 400) + 150;
+    const baseComments = Math.floor(progress * 40) + 20;
+    const baseReposts = Math.floor(progress * 25) + 10;
+
+    goalPosts.push({
+      id: `goal_post_${artist.activeGoal.id}`,
+      artistId: artist.id,
+      type: 'text',
+      content: artist.activeGoal.description || `I've launched a new goal: ${artist.activeGoal.title}. Help me reach ${artist.activeGoal.targetValue.toLocaleString()} ${artist.activeGoal.metric}!`,
+      timestamp: '3 days ago',
+      timestampDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      likes: baseLikes,
+      comments: baseComments,
+      reposts: baseReposts,
+      goalId: artist.activeGoal.id,
+    });
+  }
+
+  // Combine and sort by date
+  return [...goalPosts, ...contentPosts].sort(
+    (a, b) => b.timestampDate.getTime() - a.timestampDate.getTime()
+  );
 }
 
 // Community API
@@ -220,7 +250,35 @@ export function getGoals(): Goal[] {
 }
 
 export function getGoal(id: string): Goal | undefined {
-  return getGoals().find(g => g.id === id);
+  // First check artist portal goals
+  const portalGoal = getGoals().find(g => g.id === id);
+  if (portalGoal) return portalGoal;
+
+  // Then check artist activeGoals (convert ArtistGoal to Goal format)
+  const allArtists = getAllArtists();
+  for (const artist of allArtists) {
+    if (artist.activeGoal && artist.activeGoal.id === id) {
+      return {
+        id: artist.activeGoal.id,
+        title: artist.activeGoal.title,
+        description: artist.activeGoal.description,
+        metric: 'custom' as const,
+        targetValue: artist.activeGoal.targetValue,
+        currentValue: artist.activeGoal.currentValue,
+        startDate: new Date().toISOString(),
+        status: artist.activeGoal.status === 'active' ? 'active' : 'completed',
+        unlocks: [],
+        dropIds: [],
+        color: artist.activeGoal.color,
+        contributorCount: 0,
+        referralEnabled: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as Goal;
+    }
+  }
+
+  return undefined;
 }
 
 export function getActiveGoals(): Goal[] {
