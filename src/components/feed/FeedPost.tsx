@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { getArtist, getGoal } from '@/lib/data';
 import { formatNumber } from '@/lib/utils';
 import type { Post } from '@/types';
@@ -12,20 +11,11 @@ interface FeedPostProps {
 }
 
 export function FeedPost({ post }: FeedPostProps) {
-  const router = useRouter();
   const artist = getArtist(post.artistId);
   if (!artist) return null;
 
   // Get linked goal if any
   const linkedGoal = post.goalId ? getGoal(post.goalId) : null;
-
-  const handleGoalClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (linkedGoal) {
-      router.push(`/goal/${linkedGoal.id}`);
-    }
-  };
 
   // Map post type to badge class
   const getPostTypeBadge = () => {
@@ -127,10 +117,11 @@ export function FeedPost({ post }: FeedPostProps) {
 
       {/* Goal Progress */}
       {linkedGoal && (
-        <div
+        <Link
+          href={`/goal/${linkedGoal.id}`}
           className="post-goal-section"
           style={{ '--goal-color': linkedGoal.color || '#8b2bff' } as React.CSSProperties}
-          onClick={handleGoalClick}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="post-goal-header">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -166,7 +157,7 @@ export function FeedPost({ post }: FeedPostProps) {
               ))}
             </div>
           )}
-        </div>
+        </Link>
       )}
 
       {/* Actions */}

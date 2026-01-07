@@ -177,18 +177,24 @@ export function ArtistSidebar() {
       </Link>
 
       {/* Artist Profile Mini */}
-      <div className="artist-profile-mini">
+      <Link href={`/artist/${artist.id}`} className="artist-profile-mini" title="View fan profile">
         <img src={artist.avatar} alt={artist.name} className="artist-mini-avatar" />
         {!isCollapsed && (
           <div className="artist-mini-info">
             <span className="artist-mini-name">
               {artist.name}
-              {artist.verified && <span className="verified-badge">✓</span>}
+              {artist.verified && (
+                <span className="verified-badge-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                  </svg>
+                </span>
+              )}
             </span>
             <span className="artist-mini-handle">{artist.handle}</span>
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="nav-menu">
