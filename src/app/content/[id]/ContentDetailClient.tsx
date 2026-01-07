@@ -43,8 +43,10 @@ export default function ContentDetailClient({ content, artist }: ContentDetailCl
   const getAccessLabel = (access: string) => {
     switch (access) {
       case 'public': return 'Public';
+      case 'followers': return 'Followers';
       case 'supporters': return 'Supporters Only';
       case 'superfans': return 'Superfans Only';
+      case 'inner_circle': return 'Inner Circle Only';
       default: return access;
     }
   };

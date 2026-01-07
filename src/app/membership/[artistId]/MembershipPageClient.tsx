@@ -25,42 +25,6 @@ export default function MembershipPageClient({ artistId }: MembershipPageClientP
     );
   }
 
-  const tiers = [
-    {
-      id: 'supporters',
-      name: 'Supporters',
-      price: '$10',
-      period: '/month',
-      impactStatement: 'Your $10/month helps fund studio time, production, and new recordings',
-      benefits: [
-        'Early access to new releases (48 hours)',
-        'Monthly behind-the-scenes of the creative process',
-        'Supporter-only Discord to follow the journey',
-        'Your name in supporter credits',
-        'Vote on song selections for live shows',
-      ],
-      featured: false,
-    },
-    {
-      id: 'superfans',
-      name: 'Superfans',
-      price: '$30',
-      period: '/month',
-      badge: 'Most Impact',
-      impactStatement: 'Your $30/month directly funds music videos, touring, and bigger productions',
-      benefits: [
-        'Everything in Supporters tier',
-        'Weekly acoustic sessions & unreleased demos',
-        'Monthly live calls — share ideas, give feedback',
-        'Name in official album credits',
-        'Vote on creative decisions (cover art, tracklist)',
-        'First access to concert tickets',
-        `Direct messaging with ${artist.name.split(' ')[0]}`,
-      ],
-      featured: true,
-    },
-  ];
-
   return (
     <div className="container">
       <Sidebar />
@@ -112,29 +76,121 @@ export default function MembershipPageClient({ artistId }: MembershipPageClientP
             </div>
           </div>
 
-          {/* Tiers */}
+          {/* Main Supporter Tier */}
           <div className="tiers-container">
-            {tiers.map((tier) => (
-              <div key={tier.id} className={`tier-card ${tier.featured ? 'featured' : ''}`}>
-                {tier.badge && <span className="tier-badge">{tier.badge}</span>}
-                <h3>{tier.name}</h3>
-                <div className="price">
-                  {tier.price}<span>{tier.period}</span>
-                </div>
-
-                <div className="impact-statement">{tier.impactStatement}</div>
-
-                <ul>
-                  {tier.benefits.map((benefit, index) => (
-                    <li key={index}>{benefit}</li>
-                  ))}
-                </ul>
-
-                <button className="join-btn">
-                  {tier.featured ? 'Support as Superfan' : 'Become a Supporter'}
-                </button>
+            <div className="tier-card featured">
+              <span className="tier-badge">Join the Journey</span>
+              <h3>Supporter</h3>
+              <div className="price">
+                $10<span>/month</span>
               </div>
-            ))}
+
+              <div className="impact-statement">
+                Your $10/month helps fund studio time, production, and new recordings
+              </div>
+
+              <ul>
+                <li>Early access to new releases (48 hours)</li>
+                <li>Monthly behind-the-scenes of the creative process</li>
+                <li>Supporter-only Discord to follow the journey</li>
+                <li>Your name in supporter credits</li>
+                <li>Vote on song selections for live shows</li>
+                <li>Earn points toward Superfan status</li>
+              </ul>
+
+              <button className="join-btn">Become a Supporter</button>
+            </div>
+          </div>
+
+          {/* Earned Status Tiers */}
+          <div className="earned-tiers-section">
+            <h2>Earn Elite Status</h2>
+            <p className="earned-tiers-intro">
+              As a Supporter, you earn points through your engagement and contributions.
+              Rise through the ranks to unlock exclusive benefits!
+            </p>
+
+            <div className="earned-tiers-grid">
+              {/* Superfan */}
+              <div className="earned-tier-card superfan">
+                <div className="earned-tier-header">
+                  <div className="earned-tier-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>Superfan</h3>
+                    <span className="earned-tier-qualification">Top 25% of Supporters by points</span>
+                  </div>
+                </div>
+                <ul>
+                  <li>All Supporter benefits</li>
+                  <li>Weekly acoustic sessions & unreleased demos</li>
+                  <li>Monthly live calls — share ideas, give feedback</li>
+                  <li>Name in official album credits</li>
+                  <li>Vote on creative decisions (cover art, tracklist)</li>
+                  <li>First access to concert tickets</li>
+                  <li>Direct messaging with {artist.name.split(' ')[0]}</li>
+                </ul>
+              </div>
+
+              {/* Inner Circle */}
+              <div className="earned-tier-card inner-circle">
+                <div className="earned-tier-header">
+                  <div className="earned-tier-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <circle cx="12" cy="12" r="6" />
+                      <circle cx="12" cy="12" r="2" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>Inner Circle</h3>
+                    <span className="earned-tier-qualification">Top 10 fans overall</span>
+                  </div>
+                </div>
+                <ul>
+                  <li>All Superfan benefits</li>
+                  <li>Exclusive 1-on-1 interactions</li>
+                  <li>VIP event access</li>
+                  <li>Personal thank you from {artist.name.split(' ')[0]}</li>
+                  <li>Input on creative direction</li>
+                  <li>First look at unreleased projects</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Points Explainer */}
+            <div className="points-explainer">
+              <h3>How Points Work</h3>
+              <div className="points-grid">
+                <div className="points-item">
+                  <span className="points-value">+10</span>
+                  <span className="points-action">Monthly subscription</span>
+                </div>
+                <div className="points-item">
+                  <span className="points-value">+5</span>
+                  <span className="points-action">Engage with content</span>
+                </div>
+                <div className="points-item">
+                  <span className="points-value">+25</span>
+                  <span className="points-action">Merch purchase</span>
+                </div>
+                <div className="points-item">
+                  <span className="points-value">+50</span>
+                  <span className="points-action">Attend live event</span>
+                </div>
+                <div className="points-item">
+                  <span className="points-value">+15</span>
+                  <span className="points-action">Share content</span>
+                </div>
+                <div className="points-item">
+                  <span className="points-value">+100</span>
+                  <span className="points-action">Help reach a goal</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Supporter Community */}

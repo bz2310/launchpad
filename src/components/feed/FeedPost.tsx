@@ -47,7 +47,9 @@ export function FeedPost({ post }: FeedPostProps) {
           <span className={`post-type-badge ${badge.className}`}>{badge.label}</span>
           {post.tierExclusive && (
             <span className={`tier-badge ${post.tierExclusive}`}>
-              {post.tierExclusive === 'supporters' ? 'Supporters' : 'Superfans'}
+              {post.tierExclusive === 'supporters' && 'Supporters'}
+              {post.tierExclusive === 'superfans' && 'Superfans'}
+              {post.tierExclusive === 'inner_circle' && 'Inner Circle'}
             </span>
           )}
         </div>

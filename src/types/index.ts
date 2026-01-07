@@ -38,12 +38,14 @@ export interface WeeklyImpact {
 }
 
 export interface SupportRelationship {
-  isSupporter: boolean;
+  isSupporter: boolean; // true if paying $10/mo supporter tier
   isEarlySupporter?: boolean;
-  membershipTier: string;
+  membershipTier: 'free' | 'follower' | 'supporter' | 'superfan' | 'inner_circle';
   supporterSince: string;
   releasesSupported: number;
   milestonesUnlocked: number;
+  points?: number; // Points accumulated (for superfan/inner_circle qualification)
+  pointsRank?: number; // Rank among supporters
 }
 
 export interface UserBadge {
@@ -179,9 +181,11 @@ export interface Milestone {
 export interface MembershipTier {
   id: string;
   name: string;
-  price: string;
+  price: string; // "$10/month" for supporter, "Earned" for superfan/inner_circle
   benefits: string[];
   color: string;
+  isEarned?: boolean; // true for superfan and inner_circle
+  qualificationDescription?: string; // e.g., "Top 25% of supporters by points"
 }
 
 // Post Types

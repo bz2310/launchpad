@@ -85,7 +85,7 @@ export function calculateMFSByTier(
   revenueByTier: Record<FanTier, number>,
   fansByTier: Record<FanTier, number>
 ): Record<FanTier, number> {
-  const result: Record<FanTier, number> = { free: 0, supporter: 0, superfan: 0, inner_circle: 0 };
+  const result: Record<FanTier, number> = { free: 0, follower: 0, supporter: 0, superfan: 0, inner_circle: 0 };
 
   for (const tier of Object.keys(result) as FanTier[]) {
     result[tier] = calculateMFS(revenueByTier[tier] || 0, fansByTier[tier] || 0);

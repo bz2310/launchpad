@@ -13,6 +13,7 @@ const getTierLabel = (tier: FanTier): string => {
     inner_circle: 'Inner Circle',
     superfan: 'Superfan',
     supporter: 'Supporter',
+    follower: 'Follower',
     free: 'Free',
   };
   return labels[tier] || tier;
@@ -24,6 +25,7 @@ const getTierColor = (tier: FanTier): string => {
     inner_circle: '#ff4757',
     superfan: '#8b2bff',
     supporter: '#22c55e',
+    follower: '#6b7280',
     free: '#6b7280',
   };
   return colors[tier] || '#6b7280';

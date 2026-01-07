@@ -41,14 +41,22 @@ export function StatusBadge({ status }: StatusBadgeProps) {
 }
 
 // Tier badge for fan tiers
+// Tier system:
+// - free: Not following, just visited
+// - follower: Following but not paying (same content access as free)
+// - supporter: $10/month paying subscriber
+// - superfan: Top 25% of supporters by points (earned)
+// - inner_circle: Top 10 fans overall (earned)
 interface TierBadgeProps {
-  tier: 'free' | 'supporter' | 'superfan';
+  tier: 'free' | 'follower' | 'supporter' | 'superfan' | 'inner_circle';
 }
 
 const tierConfig: Record<TierBadgeProps['tier'], { label: string; variant: BadgeProps['variant'] }> = {
   free: { label: 'Free', variant: 'default' },
+  follower: { label: 'Follower', variant: 'default' },
   supporter: { label: 'Supporter', variant: 'primary' },
   superfan: { label: 'Superfan', variant: 'warning' },
+  inner_circle: { label: 'Inner Circle', variant: 'danger' },
 };
 
 export function TierBadge({ tier }: TierBadgeProps) {

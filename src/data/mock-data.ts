@@ -92,10 +92,12 @@ export const currentUser: User = {
   supportRelationships: {
     artist_001: {
       isSupporter: true,
-      membershipTier: 'Superfans',
+      membershipTier: 'superfan', // Top 25% of supporters by points
       supporterSince: 'March 2023',
       releasesSupported: 2,
       milestonesUnlocked: 1,
+      points: 4500,
+      pointsRank: 45,
     },
   },
   badges: {

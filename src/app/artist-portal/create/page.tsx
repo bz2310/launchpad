@@ -616,8 +616,8 @@ function CreatePageContent() {
                   onChange={() => setAccessType('subscribers')}
                 />
                 <div className="radio-content">
-                  <span className="radio-label">Subscribers</span>
-                  <span className="radio-desc">Any paid tier</span>
+                  <span className="radio-label">Supporters</span>
+                  <span className="radio-desc">All paying supporters ($10/mo)</span>
                 </div>
               </label>
 
@@ -630,7 +630,7 @@ function CreatePageContent() {
                 />
                 <div className="radio-content">
                   <span className="radio-label">Tier-based</span>
-                  <span className="radio-desc">Specific tiers only</span>
+                  <span className="radio-desc">Specific status levels only</span>
                 </div>
               </label>
               {accessType === 'tier' && (
@@ -647,7 +647,7 @@ function CreatePageContent() {
                         }
                       }}
                     />
-                    <span>Supporter</span>
+                    <span>Supporter ($10/mo)</span>
                   </label>
                   <label className="checkbox-option">
                     <input
@@ -661,7 +661,21 @@ function CreatePageContent() {
                         }
                       }}
                     />
-                    <span>Superfan</span>
+                    <span>Superfan (top 25% by points)</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={selectedTiers.includes('inner_circle')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedTiers([...selectedTiers, 'inner_circle']);
+                        } else {
+                          setSelectedTiers(selectedTiers.filter((t) => t !== 'inner_circle'));
+                        }
+                      }}
+                    />
+                    <span>Inner Circle (top 10 fans)</span>
                   </label>
                 </div>
               )}

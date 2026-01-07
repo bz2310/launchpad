@@ -442,13 +442,14 @@ const generateDrops = (): DropPerformance[] => {
     const engagement = item.likeCount + item.commentCount + item.shareCount;
 
     // Calculate tier breakdown based on access level
-    let viewsByTier = { free: 0, supporter: 0, superfan: 0, inner_circle: 0 };
-    if (item.accessLevel === 'public') {
-      viewsByTier = { free: Math.round(views * 0.58), supporter: Math.round(views * 0.25), superfan: Math.round(views * 0.12), inner_circle: Math.round(views * 0.05) };
+    // Tier system: free, follower (same as free), supporter ($10/mo), superfan (top 25%), inner_circle (top 10)
+    let viewsByTier = { free: 0, follower: 0, supporter: 0, superfan: 0, inner_circle: 0 };
+    if (item.accessLevel === 'public' || item.accessLevel === 'followers') {
+      viewsByTier = { free: Math.round(views * 0.30), follower: Math.round(views * 0.28), supporter: Math.round(views * 0.25), superfan: Math.round(views * 0.12), inner_circle: Math.round(views * 0.05) };
     } else if (item.accessLevel === 'supporters') {
-      viewsByTier = { free: 0, supporter: Math.round(views * 0.65), superfan: Math.round(views * 0.25), inner_circle: Math.round(views * 0.10) };
+      viewsByTier = { free: 0, follower: 0, supporter: Math.round(views * 0.65), superfan: Math.round(views * 0.25), inner_circle: Math.round(views * 0.10) };
     } else {
-      viewsByTier = { free: 0, supporter: 0, superfan: Math.round(views * 0.7), inner_circle: Math.round(views * 0.3) };
+      viewsByTier = { free: 0, follower: 0, supporter: 0, superfan: Math.round(views * 0.7), inner_circle: Math.round(views * 0.3) };
     }
 
     return {
@@ -561,18 +562,19 @@ const aggregateRevenueMetrics = (days: number): RevenuePeriodMetrics => {
     bySource,
     byTier: {
       free: { gross: 0, subscriberCount: 0, churnCount: 0 },
+      follower: { gross: 0, subscriberCount: 0, churnCount: 0 },
       supporter: {
-        gross: bySource.subscription.gross * 0.5,
+        gross: bySource.subscription.gross,
         subscriberCount: supporterFans.size,
         churnCount: Math.floor(supporterFans.size * 0.02),
       },
       superfan: {
-        gross: bySource.subscription.gross * 0.35,
+        gross: 0, // Superfan is earned, not paid
         subscriberCount: superfanFans.size,
         churnCount: Math.floor(superfanFans.size * 0.015),
       },
       inner_circle: {
-        gross: bySource.subscription.gross * 0.15,
+        gross: 0, // Inner circle is earned, not paid
         subscriberCount: Math.floor(superfanFans.size * 0.3),
         churnCount: Math.floor(superfanFans.size * 0.01),
       },
@@ -849,6 +851,7 @@ const aggregateFanMetrics = (days: number): { ladder: FanLadderMetrics; flow: Fa
       churnRate: Math.round(churns.length / Math.max(1, totalFans) * 1000) / 10,
       churnByTier: {
         free: freeChurns,
+        follower: Math.floor(freeChurns * 0.6),
         supporter: supporterChurns,
         superfan: superfanChurns,
         inner_circle: Math.floor(superfanChurns * 0.2),
@@ -891,9 +894,10 @@ const aggregateMFS = (days: number): MonthlyFanSpend => {
     mfs: Math.round(mfs * 100) / 100,
     mfsByTier: {
       free: 0,
-      supporter: 10.00,
-      superfan: 30.00,
-      inner_circle: 75.00,
+      follower: 0,
+      supporter: 10.00, // Only paid tier is supporter at $10/mo
+      superfan: 0, // Earned tier, not paid
+      inner_circle: 0, // Earned tier, not paid
     },
     mfsTrend: trendData,
     changePercent: calculatePercentChange(mfs, prevMfs),
@@ -1013,8 +1017,10 @@ const buildDropsOverview = (days: number): DropsOverviewMetrics => {
     },
     byAccessLevel: {
       public: { count: drops.filter(d => d.accessLevel === 'public').length, views: 73570, conversionRate: 0.15 },
+      followers: { count: drops.filter(d => d.accessLevel === 'followers').length, views: 0, conversionRate: 0.15 },
       supporters: { count: drops.filter(d => d.accessLevel === 'supporters').length, views: 15450, conversionRate: 0.28 },
       superfans: { count: drops.filter(d => d.accessLevel === 'superfans').length, views: 5760, conversionRate: 0.12 },
+      inner_circle: { count: drops.filter(d => d.accessLevel === 'inner_circle').length, views: 890, conversionRate: 0.05 },
     },
     topPerformers: drops.slice(0, 3),
     underperformers: [],

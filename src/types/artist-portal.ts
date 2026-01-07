@@ -15,7 +15,12 @@ export interface DatabaseRecord {
 // Fan Management Types
 // =====================
 
-export type FanTier = 'free' | 'supporter' | 'superfan' | 'inner_circle';
+// Tier system:
+// - free/follower: Same content access, followers see content in feed. Free tier.
+// - supporter: $10/month paid subscription
+// - superfan: Top 25% of supporters by points (earned, not purchased)
+// - inner_circle: Top 10 fans overall (earned, not purchased)
+export type FanTier = 'free' | 'follower' | 'supporter' | 'superfan' | 'inner_circle';
 export type FanStatus = 'active' | 'at_risk' | 'churned';
 
 export interface FanProfile extends DatabaseRecord {
@@ -35,6 +40,8 @@ export interface FanProfile extends DatabaseRecord {
   totalSpend: number;
   lifetimeValue: number;
   engagementScore: number; // 0-100
+  points: number; // Points for determining superfan/inner_circle status
+  pointsRank?: number; // Rank among all supporters (for inner_circle: top 10, superfan: top 25%)
   subscriptionId?: string;
   stripeCustomerId?: string;
 }
@@ -82,7 +89,13 @@ export interface FanSegmentFilter {
 
 export type ContentType = 'music' | 'video' | 'post' | 'image' | 'event';
 export type ContentStatus = 'draft' | 'scheduled' | 'published' | 'archived';
-export type AccessLevel = 'public' | 'supporters' | 'superfans';
+// Access levels for content:
+// - public: Anyone can view
+// - followers: Same as public, but followers get it in their feed
+// - supporters: Only $10/mo supporters and above
+// - superfans: Only top 25% supporters (by points) and inner circle
+// - inner_circle: Only top 10 fans
+export type AccessLevel = 'public' | 'followers' | 'supporters' | 'superfans' | 'inner_circle';
 
 export interface ContentItem extends DatabaseRecord {
   type: ContentType;
@@ -145,14 +158,16 @@ export interface ScheduledContent {
 export interface SubscriptionTier extends DatabaseRecord {
   name: string;
   slug: FanTier;
-  price: number;
+  price: number; // 0 for free/follower, $10 for supporter. Superfan/inner_circle are earned, not purchased.
   currency: string;
   interval: 'month' | 'year';
   benefits: string[];
   color: string;
   isActive: boolean;
-  subscriberCount: number;
-  stripePriceId?: string;
+  subscriberCount: number; // For earned tiers, this is the count of fans who qualify
+  stripePriceId?: string; // Only for paid tiers (supporter)
+  isEarned?: boolean; // true for superfan and inner_circle (earned by points, not purchased)
+  qualificationDescription?: string; // e.g., "Top 25% of supporters by points"
 }
 
 export interface Subscription extends DatabaseRecord {

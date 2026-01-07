@@ -4907,6 +4907,172 @@ a.leaderboard-item {
     }
 }
 
+/* Earned Tiers Section */
+.earned-tiers-section {
+    margin-bottom: 40px;
+}
+
+.earned-tiers-section h2 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.earned-tiers-intro {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.earned-tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.earned-tier-card {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+}
+
+.earned-tier-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.earned-tier-card.superfan::before {
+    background: linear-gradient(90deg, var(--primary) 0%, #a855f7 100%);
+}
+
+.earned-tier-card.inner-circle::before {
+    background: linear-gradient(90deg, #ff4757 0%, #ff6b7d 100%);
+}
+
+.earned-tier-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.earned-tier-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.earned-tier-card.superfan .earned-tier-icon {
+    background: rgba(139, 43, 255, 0.15);
+    color: var(--primary);
+}
+
+.earned-tier-card.inner-circle .earned-tier-icon {
+    background: rgba(255, 71, 87, 0.15);
+    color: #ff4757;
+}
+
+.earned-tier-header h3 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.earned-tier-qualification {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: block;
+}
+
+.earned-tier-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.earned-tier-card li {
+    padding: 8px 0;
+    padding-left: 24px;
+    position: relative;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.earned-tier-card li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+}
+
+.earned-tier-card.inner-circle li::before {
+    color: #ff4757;
+}
+
+/* Points Explainer */
+.points-explainer {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.points-explainer h3 {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 18px;
+}
+
+.points-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.points-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    background: var(--bg-primary);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.points-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+.points-action {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .earned-tiers-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .points-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 /* ==================== DASHBOARD PAGE STYLES ==================== */
 .dashboard-container {
     display: flex;
@@ -18179,6 +18345,16 @@ a.leaderboard-item {
 .tier-badge.superfan, .tier-badge.superfans {
     background: rgba(139, 43, 255, 0.15);
     color: var(--primary);
+}
+
+.tier-badge.inner_circle {
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.2) 0%, rgba(255, 107, 125, 0.2) 100%);
+    color: #ff4757;
+}
+
+.tier-badge.follower {
+    background: rgba(107, 114, 128, 0.15);
+    color: #6b7280;
 }
 
 .membership-stats {
