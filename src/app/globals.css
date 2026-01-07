@@ -18193,22 +18193,9 @@ a.leaderboard-item {
 
 .my-artist-goal-card {
     background: var(--bg-secondary);
-    border: 1px solid rgba(139, 43, 255, 0.2);
+    border: 1px solid color-mix(in srgb, var(--goal-color, var(--primary)) 20%, transparent);
     border-radius: 12px;
     padding: 20px;
-}
-
-.my-artist-goal-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.my-artist-goal-header svg {
-    color: var(--goal-color, var(--primary));
-    flex-shrink: 0;
-    margin-top: 2px;
 }
 
 .my-artist-goal-info {
@@ -18219,36 +18206,13 @@ a.leaderboard-item {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 4px;
+    color: var(--text-primary);
 }
 
 .my-artist-goal-info p {
     font-size: 13px;
     color: var(--text-secondary);
-}
-
-.my-artist-goal-percent {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--goal-color, var(--primary));
-}
-
-.my-artist-goal-progress {
-    margin-bottom: 16px;
-}
-
-.my-artist-goal-bar {
-    height: 8px;
-    background: var(--bg-tertiary);
-    border-radius: 4px;
-    overflow: hidden;
     margin-bottom: 8px;
-}
-
-.my-artist-goal-fill {
-    height: 100%;
-    background: var(--goal-color, var(--primary));
-    border-radius: 4px;
-    transition: width 0.3s;
 }
 
 .my-artist-goal-stats {
@@ -18256,11 +18220,13 @@ a.leaderboard-item {
     justify-content: space-between;
     font-size: 12px;
     color: var(--text-secondary);
+    margin-top: 8px;
 }
 
 .my-artist-goal-contribute {
     width: 100%;
     padding: 12px;
+    margin-top: 16px;
     background: var(--goal-color, var(--primary));
     color: white;
     border: none;
@@ -18430,71 +18396,155 @@ a.leaderboard-item {
 }
 
 /* Artist Profile Goal Marker */
-.artist-goal-marker {
+/* Goal Wheel - Similar to Momentum Wheel */
+.goal-wheel {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: rgba(139, 43, 255, 0.08);
-    border: 1px solid rgba(139, 43, 255, 0.2);
+    gap: 10px;
+    padding: 8px 14px;
+    background: linear-gradient(135deg, rgba(30, 30, 30, 0.8) 0%, rgba(35, 30, 40, 0.8) 100%);
+    border: 1px solid color-mix(in srgb, var(--goal-color, var(--primary)) 30%, transparent);
     border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
 }
 
-.artist-goal-marker:hover {
-    background: rgba(139, 43, 255, 0.12);
-    border-color: var(--goal-color, var(--primary));
+.goal-circle {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
 }
 
-.artist-goal-marker-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--goal-color, var(--primary));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
+.goal-circle svg {
+    width: 42px;
+    height: 42px;
+    transform: rotate(-90deg);
 }
 
-.artist-goal-marker-info {
-    flex: 1;
+.goal-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 3;
 }
 
-.artist-goal-marker-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 2px;
+.goal-progress {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke: var(--goal-color, var(--primary));
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--goal-color, var(--primary)) 40%, transparent));
 }
 
-.artist-goal-marker-progress {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.artist-goal-marker-bar {
-    flex: 1;
-    height: 4px;
-    background: var(--bg-tertiary);
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.artist-goal-marker-fill {
-    height: 100%;
-    background: var(--goal-color, var(--primary));
-    border-radius: 2px;
-}
-
-.artist-goal-marker-percent {
-    font-size: 12px;
+.goal-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
     font-weight: 700;
     color: var(--goal-color, var(--primary));
-    min-width: 36px;
-    text-align: right;
+}
+
+.goal-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.goal-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.goal-target {
+    font-size: 11px;
+    color: var(--text-secondary);
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Mini Goal Wheel for My Artists sidebar */
+.my-artist-goal-wheel-mini {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.my-artist-goal-wheel-mini .goal-wheel-svg {
+    width: 32px;
+    height: 32px;
+    transform: rotate(-90deg);
+}
+
+.my-artist-goal-wheel-mini .goal-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 3;
+}
+
+.my-artist-goal-wheel-mini .goal-progress {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke: var(--goal-color, var(--primary));
+    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--goal-color, var(--primary)) 40%, transparent));
+}
+
+.my-artist-goal-wheel-mini .goal-wheel-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--goal-color, var(--primary));
+}
+
+/* Large Goal Wheel for My Artists detail */
+.my-artist-goal-wheel-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.goal-wheel-large {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+}
+
+.goal-wheel-large svg {
+    width: 80px;
+    height: 80px;
+    transform: rotate(-90deg);
+}
+
+.goal-wheel-large .goal-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 3;
+}
+
+.goal-wheel-large .goal-progress {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke: var(--goal-color, var(--primary));
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--goal-color, var(--primary)) 50%, transparent));
+}
+
+.goal-wheel-value-large {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--goal-color, var(--primary));
 }
 
 @media (max-width: 768px) {

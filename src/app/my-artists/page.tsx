@@ -47,13 +47,12 @@ export default function MyArtistsPage() {
                   </span>
                 </div>
                 {artist.activeGoal && (
-                  <div className="my-artist-goal-badge" style={{ '--goal-color': artist.activeGoal.color || '#8b2bff' } as React.CSSProperties}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" />
-                      <circle cx="12" cy="12" r="6" />
-                      <circle cx="12" cy="12" r="2" />
+                  <div className="my-artist-goal-wheel-mini" style={{ '--goal-color': artist.activeGoal.color || '#8b2bff' } as React.CSSProperties}>
+                    <svg viewBox="0 0 36 36" className="goal-wheel-svg">
+                      <path className="goal-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path className="goal-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeDasharray={`${Math.round((artist.activeGoal.currentValue / artist.activeGoal.targetValue) * 100)}, 100`}/>
                     </svg>
-                    <span>{Math.round((artist.activeGoal.currentValue / artist.activeGoal.targetValue) * 100)}%</span>
+                    <span className="goal-wheel-value">{Math.round((artist.activeGoal.currentValue / artist.activeGoal.targetValue) * 100)}%</span>
                   </div>
                 )}
               </button>
@@ -127,32 +126,23 @@ export default function MyArtistsPage() {
                   className="my-artist-goal-card"
                   style={{ '--goal-color': selectedArtistData.activeGoal.color || '#8b2bff' } as React.CSSProperties}
                 >
-                  <div className="my-artist-goal-header">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" />
-                      <circle cx="12" cy="12" r="6" />
-                      <circle cx="12" cy="12" r="2" />
-                    </svg>
+                  <div className="my-artist-goal-wheel-container">
+                    <div className="goal-wheel-large">
+                      <svg viewBox="0 0 36 36">
+                        <path className="goal-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        <path className="goal-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeDasharray={`${Math.round((selectedArtistData.activeGoal.currentValue / selectedArtistData.activeGoal.targetValue) * 100)}, 100`}/>
+                      </svg>
+                      <div className="goal-wheel-value-large">{Math.round((selectedArtistData.activeGoal.currentValue / selectedArtistData.activeGoal.targetValue) * 100)}%</div>
+                    </div>
                     <div className="my-artist-goal-info">
                       <h4>{selectedArtistData.activeGoal.title}</h4>
                       {selectedArtistData.activeGoal.description && (
                         <p>{selectedArtistData.activeGoal.description}</p>
                       )}
-                    </div>
-                    <span className="my-artist-goal-percent">
-                      {Math.round((selectedArtistData.activeGoal.currentValue / selectedArtistData.activeGoal.targetValue) * 100)}%
-                    </span>
-                  </div>
-                  <div className="my-artist-goal-progress">
-                    <div className="my-artist-goal-bar">
-                      <div
-                        className="my-artist-goal-fill"
-                        style={{ width: `${Math.min(100, (selectedArtistData.activeGoal.currentValue / selectedArtistData.activeGoal.targetValue) * 100)}%` }}
-                      />
-                    </div>
-                    <div className="my-artist-goal-stats">
-                      <span>{selectedArtistData.activeGoal.currentValue.toLocaleString()} {selectedArtistData.activeGoal.metric}</span>
-                      <span>Goal: {selectedArtistData.activeGoal.targetValue.toLocaleString()}</span>
+                      <div className="my-artist-goal-stats">
+                        <span>{selectedArtistData.activeGoal.currentValue.toLocaleString()} {selectedArtistData.activeGoal.metric}</span>
+                        <span>Goal: {selectedArtistData.activeGoal.targetValue.toLocaleString()}</span>
+                      </div>
                     </div>
                   </div>
                   <button className="my-artist-goal-contribute">

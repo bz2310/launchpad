@@ -200,32 +200,22 @@ export default function ArtistPageClient({ id }: ArtistPageClientProps) {
                 <span className="stat-number">{artist.stats.listeners}</span>
                 <span className="stat-label">Monthly Listeners</span>
               </div>
-              {/* Show Goal Marker if artist has active goal, otherwise show Momentum */}
+              {/* Show Goal Wheel if artist has active goal, otherwise show Momentum */}
               {artist.activeGoal ? (
                 <div
-                  className="artist-goal-marker"
+                  className="goal-wheel"
                   style={{ '--goal-color': artist.activeGoal.color || '#8b2bff' } as React.CSSProperties}
                 >
-                  <div className="artist-goal-marker-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" />
-                      <circle cx="12" cy="12" r="6" />
-                      <circle cx="12" cy="12" r="2" />
+                  <div className="goal-circle">
+                    <svg viewBox="0 0 36 36">
+                      <path className="goal-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path className="goal-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" strokeDasharray={`${Math.round((artist.activeGoal.currentValue / artist.activeGoal.targetValue) * 100)}, 100`}/>
                     </svg>
+                    <div className="goal-value">{Math.round((artist.activeGoal.currentValue / artist.activeGoal.targetValue) * 100)}%</div>
                   </div>
-                  <div className="artist-goal-marker-info">
-                    <div className="artist-goal-marker-title">{artist.activeGoal.title}</div>
-                    <div className="artist-goal-marker-progress">
-                      <div className="artist-goal-marker-bar">
-                        <div
-                          className="artist-goal-marker-fill"
-                          style={{ width: `${Math.min(100, (artist.activeGoal.currentValue / artist.activeGoal.targetValue) * 100)}%` }}
-                        />
-                      </div>
-                      <span className="artist-goal-marker-percent">
-                        {Math.round((artist.activeGoal.currentValue / artist.activeGoal.targetValue) * 100)}%
-                      </span>
-                    </div>
+                  <div className="goal-info">
+                    <span className="goal-label">Goal</span>
+                    <span className="goal-target">{artist.activeGoal.title}</span>
                   </div>
                 </div>
               ) : artist.momentum && (
