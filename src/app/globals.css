@@ -4855,6 +4855,49 @@ a.leaderboard-item {
     background: linear-gradient(135deg, var(--primary-light) 0%, #d4a3ff 100%);
 }
 
+/* Supporter tiers grid */
+.supporter-tiers {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Gift card styling */
+.tier-card.gift-card {
+    border: 2px solid #f97316;
+}
+
+.tier-card.gift-card .tier-badge.gift-badge {
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+}
+
+.tier-card.gift-card .impact-statement {
+    background: rgba(249, 115, 22, 0.1);
+    color: #fb923c;
+}
+
+.tier-card.gift-card ul li::before {
+    color: #f97316;
+}
+
+.tier-card .join-btn.gift-btn {
+    background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tier-card .join-btn.gift-btn:hover {
+    box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
+}
+
+/* Tier hierarchy note */
+.tier-hierarchy-note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    font-style: italic;
+}
+
 .supporter-community {
     text-align: center;
     padding: 40px;

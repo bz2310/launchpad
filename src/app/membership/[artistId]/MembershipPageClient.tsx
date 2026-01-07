@@ -77,7 +77,7 @@ export default function MembershipPageClient({ artistId }: MembershipPageClientP
           </div>
 
           {/* Main Supporter Tier */}
-          <div className="tiers-container">
+          <div className="tiers-container supporter-tiers">
             <div className="tier-card featured">
               <span className="tier-badge">Join the Journey</span>
               <h3>Supporter</h3>
@@ -99,6 +99,36 @@ export default function MembershipPageClient({ artistId }: MembershipPageClientP
               </ul>
 
               <button className="join-btn">Become a Supporter</button>
+            </div>
+
+            <div className="tier-card gift-card">
+              <span className="tier-badge gift-badge">Give a Gift</span>
+              <h3>Gift Supporter</h3>
+              <div className="price">
+                $10<span>/month</span>
+              </div>
+
+              <div className="impact-statement">
+                Gift a friend a Supporter membership and share the journey together
+              </div>
+
+              <ul>
+                <li>Send to any email address</li>
+                <li>Recipient gets all Supporter benefits</li>
+                <li>Add a personal message</li>
+                <li>Choose 1, 3, 6, or 12 months</li>
+              </ul>
+
+              <button className="join-btn gift-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="20 12 20 22 4 22 4 12" />
+                  <rect x="2" y="7" width="20" height="5" />
+                  <line x1="12" y1="22" x2="12" y2="7" />
+                  <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+                  <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+                </svg>
+                Gift a Membership
+              </button>
             </div>
           </div>
 

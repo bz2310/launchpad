@@ -635,47 +635,33 @@ function CreatePageContent() {
               </label>
               {accessType === 'tier' && (
                 <div className="sub-options">
+                  <p className="tier-hierarchy-note">Select minimum tier (includes all higher tiers)</p>
                   <label className="checkbox-option">
                     <input
-                      type="checkbox"
+                      type="radio"
+                      name="tierLevel"
                       checked={selectedTiers.includes('supporter')}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedTiers([...selectedTiers, 'supporter']);
-                        } else {
-                          setSelectedTiers(selectedTiers.filter((t) => t !== 'supporter'));
-                        }
-                      }}
+                      onChange={() => setSelectedTiers(['supporter', 'superfan', 'inner_circle'])}
                     />
-                    <span>Supporter ($10/mo)</span>
+                    <span>Supporter & above ($10/mo+)</span>
                   </label>
                   <label className="checkbox-option">
                     <input
-                      type="checkbox"
-                      checked={selectedTiers.includes('superfan')}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedTiers([...selectedTiers, 'superfan']);
-                        } else {
-                          setSelectedTiers(selectedTiers.filter((t) => t !== 'superfan'));
-                        }
-                      }}
+                      type="radio"
+                      name="tierLevel"
+                      checked={!selectedTiers.includes('supporter') && selectedTiers.includes('superfan')}
+                      onChange={() => setSelectedTiers(['superfan', 'inner_circle'])}
                     />
-                    <span>Superfan (top 25% by points)</span>
+                    <span>Superfan & above (top 25% by points)</span>
                   </label>
                   <label className="checkbox-option">
                     <input
-                      type="checkbox"
-                      checked={selectedTiers.includes('inner_circle')}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedTiers([...selectedTiers, 'inner_circle']);
-                        } else {
-                          setSelectedTiers(selectedTiers.filter((t) => t !== 'inner_circle'));
-                        }
-                      }}
+                      type="radio"
+                      name="tierLevel"
+                      checked={!selectedTiers.includes('supporter') && !selectedTiers.includes('superfan') && selectedTiers.includes('inner_circle')}
+                      onChange={() => setSelectedTiers(['inner_circle'])}
                     />
-                    <span>Inner Circle (top 10 fans)</span>
+                    <span>Inner Circle only (top 10 fans)</span>
                   </label>
                 </div>
               )}
@@ -735,34 +721,6 @@ function CreatePageContent() {
                 </div>
               )}
 
-              <label className={`radio-option ${accessType === 'segment' ? 'active' : ''}`}>
-                <input
-                  type="radio"
-                  name="access"
-                  checked={accessType === 'segment'}
-                  onChange={() => setAccessType('segment')}
-                />
-                <div className="radio-content">
-                  <span className="radio-label">Segment-based</span>
-                  <span className="radio-desc">Target specific groups</span>
-                </div>
-              </label>
-              {accessType === 'segment' && (
-                <div className="sub-options">
-                  <select
-                    value={selectedSegment}
-                    onChange={(e) => setSelectedSegment(e.target.value)}
-                    className="segment-select"
-                  >
-                    <option value="">Select a segment...</option>
-                    {segments.map((seg) => (
-                      <option key={seg.id} value={seg.id}>
-                        {seg.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
             </div>
           </section>
 
@@ -1086,12 +1044,18 @@ function CreatePageContent() {
                 {dropType === 'audio' ? 'Music' : dropType === 'video' ? 'Video' : dropType === 'post' ? 'Post' : dropType === 'event' ? 'Event' : dropType === 'poll' ? 'Poll' : dropType === 'merch' ? 'Merch' : 'Post'}
               </span>
               {accessType !== 'public' && (
-                <span className={`tier-badge ${accessType === 'tier' && selectedTiers.includes('superfan') ? 'superfans' : 'supporters'}`}>
-                  {accessType === 'subscribers' && 'Subscribers'}
-                  {accessType === 'tier' && selectedTiers.includes('superfan') && !selectedTiers.includes('supporter') && 'Superfans'}
+                <span className={`tier-badge ${
+                  accessType === 'subscribers' ? 'supporters' :
+                  accessType === 'tier' && selectedTiers.includes('supporter') ? 'supporters' :
+                  accessType === 'tier' && selectedTiers.includes('superfan') ? 'superfans' :
+                  accessType === 'tier' && selectedTiers.includes('inner_circle') ? 'inner_circle' :
+                  'supporters'
+                }`}>
+                  {accessType === 'subscribers' && 'Supporters'}
                   {accessType === 'tier' && selectedTiers.includes('supporter') && 'Supporters'}
+                  {accessType === 'tier' && !selectedTiers.includes('supporter') && selectedTiers.includes('superfan') && 'Superfans'}
+                  {accessType === 'tier' && !selectedTiers.includes('supporter') && !selectedTiers.includes('superfan') && selectedTiers.includes('inner_circle') && 'Inner Circle'}
                   {accessType === 'rank' && `Top ${rankValue}${rankType === 'percent' ? '%' : ''}`}
-                  {accessType === 'segment' && 'Exclusive'}
                 </span>
               )}
             </div>

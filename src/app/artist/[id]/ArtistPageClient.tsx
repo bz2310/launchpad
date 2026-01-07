@@ -67,24 +67,15 @@ const artistMerch = [
   },
 ];
 
-// Membership tiers
-const membershipTiers = [
-  {
-    id: 'supporters',
-    name: 'Supporters',
-    price: '$10/month',
-    impact: 'Your $10/month helps fund studio time, production, and new recordings',
-    features: ['Early access to new releases (48 hours)', 'Monthly behind-the-scenes of the creative process', 'Supporter-only Discord to follow the journey', 'Your name in supporter credits'],
-  },
-  {
-    id: 'superfans',
-    name: 'Superfans',
-    price: '$30/month',
-    impact: 'Your $30/month directly funds music videos, touring, and bigger productions',
-    features: ['Everything in Supporters tier', 'Weekly acoustic sessions & unreleased demos', 'Monthly live calls — share ideas, give feedback', 'Name in official album credits', 'Vote on creative decisions (cover art, tracklist order)', 'First access to concert tickets', 'Direct messaging'],
-    featured: true,
-  },
-];
+// Membership tier - only Supporter is purchasable ($10/mo)
+// Superfan and Inner Circle are earned by points
+const membershipTier = {
+  id: 'supporters',
+  name: 'Supporter',
+  price: '$10/month',
+  impact: 'Your $10/month helps fund studio time, production, and new recordings',
+  features: ['Early access to new releases (48 hours)', 'Monthly behind-the-scenes of the creative process', 'Supporter-only Discord to follow the journey', 'Your name in supporter credits', 'Earn points toward Superfan status'],
+};
 
 // Default badges (fallback if artist doesn't have badges defined)
 const defaultBadges = [
@@ -612,33 +603,29 @@ export default function ArtistPageClient({ id }: ArtistPageClientProps) {
           <h3>Fund New Music</h3>
           <p className="membership-intro">Your support directly funds {artist.name.split(' ')[0]}&apos;s next creation. Be part of the journey from idea to release.</p>
 
-          {membershipTiers.map((tier) => (
-            <div key={tier.id} className={`membership-tier ${tier.featured ? 'featured' : ''} ${expandedTiers.includes(tier.id) ? 'expanded' : ''}`}>
-              {tier.featured && <div className="tier-badge">Most Impact</div>}
-              <div className="tier-header" onClick={() => toggleTier(tier.id)}>
-                <div className="tier-info">
-                  <span className="tier-name">{tier.name}</span>
-                  <span className="tier-price">{tier.price.replace('/month', '')}<span className="per-month">/month</span></span>
-                </div>
-                <svg className="tier-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+          <div className={`membership-tier featured ${expandedTiers.includes(membershipTier.id) ? 'expanded' : ''}`}>
+            <div className="tier-badge">Support the Journey</div>
+            <div className="tier-header" onClick={() => toggleTier(membershipTier.id)}>
+              <div className="tier-info">
+                <span className="tier-name">{membershipTier.name}</span>
+                <span className="tier-price">{membershipTier.price.replace('/month', '')}<span className="per-month">/month</span></span>
               </div>
-              <div className="tier-details">
-                <p className="tier-impact">💜 {tier.impact}</p>
-                <ul>
-                  {tier.features.map((feature, i) => (
-                    <li key={i}>{feature}</li>
-                  ))}
-                </ul>
-                <Link href={`/membership/${id}`}>
-                  <button className="tier-join-btn">
-                    {tier.featured ? 'Support as Superfan' : 'Become a Supporter'}
-                  </button>
-                </Link>
-              </div>
+              <svg className="tier-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </div>
-          ))}
+            <div className="tier-details">
+              <p className="tier-impact">💜 {membershipTier.impact}</p>
+              <ul>
+                {membershipTier.features.map((feature, i) => (
+                  <li key={i}>{feature}</li>
+                ))}
+              </ul>
+              <Link href={`/membership/${id}`}>
+                <button className="tier-join-btn">Become a Supporter</button>
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Similar Artists */}
