@@ -242,6 +242,12 @@ export const artists: Record<string, Artist> = {
       metric: 'supporters',
       color: '#ff69b4',
       status: 'active',
+      unlocks: [
+        { id: 'gaga_unlock_25', threshold: 25, title: 'Behind-the-scenes rehearsal footage', isUnlocked: true },
+        { id: 'gaga_unlock_50', threshold: 50, title: 'Exclusive tour poster download', isUnlocked: true },
+        { id: 'gaga_unlock_75', threshold: 75, title: 'Virtual meet & greet entry', isUnlocked: false },
+        { id: 'gaga_unlock_100', threshold: 100, title: 'Name in tour credits + signed merch', isUnlocked: false },
+      ],
     },
     badges: [
       { id: 'verified', name: 'Verified Artist', icon: 'check-circle', color: '#22c55e' },
@@ -292,6 +298,12 @@ export const artists: Record<string, Artist> = {
       metric: 'pre-saves',
       color: '#ff0000',
       status: 'active',
+      unlocks: [
+        { id: 'weeknd_unlock_25', threshold: 25, title: 'Extended album artwork reveal', isUnlocked: true },
+        { id: 'weeknd_unlock_50', threshold: 50, title: 'Exclusive alternate music video', isUnlocked: true },
+        { id: 'weeknd_unlock_75', threshold: 75, title: 'Early access to concert film', isUnlocked: false },
+        { id: 'weeknd_unlock_100', threshold: 100, title: 'Limited edition vinyl + digital booklet', isUnlocked: false },
+      ],
     },
     badges: [
       { id: 'verified', name: 'Verified Artist', icon: 'check-circle', color: '#22c55e' },
@@ -339,6 +351,12 @@ export const artists: Record<string, Artist> = {
       metric: 'contributions',
       color: '#8b2bff',
       status: 'active',
+      unlocks: [
+        { id: 'strokes_unlock_25', threshold: 25, title: 'Studio diary video series', isUnlocked: true },
+        { id: 'strokes_unlock_50', threshold: 50, title: 'Exclusive demo track download', isUnlocked: true },
+        { id: 'strokes_unlock_75', threshold: 75, title: 'Name in album credits', isUnlocked: false },
+        { id: 'strokes_unlock_100', threshold: 100, title: 'Private listening party invite', isUnlocked: false },
+      ],
     },
     badges: [
       { id: 'verified', name: 'Verified Artist', icon: 'check-circle', color: '#22c55e' },
@@ -385,6 +403,12 @@ export const artists: Record<string, Artist> = {
       metric: 'pre-orders',
       color: '#0066cc',
       status: 'active',
+      unlocks: [
+        { id: 'weezer_unlock_25', threshold: 25, title: 'Rare band photos from 1994', isUnlocked: true },
+        { id: 'weezer_unlock_50', threshold: 50, title: 'Unreleased demo: "Suzanne"', isUnlocked: true },
+        { id: 'weezer_unlock_75', threshold: 75, title: 'Rivers Cuomo video commentary', isUnlocked: true },
+        { id: 'weezer_unlock_100', threshold: 100, title: 'Exclusive acoustic session recording', isUnlocked: false },
+      ],
     },
     badges: [
       { id: 'verified', name: 'Verified Artist', icon: 'check-circle', color: '#22c55e' },

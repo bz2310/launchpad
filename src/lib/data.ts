@@ -258,6 +258,17 @@ export function getGoal(id: string): Goal | undefined {
   const allArtists = getAllArtists();
   for (const artist of allArtists) {
     if (artist.activeGoal && artist.activeGoal.id === id) {
+      // Convert ArtistGoalUnlock[] to GoalUnlock[] format
+      const unlocks = (artist.activeGoal.unlocks || []).map(unlock => ({
+        id: unlock.id,
+        threshold: unlock.threshold,
+        title: unlock.title,
+        description: unlock.description,
+        rewardType: 'content' as const,
+        deliverTo: 'all_contributors' as const,
+        isUnlocked: unlock.isUnlocked,
+      }));
+
       return {
         id: artist.activeGoal.id,
         title: artist.activeGoal.title,
@@ -267,7 +278,7 @@ export function getGoal(id: string): Goal | undefined {
         currentValue: artist.activeGoal.currentValue,
         startDate: new Date().toISOString(),
         status: artist.activeGoal.status === 'active' ? 'active' : 'completed',
-        unlocks: [],
+        unlocks,
         dropIds: [],
         color: artist.activeGoal.color,
         contributorCount: 0,

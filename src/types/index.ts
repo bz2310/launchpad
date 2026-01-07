@@ -92,6 +92,14 @@ export interface Activity {
 }
 
 // Artist Types
+export interface ArtistGoalUnlock {
+  id: string;
+  threshold: 25 | 50 | 75 | 100;
+  title: string;
+  description?: string;
+  isUnlocked: boolean;
+}
+
 export interface ArtistGoal {
   id: string;
   title: string;
@@ -101,6 +109,7 @@ export interface ArtistGoal {
   metric: string;
   color?: string;
   status: 'active' | 'completed';
+  unlocks?: ArtistGoalUnlock[];
 }
 
 export interface Artist {
