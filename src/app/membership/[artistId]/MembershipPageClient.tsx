@@ -194,32 +194,39 @@ export default function MembershipPageClient({ artistId }: MembershipPageClientP
             {/* Points Explainer */}
             <div className="points-explainer">
               <h3>How Points Work</h3>
-              <div className="points-grid">
+              <div className="points-list">
                 <div className="points-item">
-                  <span className="points-value">+10</span>
-                  <span className="points-action">Monthly subscription</span>
+                  <span className="points-action">Share gifts</span>
+                  <span className="points-value">50 pts each</span>
                 </div>
                 <div className="points-item">
-                  <span className="points-value">+5</span>
-                  <span className="points-action">Engage with content</span>
+                  <span className="points-action">Share → subscriber</span>
+                  <span className="points-value">300 pts each</span>
                 </div>
                 <div className="points-item">
-                  <span className="points-value">+25</span>
-                  <span className="points-action">Merch purchase</span>
-                </div>
-                <div className="points-item">
-                  <span className="points-value">+50</span>
-                  <span className="points-action">Attend live event</span>
-                </div>
-                <div className="points-item">
-                  <span className="points-value">+15</span>
-                  <span className="points-action">Share content</span>
-                </div>
-                <div className="points-item">
-                  <span className="points-value">+100</span>
                   <span className="points-action">Help reach a goal</span>
+                  <span className="points-value">100 pts bonus</span>
+                </div>
+                <div className="points-item">
+                  <span className="points-action">Attend events</span>
+                  <span className="points-value">200 pts each</span>
+                </div>
+                <div className="points-item">
+                  <span className="points-action">Comments</span>
+                  <span className="points-value">10 pts each</span>
+                </div>
+                <div className="points-item">
+                  <span className="points-action">Likes</span>
+                  <span className="points-value">2 pts each</span>
+                </div>
+                <div className="points-item">
+                  <span className="points-action">Merch</span>
+                  <span className="points-value">1 pt per $1</span>
                 </div>
               </div>
+              <Link href="/points" className="points-learn-more">
+                Learn more about points →
+              </Link>
             </div>
           </div>
 

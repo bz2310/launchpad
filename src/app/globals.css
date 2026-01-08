@@ -5092,13 +5092,56 @@ a.leaderboard-item {
     font-size: 18px;
 }
 
+.points-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.points-list .points-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-primary);
+    border-radius: 8px;
+}
+
+.points-list .points-action {
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.points-list .points-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+    font-family: monospace;
+}
+
+.points-learn-more {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.points-learn-more:hover {
+    opacity: 0.8;
+}
+
+/* Legacy grid styles for backwards compat */
 .points-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
 }
 
-.points-item {
+.points-grid .points-item {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -5108,14 +5151,14 @@ a.leaderboard-item {
     text-align: center;
 }
 
-.points-value {
+.points-grid .points-value {
     font-size: 24px;
     font-weight: 700;
     color: var(--primary);
     margin-bottom: 4px;
 }
 
-.points-action {
+.points-grid .points-action {
     font-size: 13px;
     color: var(--text-secondary);
 }
@@ -5127,6 +5170,311 @@ a.leaderboard-item {
 
     .points-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ==================== POINTS PAGE STYLES ==================== */
+.points-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.points-hero {
+    text-align: center;
+    padding: 40px 20px;
+    margin-bottom: 40px;
+}
+
+.points-hero h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--primary), #b366ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.points-hero-subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.points-section {
+    margin-bottom: 48px;
+}
+
+.points-section h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.points-section .section-intro {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+/* Tier Thresholds */
+.tier-thresholds {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.tier-threshold-card {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.tier-threshold-card:hover {
+    transform: translateY(-2px);
+}
+
+.tier-threshold-card.supporter {
+    border-color: rgba(139, 43, 255, 0.3);
+}
+
+.tier-threshold-card.superfan {
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.tier-threshold-card.inner-circle {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.tier-threshold-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.tier-threshold-card.supporter .tier-threshold-icon {
+    background: rgba(139, 43, 255, 0.15);
+    color: #b366ff;
+}
+
+.tier-threshold-card.superfan .tier-threshold-icon {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+.tier-threshold-card.inner-circle .tier-threshold-icon {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.tier-threshold-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.tier-requirement {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.tier-description {
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+/* Points Earning Grid */
+.points-earning-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.points-category {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--border);
+}
+
+.points-category h3 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.category-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-icon.high {
+    background: rgba(139, 43, 255, 0.15);
+    color: #b366ff;
+}
+
+.category-icon.medium {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.category-icon.engagement {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+
+.category-icon.purchases {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+.points-earning-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.points-earning-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px;
+    background: var(--bg-primary);
+    border-radius: 8px;
+}
+
+.earning-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.earning-action {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.earning-description {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.earning-value {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: monospace;
+    white-space: nowrap;
+}
+
+.earning-value.high {
+    color: #b366ff;
+}
+
+.earning-value.medium {
+    color: #4ade80;
+}
+
+.earning-value.engagement {
+    color: #60a5fa;
+}
+
+.earning-value.purchases {
+    color: #fbbf24;
+}
+
+/* Points FAQ */
+.points-faq {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.faq-item {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border);
+}
+
+.faq-item h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.faq-item p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Points CTA */
+.points-cta {
+    text-align: center;
+    padding: 48px 24px;
+    background: linear-gradient(135deg, rgba(139, 43, 255, 0.1), rgba(179, 102, 255, 0.1));
+    border-radius: 20px;
+    border: 1px solid rgba(139, 43, 255, 0.2);
+}
+
+.points-cta h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.points-cta p {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.points-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.points-cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 43, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+    .tier-thresholds {
+        grid-template-columns: 1fr;
+    }
+
+    .points-earning-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .points-hero h1 {
+        font-size: 28px;
     }
 }
 
@@ -18527,6 +18875,24 @@ a.leaderboard-item {
 .membership-stat-label {
     font-size: 12px;
     color: var(--text-secondary);
+}
+
+.points-info-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.points-info-link:hover {
+    opacity: 0.8;
 }
 
 .my-artist-goal-section h3,

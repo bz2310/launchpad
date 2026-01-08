@@ -114,7 +114,25 @@ export default function MyArtistsPage() {
                     <span className="membership-stat-value">{relationship?.milestonesUnlocked || 0}</span>
                     <span className="membership-stat-label">Milestones Unlocked</span>
                   </div>
+                  <div className="membership-stat">
+                    <span className="membership-stat-value">{relationship?.points?.toLocaleString() || 0}</span>
+                    <span className="membership-stat-label">Points</span>
+                  </div>
+                  {relationship?.pointsRank && (
+                    <div className="membership-stat">
+                      <span className="membership-stat-value">#{relationship.pointsRank}</span>
+                      <span className="membership-stat-label">Rank</span>
+                    </div>
+                  )}
                 </div>
+                <Link href="/points" className="points-info-link">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" />
+                    <path d="M12 8h.01" />
+                  </svg>
+                  How points work
+                </Link>
               </div>
             </div>
 
