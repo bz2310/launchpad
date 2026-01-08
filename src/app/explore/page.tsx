@@ -104,27 +104,26 @@ export default function ExplorePage() {
       {/* Rising Stars */}
       <div className="explore-section">
         <h2 className="explore-section-title">Rising Stars This Week</h2>
-        <div className="artist-cards-grid">
+        <div className="rising-stars-grid">
           {risingStars.map((artist) => (
-            <div key={artist.id} className="artist-discover-card">
+            <Link key={artist.id} href={`/artist/${artist.id}`} className="rising-star-card">
               <img
                 src={artist.avatar}
                 alt={artist.name}
-                className="artist-card-avatar"
+                className="rising-star-avatar"
               />
-              <h4>{artist.name}</h4>
-              <p className="artist-card-genre">{artist.genres.join(' / ')}</p>
-              <p className="artist-card-supporters">💜 {artist.stats.supporters} supporters</p>
-              {artist.risingReason && (
-                <span className="rising-context">📣 {artist.risingReason}</span>
-              )}
-              <Link
-                href={`/membership/${artist.id}`}
-                className="support-btn-small"
-              >
-                Support
-              </Link>
-            </div>
+              <div className="rising-star-info">
+                <h4>{artist.name}</h4>
+                <p className="rising-star-genre">{artist.genres.join(' • ')}</p>
+                <div className="rising-star-meta">
+                  <span className="rising-star-supporters">{artist.stats.supporters.toLocaleString()} supporters</span>
+                  {artist.risingReason && (
+                    <span className="rising-star-reason">{artist.risingReason}</span>
+                  )}
+                </div>
+              </div>
+              <span className="rising-star-btn">Support</span>
+            </Link>
           ))}
         </div>
       </div>

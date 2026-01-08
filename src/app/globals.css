@@ -2103,7 +2103,96 @@ body {
     opacity: 0.8;
 }
 
-/* Artist Discover Cards Grid */
+/* Rising Stars Grid */
+.rising-stars-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rising-star-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+.rising-star-card:hover {
+    border-color: var(--primary);
+    background: var(--bg-tertiary);
+}
+
+.rising-star-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.rising-star-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.rising-star-info h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rising-star-genre {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.rising-star-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.rising-star-supporters {
+    font-size: 12px;
+    color: var(--primary-light);
+    font-weight: 500;
+}
+
+.rising-star-reason {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.rising-star-btn {
+    padding: 8px 16px;
+    background: var(--primary);
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.rising-star-card:hover .rising-star-btn {
+    background: var(--primary-light);
+}
+
+/* Legacy Artist Discover Cards Grid */
 .artist-cards-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -19114,8 +19203,8 @@ a.leaderboard-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 24px;
+    gap: 12px;
+    padding: 16px;
     background: var(--bg-tertiary);
     border-radius: 12px;
     margin-bottom: 16px;
@@ -19123,8 +19212,8 @@ a.leaderboard-item {
 
 .tier-progress-wheel {
     position: relative;
-    width: 140px;
-    height: 140px;
+    width: 120px;
+    height: 120px;
     flex-shrink: 0;
 }
 
