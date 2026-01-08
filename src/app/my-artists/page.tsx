@@ -6,6 +6,27 @@ import Image from 'next/image';
 import { MainLayout } from '@/components/layout';
 import { getSupportedArtists, getCurrentUser, getPublishedContent } from '@/lib/data';
 
+// Mock top fans data for the leaderboard
+const mockTopFans = [
+  { id: '1', name: 'Sarah M.', avatar: 'https://i.pravatar.cc/40?img=1', points: 4850, rank: 1 },
+  { id: '2', name: 'Jake T.', avatar: 'https://i.pravatar.cc/40?img=2', points: 4320, rank: 2 },
+  { id: '3', name: 'Maria G.', avatar: 'https://i.pravatar.cc/40?img=3', points: 3980, rank: 3 },
+  { id: '4', name: 'Alex K.', avatar: 'https://i.pravatar.cc/40?img=4', points: 3650, rank: 4 },
+  { id: '5', name: 'Chris L.', avatar: 'https://i.pravatar.cc/40?img=5', points: 3420, rank: 5 },
+  { id: '6', name: 'Emma R.', avatar: 'https://i.pravatar.cc/40?img=6', points: 3100, rank: 6 },
+  { id: '7', name: 'David W.', avatar: 'https://i.pravatar.cc/40?img=7', points: 2890, rank: 7 },
+  { id: '8', name: 'Lisa P.', avatar: 'https://i.pravatar.cc/40?img=8', points: 2650, rank: 8 },
+  { id: '9', name: 'Mike S.', avatar: 'https://i.pravatar.cc/40?img=9', points: 2480, rank: 9 },
+  { id: '10', name: 'Anna B.', avatar: 'https://i.pravatar.cc/40?img=10', points: 2320, rank: 10 },
+];
+
+// Mock purchased content
+const mockPurchasedContent = [
+  { id: 'p1', title: 'Acoustic Sessions EP', type: 'music', price: '$4.99', purchaseDate: '2024-01-15', thumbnail: 'https://picsum.photos/seed/p1/200/200' },
+  { id: 'p2', title: 'Behind the Album Documentary', type: 'video', price: '$9.99', purchaseDate: '2024-01-10', thumbnail: 'https://picsum.photos/seed/p2/200/200' },
+  { id: 'p3', title: 'Exclusive Photo Book', type: 'image', price: '$2.99', purchaseDate: '2023-12-20', thumbnail: 'https://picsum.photos/seed/p3/200/200' },
+];
+
 export default function MyArtistsPage() {
   const supportedArtists = getSupportedArtists();
   const user = getCurrentUser();
@@ -16,7 +37,11 @@ export default function MyArtistsPage() {
   const relationship = user.supportRelationships?.[selectedArtist];
 
   // Get recent content for selected artist (mock - in real app would filter by artist)
-  const recentContent = allContent.slice(0, 4);
+  const recentContent = allContent.slice(0, 6);
+
+  // Mock user's rank and points
+  const userPoints = relationship?.points || 1250;
+  const userRank = relationship?.pointsRank || 42;
 
   return (
     <MainLayout title="My Artists">
@@ -40,7 +65,13 @@ export default function MyArtistsPage() {
                 <div className="my-artist-info">
                   <span className="my-artist-name">
                     {artist.name}
-                    {artist.verified && <span className="verified-small">✓</span>}
+                    {artist.verified && (
+                      <span className="verified-icon-small">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                        </svg>
+                      </span>
+                    )}
                   </span>
                   <span className="my-artist-tier">
                     {user.supportRelationships?.[artist.id]?.membershipTier || 'Supporter'}
@@ -76,7 +107,13 @@ export default function MyArtistsPage() {
                 <div>
                   <h2>
                     {selectedArtistData.name}
-                    {selectedArtistData.verified && <span className="verified-badge">✓</span>}
+                    {selectedArtistData.verified && (
+                      <span className="verified-icon-badge">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                        </svg>
+                      </span>
+                    )}
                   </h2>
                   <p className="my-artist-handle">{selectedArtistData.handle}</p>
                   {relationship && (
@@ -96,8 +133,9 @@ export default function MyArtistsPage() {
               </div>
             </div>
 
-            {/* Membership Card */}
-            <div className="my-artist-membership">
+            {/* Two Column Layout: Membership + Points */}
+            <div className="my-artist-cards-row">
+              {/* Membership Card */}
               <div className="membership-card">
                 <div className="membership-card-header">
                   <h3>Your Membership</h3>
@@ -114,17 +152,42 @@ export default function MyArtistsPage() {
                     <span className="membership-stat-value">{relationship?.milestonesUnlocked || 0}</span>
                     <span className="membership-stat-label">Milestones Unlocked</span>
                   </div>
-                  <div className="membership-stat">
-                    <span className="membership-stat-value">{relationship?.points?.toLocaleString() || 0}</span>
-                    <span className="membership-stat-label">Points</span>
-                  </div>
-                  {relationship?.pointsRank && (
-                    <div className="membership-stat">
-                      <span className="membership-stat-value">#{relationship.pointsRank}</span>
-                      <span className="membership-stat-label">Rank</span>
-                    </div>
-                  )}
                 </div>
+              </div>
+
+              {/* Points Summary Card */}
+              <div className="points-summary-card">
+                <div className="points-summary-header">
+                  <h3>Points Summary</h3>
+                  <div className="your-points-badge">
+                    <span className="your-points-value">{userPoints.toLocaleString()}</span>
+                    <span className="your-points-label">pts</span>
+                  </div>
+                </div>
+
+                {/* Your Rank */}
+                <div className="your-rank-display">
+                  <span className="your-rank-label">Your Rank</span>
+                  <span className="your-rank-value">#{userRank}</span>
+                </div>
+
+                {/* Top 10 Leaderboard */}
+                <div className="points-leaderboard">
+                  <h4>Top 10 Supporters</h4>
+                  <div className="leaderboard-list">
+                    {mockTopFans.map((fan) => (
+                      <div key={fan.id} className={`leaderboard-item ${fan.rank <= 3 ? 'top-three' : ''}`}>
+                        <span className={`leaderboard-rank ${fan.rank <= 3 ? `rank-${fan.rank}` : ''}`}>
+                          {fan.rank}
+                        </span>
+                        <img src={fan.avatar} alt={fan.name} className="leaderboard-avatar" />
+                        <span className="leaderboard-name">{fan.name}</span>
+                        <span className="leaderboard-points">{fan.points.toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <Link href="/points" className="points-info-link">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />
@@ -170,7 +233,40 @@ export default function MyArtistsPage() {
               </div>
             )}
 
-            {/* Recent Content */}
+            {/* Purchased Content */}
+            <div className="my-artist-content-section">
+              <div className="section-header">
+                <h3>Your Purchased Content</h3>
+              </div>
+              {mockPurchasedContent.length > 0 ? (
+                <div className="purchased-content-list">
+                  {mockPurchasedContent.map((item) => (
+                    <Link key={item.id} href={`/content/${item.id}`} className="purchased-content-item">
+                      <img src={item.thumbnail} alt={item.title} className="purchased-thumbnail" />
+                      <div className="purchased-info">
+                        <h4>{item.title}</h4>
+                        <span className="purchased-meta">
+                          <span className={`purchased-type ${item.type}`}>
+                            {item.type === 'music' ? '♪' : item.type === 'video' ? '▶' : '📷'}
+                            {item.type}
+                          </span>
+                          <span className="purchased-date">
+                            Purchased {new Date(item.purchaseDate).toLocaleDateString()}
+                          </span>
+                        </span>
+                      </div>
+                      <span className="purchased-price">{item.price}</span>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-purchased">
+                  <p>No purchased content yet. Exclusive drops will appear here.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Recent Content Feed */}
             <div className="my-artist-content-section">
               <div className="section-header">
                 <h3>Recent Content</h3>
@@ -178,25 +274,72 @@ export default function MyArtistsPage() {
                   View All
                 </Link>
               </div>
-              <div className="my-artist-content-grid">
+              <div className="my-artist-feed">
                 {recentContent.map((content) => (
                   <Link
                     key={content.id}
                     href={`/content/${content.id}`}
-                    className="my-artist-content-card"
+                    className="feed-item-card"
                   >
-                    {content.thumbnailUrl && (
-                      <div className="content-thumbnail">
-                        <img src={content.thumbnailUrl} alt={content.title} />
-                        <span className={`content-type-badge ${content.type}`}>
-                          {content.type === 'music' ? '♪' : content.type === 'video' ? '▶' : '✎'}
+                    <div className="feed-item-header">
+                      <Image
+                        src={selectedArtistData.avatar}
+                        alt={selectedArtistData.name}
+                        width={40}
+                        height={40}
+                        className="feed-item-avatar"
+                      />
+                      <div className="feed-item-meta">
+                        <span className="feed-item-artist">{selectedArtistData.name}</span>
+                        <span className="feed-item-date">
+                          {new Date(content.publishedAt || content.createdAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric'
+                          })}
                         </span>
                       </div>
+                      <span className={`feed-type-badge ${content.type}`}>
+                        {content.type === 'music' ? 'Music' : content.type === 'video' ? 'Video' : content.type === 'image' ? 'Photo' : 'Post'}
+                      </span>
+                    </div>
+                    <h4 className="feed-item-title">{content.title}</h4>
+                    {content.description && (
+                      <p className="feed-item-description">{content.description.substring(0, 120)}...</p>
                     )}
-                    <div className="content-info">
-                      <h4>{content.title}</h4>
-                      <span className="content-date">
-                        {new Date(content.publishedAt || content.createdAt).toLocaleDateString()}
+                    {content.thumbnailUrl && (
+                      <div className="feed-item-media">
+                        <img src={content.thumbnailUrl} alt={content.title} />
+                        {content.type === 'video' && (
+                          <div className="play-overlay">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                              <polygon points="5 3 19 12 5 21 5 3" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div className="feed-item-stats">
+                      <span className="feed-stat">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg>
+                        {content.likeCount || 0}
+                      </span>
+                      <span className="feed-stat">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                        {content.commentCount || 0}
+                      </span>
+                      <span className="feed-stat">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="18" cy="5" r="3" />
+                          <circle cx="6" cy="12" r="3" />
+                          <circle cx="18" cy="19" r="3" />
+                          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                        </svg>
+                        {content.shareCount || 0}
                       </span>
                     </div>
                   </Link>

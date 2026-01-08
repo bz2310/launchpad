@@ -19033,6 +19033,451 @@ a.leaderboard-item {
     color: var(--text-secondary);
 }
 
+/* Verified Icon Badges */
+.verified-icon-small {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 50%;
+    color: white;
+    margin-left: 4px;
+    flex-shrink: 0;
+}
+
+.verified-icon-small svg {
+    width: 10px;
+    height: 10px;
+}
+
+.verified-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: var(--primary);
+    border-radius: 50%;
+    color: white;
+    margin-left: 6px;
+    flex-shrink: 0;
+}
+
+.verified-icon-badge svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Two-column layout for Membership + Points */
+.my-artist-cards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Membership Card */
+.membership-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.membership-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.membership-card-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Points Summary Card */
+.points-summary-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.points-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.points-summary-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.your-points-badge {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    padding: 6px 14px;
+    border-radius: 20px;
+}
+
+.your-points-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+}
+
+.your-points-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Your Rank Display */
+.your-rank-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.your-rank-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.your-rank-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* Top 10 Leaderboard */
+.points-leaderboard {
+    margin-bottom: 16px;
+}
+
+.points-leaderboard h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.leaderboard-item:hover {
+    background: var(--bg-primary);
+}
+
+.leaderboard-item.top-three {
+    background: rgba(139, 43, 255, 0.1);
+}
+
+.leaderboard-rank {
+    min-width: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.leaderboard-rank.rank-1 {
+    color: #ffd700;
+}
+
+.leaderboard-rank.rank-2 {
+    color: #c0c0c0;
+}
+
+.leaderboard-rank.rank-3 {
+    color: #cd7f32;
+}
+
+.leaderboard-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.leaderboard-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.leaderboard-points {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Purchased Content Section */
+.purchased-content-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.purchased-content-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.purchased-content-item:hover {
+    background: var(--bg-tertiary);
+    transform: translateX(4px);
+}
+
+.purchased-thumbnail {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.purchased-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.purchased-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.purchased-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+}
+
+.purchased-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.purchased-type.music {
+    background: rgba(139, 43, 255, 0.15);
+    color: var(--primary);
+}
+
+.purchased-type.video {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.purchased-type.image {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.purchased-date {
+    color: var(--text-secondary);
+}
+
+.purchased-price {
+    font-size: 14px;
+    font-weight: 600;
+    color: #22c55e;
+}
+
+.empty-purchased {
+    padding: 32px;
+    text-align: center;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    color: var(--text-secondary);
+}
+
+/* Feed-style Recent Content */
+.my-artist-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.feed-item-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 16px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: block;
+}
+
+.feed-item-card:hover {
+    background: var(--bg-tertiary);
+}
+
+.feed-item-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.feed-item-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.feed-item-meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.feed-item-artist {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.feed-item-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.feed-type-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.feed-type-badge.music {
+    background: rgba(139, 43, 255, 0.15);
+    color: var(--primary);
+}
+
+.feed-type-badge.video {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.feed-type-badge.image {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.feed-type-badge.post {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.feed-item-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.feed-item-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.feed-item-media {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.feed-item-media img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+}
+
+.feed-item-media .play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    transition: background 0.2s;
+}
+
+.feed-item-card:hover .feed-item-media .play-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.feed-item-stats {
+    display: flex;
+    gap: 20px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.feed-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.feed-stat svg {
+    opacity: 0.7;
+}
+
 /* =====================
    Portfolio / Under Construction Page
    ===================== */
@@ -19595,6 +20040,14 @@ a.leaderboard-item {
 
     .my-artist-content-grid {
         grid-template-columns: 1fr;
+    }
+
+    .my-artist-cards-row {
+        grid-template-columns: 1fr;
+    }
+
+    .leaderboard-list {
+        max-height: 200px;
     }
 }
 
