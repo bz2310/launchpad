@@ -18857,24 +18857,35 @@ a.leaderboard-item {
 }
 
 .membership-stats {
-    display: flex;
-    gap: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
 }
 
 .membership-stat {
     display: flex;
     flex-direction: column;
+    text-align: center;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
 }
 
 .membership-stat-value {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
     color: var(--text-primary);
 }
 
 .membership-stat-label {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
 }
 
 .points-info-link {
@@ -19081,7 +19092,9 @@ a.leaderboard-item {
 .membership-card {
     background: var(--bg-secondary);
     border-radius: 12px;
-    padding: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
 }
 
 .membership-card-header {
@@ -19100,17 +19113,17 @@ a.leaderboard-item {
 .tier-progress-section {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 16px;
+    gap: 20px;
+    padding: 20px;
     background: var(--bg-tertiary);
-    border-radius: 10px;
+    border-radius: 12px;
     margin-bottom: 16px;
 }
 
 .tier-progress-wheel {
     position: relative;
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     flex-shrink: 0;
 }
 
@@ -19123,13 +19136,13 @@ a.leaderboard-item {
 .tier-progress-bg {
     fill: none;
     stroke: var(--bg-primary);
-    stroke-width: 3;
+    stroke-width: 3.5;
 }
 
 .tier-progress-fill {
     fill: none;
     stroke: var(--primary);
-    stroke-width: 3;
+    stroke-width: 3.5;
     stroke-linecap: round;
     transition: stroke-dasharray 0.5s ease;
 }
@@ -19139,7 +19152,7 @@ a.leaderboard-item {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--primary);
 }
@@ -19147,17 +19160,18 @@ a.leaderboard-item {
 .tier-progress-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
+    flex: 1;
 }
 
 .tier-progress-next {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text-primary);
 }
 
 .tier-progress-label {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-secondary);
 }
 
@@ -19167,18 +19181,24 @@ a.leaderboard-item {
 }
 
 .tier-achieved-icon {
-    width: 48px;
-    height: 48px;
+    width: 80px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(255, 71, 87, 0.2);
     border-radius: 50%;
     color: #ff4757;
+    flex-shrink: 0;
+}
+
+.tier-achieved-icon svg {
+    width: 36px;
+    height: 36px;
 }
 
 .tier-achieved-text {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     color: #ff4757;
 }
