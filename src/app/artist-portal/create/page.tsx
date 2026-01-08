@@ -8,8 +8,8 @@ import { getArtistPortalData } from '@/data/artist-portal-data';
 import type { DropRole, CtaType, UnlockThreshold } from '@/types/artist-portal';
 
 type DropType = 'audio' | 'video' | 'post' | 'merch' | 'event' | 'poll';
-type AccessType = 'public' | 'subscribers' | 'tier' | 'rank' | 'segment';
-type MonetizationType = 'included' | 'paid' | 'limited';
+type AccessType = 'public' | 'tier';
+type MonetizationType = 'included' | 'paid' | 'pay_what_you_want';
 type TimingType = 'now' | 'scheduled';
 
 function CreatePageContent() {
@@ -27,14 +27,13 @@ function CreatePageContent() {
   // Access
   const [accessType, setAccessType] = useState<AccessType>('public');
   const [selectedTiers, setSelectedTiers] = useState<string[]>(['supporter']);
-  const [rankType, setRankType] = useState<'count' | 'percent'>('count');
-  const [rankValue, setRankValue] = useState(5);
-  const [selectedSegment, setSelectedSegment] = useState('');
 
   // Monetization
   const [monetization, setMonetization] = useState<MonetizationType>('included');
   const [unlockPrice, setUnlockPrice] = useState(4.99);
+  const [payWhatYouWantMin, setPayWhatYouWantMin] = useState(1.00);
   const [limitedQty, setLimitedQty] = useState(100);
+  const [isLimitedQuantity, setIsLimitedQuantity] = useState(false);
 
   // Timing
   const [timing, setTiming] = useState<TimingType>('now');
@@ -608,19 +607,6 @@ function CreatePageContent() {
                 </div>
               </label>
 
-              <label className={`radio-option ${accessType === 'subscribers' ? 'active' : ''}`}>
-                <input
-                  type="radio"
-                  name="access"
-                  checked={accessType === 'subscribers'}
-                  onChange={() => setAccessType('subscribers')}
-                />
-                <div className="radio-content">
-                  <span className="radio-label">Supporters</span>
-                  <span className="radio-desc">All paying supporters ($10/mo)</span>
-                </div>
-              </label>
-
               <label className={`radio-option ${accessType === 'tier' ? 'active' : ''}`}>
                 <input
                   type="radio"
@@ -666,61 +652,6 @@ function CreatePageContent() {
                 </div>
               )}
 
-              <label className={`radio-option ${accessType === 'rank' ? 'active' : ''}`}>
-                <input
-                  type="radio"
-                  name="access"
-                  checked={accessType === 'rank'}
-                  onChange={() => setAccessType('rank')}
-                />
-                <div className="radio-content">
-                  <span className="radio-label">Rank-based</span>
-                  <span className="radio-desc">Top fans by engagement</span>
-                </div>
-              </label>
-              {accessType === 'rank' && (
-                <div className="sub-options rank-options">
-                  <label className="checkbox-option">
-                    <input
-                      type="radio"
-                      name="rankType"
-                      checked={rankType === 'count'}
-                      onChange={() => setRankType('count')}
-                    />
-                    <span>Top</span>
-                    <input
-                      type="number"
-                      className="inline-input"
-                      value={rankType === 'count' ? rankValue : 5}
-                      onChange={(e) => setRankValue(parseInt(e.target.value) || 5)}
-                      disabled={rankType !== 'count'}
-                      min={1}
-                      max={100}
-                    />
-                    <span>fans</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="radio"
-                      name="rankType"
-                      checked={rankType === 'percent'}
-                      onChange={() => setRankType('percent')}
-                    />
-                    <span>Top</span>
-                    <input
-                      type="number"
-                      className="inline-input"
-                      value={rankType === 'percent' ? rankValue : 10}
-                      onChange={(e) => setRankValue(parseInt(e.target.value) || 10)}
-                      disabled={rankType !== 'percent'}
-                      min={1}
-                      max={100}
-                    />
-                    <span>%</span>
-                  </label>
-                </div>
-              )}
-
             </div>
           </section>
 
@@ -750,7 +681,7 @@ function CreatePageContent() {
                 />
                 <div className="radio-content">
                   <span className="radio-label">Paid Unlock</span>
-                  <span className="radio-desc">One-time purchase</span>
+                  <span className="radio-desc">Fixed price one-time purchase</span>
                 </div>
               </label>
               {monetization === 'paid' && (
@@ -768,21 +699,49 @@ function CreatePageContent() {
                 </div>
               )}
 
-              <label className={`radio-option ${monetization === 'limited' ? 'active' : ''}`}>
+              <label className={`radio-option ${monetization === 'pay_what_you_want' ? 'active' : ''}`}>
                 <input
                   type="radio"
                   name="monetization"
-                  checked={monetization === 'limited'}
-                  onChange={() => setMonetization('limited')}
+                  checked={monetization === 'pay_what_you_want'}
+                  onChange={() => setMonetization('pay_what_you_want')}
                 />
                 <div className="radio-content">
-                  <span className="radio-label">Limited Quantity</span>
-                  <span className="radio-desc">Scarcity-driven</span>
+                  <span className="radio-label">Pay What You Want</span>
+                  <span className="radio-desc">Fan chooses price above minimum</span>
                 </div>
               </label>
-              {monetization === 'limited' && (
+              {monetization === 'pay_what_you_want' && (
                 <div className="sub-options">
-                  <div className="qty-input">
+                  <div className="price-input pwyw-input">
+                    <span className="min-label">Minimum</span>
+                    <span className="currency">$</span>
+                    <input
+                      type="number"
+                      value={payWhatYouWantMin}
+                      onChange={(e) => setPayWhatYouWantMin(parseFloat(e.target.value) || 0)}
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                  <p className="pwyw-note">Set to $0 for completely optional donations</p>
+                </div>
+              )}
+            </div>
+
+            {/* Limited Quantity Checkbox - works with paid options */}
+            {(monetization === 'paid' || monetization === 'pay_what_you_want') && (
+              <div className="limited-qty-option">
+                <label className="checkbox-option standalone">
+                  <input
+                    type="checkbox"
+                    checked={isLimitedQuantity}
+                    onChange={(e) => setIsLimitedQuantity(e.target.checked)}
+                  />
+                  <span>Limited Quantity</span>
+                </label>
+                {isLimitedQuantity && (
+                  <div className="qty-input inline">
                     <input
                       type="number"
                       value={limitedQty}
@@ -791,9 +750,9 @@ function CreatePageContent() {
                     />
                     <span>available</span>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </section>
 
           {/* Timing Section */}
@@ -1043,19 +1002,16 @@ function CreatePageContent() {
               <span className={`post-type-badge ${dropType === 'audio' ? 'music' : dropType}`}>
                 {dropType === 'audio' ? 'Music' : dropType === 'video' ? 'Video' : dropType === 'post' ? 'Post' : dropType === 'event' ? 'Event' : dropType === 'poll' ? 'Poll' : dropType === 'merch' ? 'Merch' : 'Post'}
               </span>
-              {accessType !== 'public' && (
+              {accessType === 'tier' && (
                 <span className={`tier-badge ${
-                  accessType === 'subscribers' ? 'supporters' :
-                  accessType === 'tier' && selectedTiers.includes('supporter') ? 'supporters' :
-                  accessType === 'tier' && selectedTiers.includes('superfan') ? 'superfans' :
-                  accessType === 'tier' && selectedTiers.includes('inner_circle') ? 'inner_circle' :
+                  selectedTiers.includes('supporter') ? 'supporters' :
+                  selectedTiers.includes('superfan') ? 'superfans' :
+                  selectedTiers.includes('inner_circle') ? 'inner_circle' :
                   'supporters'
                 }`}>
-                  {accessType === 'subscribers' && 'Supporters'}
-                  {accessType === 'tier' && selectedTiers.includes('supporter') && 'Supporters'}
-                  {accessType === 'tier' && !selectedTiers.includes('supporter') && selectedTiers.includes('superfan') && 'Superfans'}
-                  {accessType === 'tier' && !selectedTiers.includes('supporter') && !selectedTiers.includes('superfan') && selectedTiers.includes('inner_circle') && 'Inner Circle'}
-                  {accessType === 'rank' && `Top ${rankValue}${rankType === 'percent' ? '%' : ''}`}
+                  {selectedTiers.includes('supporter') && 'Supporters'}
+                  {!selectedTiers.includes('supporter') && selectedTiers.includes('superfan') && 'Superfans'}
+                  {!selectedTiers.includes('supporter') && !selectedTiers.includes('superfan') && selectedTiers.includes('inner_circle') && 'Inner Circle'}
                 </span>
               )}
             </div>
@@ -1156,7 +1112,7 @@ function CreatePageContent() {
             )}
 
             {/* Monetization/Access indicators below content */}
-            {(monetization !== 'included' || stagedRelease || selectedGoalId) && (
+            {(monetization !== 'included' || stagedRelease || selectedGoalId || isLimitedQuantity) && (
               <div className="preview-indicators">
                 {monetization === 'paid' && (
                   <div className="indicator paid">
@@ -1167,7 +1123,16 @@ function CreatePageContent() {
                     <span>Unlock for ${unlockPrice.toFixed(2)}</span>
                   </div>
                 )}
-                {monetization === 'limited' && (
+                {monetization === 'pay_what_you_want' && (
+                  <div className="indicator pwyw">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 6v12M8 10h8M8 14h8" />
+                    </svg>
+                    <span>Pay what you want{payWhatYouWantMin > 0 ? ` (min $${payWhatYouWantMin.toFixed(2)})` : ''}</span>
+                  </div>
+                )}
+                {isLimitedQuantity && (monetization === 'paid' || monetization === 'pay_what_you_want') && (
                   <div className="indicator limited">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <circle cx="12" cy="12" r="10" />
