@@ -185,6 +185,12 @@ export default function MyArtistsPage() {
                   <div className="tier-progress-section">
                     <div className="tier-progress-wheel">
                       <svg viewBox="0 0 36 36" className="tier-progress-svg">
+                        <defs>
+                          <linearGradient id="tierProgressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#8b2bff" />
+                            <stop offset="100%" stopColor="#d946ef" />
+                          </linearGradient>
+                        </defs>
                         <path
                           className="tier-progress-bg"
                           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
