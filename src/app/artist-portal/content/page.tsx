@@ -12,7 +12,7 @@ interface MonthDay {
 
 type TabType = 'library' | 'calendar';
 type FilterType = 'all' | 'music' | 'video' | 'post' | 'image';
-type AccessFilter = 'all' | 'public' | 'supporters' | 'superfans';
+type AccessFilter = 'all' | 'public' | 'followers' | 'supporters' | 'superfans' | 'inner_circle';
 type StatusFilter = 'all' | 'published' | 'scheduled' | 'draft';
 
 export default function ContentPage() {
@@ -126,11 +126,7 @@ export default function ContentPage() {
     return content
       .filter(item => {
         if (typeFilter !== 'all' && item.type !== typeFilter) return false;
-        if (accessFilter !== 'all') {
-          if (accessFilter === 'supporters' && item.accessLevel !== 'supporters') return false;
-          if (accessFilter === 'superfans' && item.accessLevel !== 'superfans') return false;
-          if (accessFilter === 'public' && item.accessLevel !== 'public') return false;
-        }
+        if (accessFilter !== 'all' && item.accessLevel !== accessFilter) return false;
         if (statusFilter !== 'all' && item.status !== statusFilter) return false;
         if (monetizedFilter !== null) {
           const isMonetized = item.revenue > 0;
@@ -176,8 +172,10 @@ export default function ContentPage() {
   const getAccessLabel = (access: string) => {
     switch (access) {
       case 'public': return 'Public';
+      case 'followers': return 'Followers';
       case 'supporters': return 'Supporters';
       case 'superfans': return 'Superfans';
+      case 'inner_circle': return 'Inner Circle';
       default: return access;
     }
   };
@@ -248,8 +246,10 @@ export default function ContentPage() {
                 <select value={accessFilter} onChange={(e) => setAccessFilter(e.target.value as AccessFilter)}>
                   <option value="all">All Access</option>
                   <option value="public">Public</option>
+                  <option value="followers">Followers</option>
                   <option value="supporters">Supporters</option>
                   <option value="superfans">Superfans</option>
+                  <option value="inner_circle">Inner Circle</option>
                 </select>
               </div>
               <div className="filter-group">

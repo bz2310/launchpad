@@ -43,7 +43,7 @@ function CreatePageContent() {
   const [stagedHours, setStagedHours] = useState(24);
 
   // Staged release tier
-  const [stagedTier, setStagedTier] = useState<'superfan' | 'supporter'>('superfan');
+  const [stagedTier, setStagedTier] = useState<'inner_circle' | 'superfan' | 'supporter'>('inner_circle');
 
   // Content
   const [title, setTitle] = useState('');
@@ -816,10 +816,11 @@ function CreatePageContent() {
                 <div className="sub-options staged-options">
                   <select
                     value={stagedTier}
-                    onChange={(e) => setStagedTier(e.target.value as 'superfan' | 'supporter')}
+                    onChange={(e) => setStagedTier(e.target.value as 'inner_circle' | 'superfan' | 'supporter')}
                     className="staged-tier-select"
                   >
-                    <option value="superfan">Superfans</option>
+                    <option value="inner_circle">Inner Circle</option>
+                    <option value="superfan">Superfans & above</option>
                     <option value="supporter">Supporters & above</option>
                   </select>
                   <span>get</span>
@@ -1148,7 +1149,9 @@ function CreatePageContent() {
                       <path d="M2 17l10 5 10-5" />
                       <path d="M2 12l10 5 10-5" />
                     </svg>
-                    <span>{stagedTier === 'superfan' ? 'Superfans' : 'Supporters'} get {stagedHours}h early access</span>
+                    <span>
+                      {stagedTier === 'inner_circle' ? 'Inner Circle' : stagedTier === 'superfan' ? 'Superfans' : 'Supporters'} get {stagedHours}h early access
+                    </span>
                   </div>
                 )}
                 {selectedGoalId && (() => {

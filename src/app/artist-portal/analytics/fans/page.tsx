@@ -164,8 +164,47 @@ export default function FansAnalyticsPage() {
         {/* Top Fans Table */}
         <div className="analytics-chart-container">
           <div className="analytics-chart-header">
-            <h3>Top Fans</h3>
-            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>by spend in {periodLabel}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <h3>Top Fans</h3>
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>by spend in {periodLabel}</span>
+            </div>
+            <button
+              className="export-link-btn"
+              onClick={() => {
+                // Generate CSV data
+                const headers = ['Rank', 'Name', 'Location', 'Tier', 'Total Spend', 'Lifetime Value', 'Engagement Score', 'Joined At', 'Last Active'];
+                const rows = topFans.map(fan => [
+                  fan.rank,
+                  `"${fan.name}"`,
+                  `"${fan.location}"`,
+                  fan.tier,
+                  fan.totalSpend,
+                  fan.lifetimeValue,
+                  fan.engagementScore,
+                  fan.joinedAt,
+                  fan.lastActiveAt
+                ]);
+                const csv = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+
+                // Download the CSV
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `top-fans-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Export Full List
+            </button>
           </div>
           <div className="analytics-drops-table">
             <div className="analytics-drops-header" style={{ gridTemplateColumns: '40px 1fr 80px 80px 80px' }}>

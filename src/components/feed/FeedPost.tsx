@@ -35,15 +35,21 @@ export function FeedPost({ post }: FeedPostProps) {
       <article className="feed-item" data-type={post.type}>
         {/* Header */}
         <div className="post-header">
-          <img src={artist.avatar} alt={artist.name} className="avatar-small" />
-          <div className="post-info">
-            <h3>
-              {artist.name}
-              {artist.verified && <span className="verified-small">✓</span>}
-            </h3>
-            <span className="handle">{artist.handle}</span>
-            <span className="timestamp">{post.timestamp}</span>
-          </div>
+          <Link
+            href={`/artist/${artist.id}`}
+            className="post-artist-link"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img src={artist.avatar} alt={artist.name} className="avatar-small" />
+            <div className="post-info">
+              <h3>
+                {artist.name}
+                {artist.verified && <span className="verified-small">✓</span>}
+              </h3>
+              <span className="handle">{artist.handle}</span>
+            </div>
+          </Link>
+          <span className="timestamp">{post.timestamp}</span>
           <span className={`post-type-badge ${badge.className}`}>{badge.label}</span>
           {post.tierExclusive && (
             <span className={`tier-badge ${post.tierExclusive}`}>

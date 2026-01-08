@@ -405,6 +405,20 @@ body {
     flex-wrap: wrap;
 }
 
+.post-artist-link {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+    min-width: 0;
+}
+
+.post-artist-link:hover .post-info h3 {
+    color: var(--primary-light);
+}
+
 .post-info {
     flex: 1;
     display: flex;
@@ -14593,6 +14607,16 @@ a.leaderboard-item {
     color: #fbbf24;
 }
 
+.content-library-table .access-badge.inner_circle {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.content-library-table .access-badge.followers {
+    background: rgba(100, 116, 139, 0.15);
+    color: #94a3b8;
+}
+
 .content-library-table .td-revenue {
     font-size: 14px;
     font-weight: 500;
@@ -15591,6 +15615,31 @@ a.leaderboard-item {
     color: var(--text-primary);
 }
 
+.export-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.export-link-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--primary);
+}
+
+.export-link-btn svg {
+    flex-shrink: 0;
+}
+
 .analytics-chart-legend {
     display: flex;
     gap: 16px;
@@ -16162,6 +16211,16 @@ a.leaderboard-item {
 .analytics-content-table .access-badge.superfans {
     background: rgba(245, 158, 11, 0.15);
     color: #fbbf24;
+}
+
+.analytics-content-table .access-badge.inner_circle {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.analytics-content-table .access-badge.followers {
+    background: rgba(100, 116, 139, 0.15);
+    color: #94a3b8;
 }
 
 .analytics-content-table .td-revenue {
