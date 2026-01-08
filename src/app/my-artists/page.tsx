@@ -22,9 +22,9 @@ const mockTopFans = [
 
 // Mock purchased content
 const mockPurchasedContent = [
-  { id: 'p1', title: 'Acoustic Sessions EP', type: 'music', price: '$4.99', purchaseDate: '2024-01-15', thumbnail: 'https://picsum.photos/seed/p1/200/200' },
-  { id: 'p2', title: 'Behind the Album Documentary', type: 'video', price: '$9.99', purchaseDate: '2024-01-10', thumbnail: 'https://picsum.photos/seed/p2/200/200' },
-  { id: 'p3', title: 'Exclusive Photo Book', type: 'image', price: '$2.99', purchaseDate: '2023-12-20', thumbnail: 'https://picsum.photos/seed/p3/200/200' },
+  { id: 'p1', title: 'Acoustic Sessions EP', type: 'music', price: '$4.99', purchaseDate: '2024-01-15', thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop' },
+  { id: 'p2', title: 'Behind the Album Documentary', type: 'video', price: '$9.99', purchaseDate: '2024-01-10', thumbnail: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=200&h=200&fit=crop' },
+  { id: 'p3', title: 'Exclusive Photo Book', type: 'image', price: '$2.99', purchaseDate: '2023-12-20', thumbnail: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=200&h=200&fit=crop' },
 ];
 
 export default function MyArtistsPage() {
