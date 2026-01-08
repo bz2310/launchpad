@@ -43,6 +43,42 @@ export default function MyArtistsPage() {
   const userPoints = relationship?.points || 1250;
   const userRank = relationship?.pointsRank || 42;
 
+  // Calculate tier progress - tiers are:
+  // Supporter: Base tier (paying $10/mo)
+  // Superfan: Top 25% of supporters by points
+  // Inner Circle: Top 10 fans overall
+  const currentTier = relationship?.membershipTier || 'supporter';
+  const totalSupporters = 1200; // Mock: total number of supporters for this artist
+
+  // For tier progress, we calculate based on rank
+  // Superfan threshold = top 25% = rank <= 300 (25% of 1200)
+  // Inner Circle threshold = top 10 = rank <= 10
+  const superfanThreshold = Math.ceil(totalSupporters * 0.25);
+  const innerCircleThreshold = 10;
+
+  // Calculate progress to next tier
+  let nextTier: string | null = null;
+  let tierProgress = 0;
+  let tierProgressLabel = '';
+
+  if (currentTier === 'supporter') {
+    nextTier = 'Superfan';
+    // Progress = how close rank is to superfan threshold
+    // If rank is 300 (at threshold), progress = 100%
+    // If rank is 600, progress = 50%
+    tierProgress = Math.min(100, Math.max(0, (superfanThreshold / userRank) * 100));
+    tierProgressLabel = `Rank #${userRank} → Top ${superfanThreshold}`;
+  } else if (currentTier === 'superfan') {
+    nextTier = 'Inner Circle';
+    // Progress toward top 10
+    tierProgress = Math.min(100, Math.max(0, (innerCircleThreshold / userRank) * 100));
+    tierProgressLabel = `Rank #${userRank} → Top 10`;
+  } else if (currentTier === 'inner_circle') {
+    nextTier = null; // Already at top tier
+    tierProgress = 100;
+    tierProgressLabel = 'Top tier achieved!';
+  }
+
   return (
     <MainLayout title="My Artists">
       <div className="my-artists-page">
@@ -143,6 +179,43 @@ export default function MyArtistsPage() {
                     {relationship?.membershipTier || 'Supporter'}
                   </span>
                 </div>
+
+                {/* Tier Progress Wheel */}
+                {nextTier && (
+                  <div className="tier-progress-section">
+                    <div className="tier-progress-wheel">
+                      <svg viewBox="0 0 36 36" className="tier-progress-svg">
+                        <path
+                          className="tier-progress-bg"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path
+                          className="tier-progress-fill"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          strokeDasharray={`${tierProgress}, 100`}
+                        />
+                      </svg>
+                      <div className="tier-progress-value">{Math.round(tierProgress)}%</div>
+                    </div>
+                    <div className="tier-progress-info">
+                      <span className="tier-progress-next">Next: {nextTier}</span>
+                      <span className="tier-progress-label">{tierProgressLabel}</span>
+                    </div>
+                  </div>
+                )}
+                {!nextTier && (
+                  <div className="tier-progress-section tier-achieved">
+                    <div className="tier-achieved-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <circle cx="12" cy="12" r="6" />
+                        <circle cx="12" cy="12" r="2" />
+                      </svg>
+                    </div>
+                    <span className="tier-achieved-text">Inner Circle - Top tier achieved!</span>
+                  </div>
+                )}
+
                 <div className="membership-stats">
                   <div className="membership-stat">
                     <span className="membership-stat-value">{relationship?.releasesSupported || 0}</span>

@@ -47,16 +47,53 @@ export default function DropsAnalyticsPage() {
 
   // Calculate summary stats from filtered content
   const summaryStats = useMemo(() => {
+    // Split content into current period (last 30 days) and previous period (30-60 days ago)
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+
+    const currentPeriod = filteredContent.filter(c => {
+      const date = new Date(c.publishedAt || c.createdAt);
+      return date >= thirtyDaysAgo;
+    });
+
+    const previousPeriod = filteredContent.filter(c => {
+      const date = new Date(c.publishedAt || c.createdAt);
+      return date >= sixtyDaysAgo && date < thirtyDaysAgo;
+    });
+
     const totalViews = filteredContent.reduce((sum, c) => sum + c.viewCount, 0);
     const totalRevenue = filteredContent.reduce((sum, c) => sum + c.revenue, 0);
     const totalEngagement = filteredContent.reduce((sum, c) => sum + c.likeCount + c.commentCount + c.shareCount, 0);
     const avgEngagement = totalViews > 0 ? (totalEngagement / totalViews) * 100 : 0;
+
+    // Current period stats
+    const currentViews = currentPeriod.reduce((sum, c) => sum + c.viewCount, 0);
+    const currentRevenue = currentPeriod.reduce((sum, c) => sum + c.revenue, 0);
+    const currentEngagementTotal = currentPeriod.reduce((sum, c) => sum + c.likeCount + c.commentCount + c.shareCount, 0);
+    const currentAvgEngagement = currentViews > 0 ? (currentEngagementTotal / currentViews) * 100 : 0;
+
+    // Previous period stats
+    const prevViews = previousPeriod.reduce((sum, c) => sum + c.viewCount, 0);
+    const prevRevenue = previousPeriod.reduce((sum, c) => sum + c.revenue, 0);
+    const prevEngagementTotal = previousPeriod.reduce((sum, c) => sum + c.likeCount + c.commentCount + c.shareCount, 0);
+    const prevAvgEngagement = prevViews > 0 ? (prevEngagementTotal / prevViews) * 100 : 0;
+
+    // Calculate % changes
+    const calcChange = (current: number, prev: number) => {
+      if (prev === 0) return current > 0 ? 100 : 0;
+      return ((current - prev) / prev) * 100;
+    };
 
     return {
       totalDrops: filteredContent.length,
       totalViews,
       totalRevenue,
       avgEngagement,
+      dropsChange: calcChange(currentPeriod.length, previousPeriod.length),
+      viewsChange: calcChange(currentViews, prevViews),
+      revenueChange: calcChange(currentRevenue, prevRevenue),
+      engagementChange: calcChange(currentAvgEngagement, prevAvgEngagement),
     };
   }, [filteredContent]);
 
@@ -67,18 +104,30 @@ export default function DropsAnalyticsPage() {
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Total Drops</div>
           <div className="analytics-kpi-value">{summaryStats.totalDrops}</div>
+          <div className={`analytics-kpi-change ${summaryStats.dropsChange >= 0 ? 'positive' : 'negative'}`}>
+            {summaryStats.dropsChange >= 0 ? '+' : ''}{summaryStats.dropsChange.toFixed(1)}% vs last period
+          </div>
         </div>
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Total Views</div>
           <div className="analytics-kpi-value">{formatCompactNumber(summaryStats.totalViews)}</div>
+          <div className={`analytics-kpi-change ${summaryStats.viewsChange >= 0 ? 'positive' : 'negative'}`}>
+            {summaryStats.viewsChange >= 0 ? '+' : ''}{summaryStats.viewsChange.toFixed(1)}% vs last period
+          </div>
         </div>
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Avg Engagement</div>
           <div className="analytics-kpi-value">{summaryStats.avgEngagement.toFixed(1)}%</div>
+          <div className={`analytics-kpi-change ${summaryStats.engagementChange >= 0 ? 'positive' : 'negative'}`}>
+            {summaryStats.engagementChange >= 0 ? '+' : ''}{summaryStats.engagementChange.toFixed(1)}% vs last period
+          </div>
         </div>
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Total Revenue</div>
           <div className="analytics-kpi-value">{formatCurrency(summaryStats.totalRevenue)}</div>
+          <div className={`analytics-kpi-change ${summaryStats.revenueChange >= 0 ? 'positive' : 'negative'}`}>
+            {summaryStats.revenueChange >= 0 ? '+' : ''}{summaryStats.revenueChange.toFixed(1)}% vs last period
+          </div>
         </div>
       </div>
 

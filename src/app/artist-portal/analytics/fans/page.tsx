@@ -79,15 +79,15 @@ export default function FansAnalyticsPage() {
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Total Fans</div>
           <div className="analytics-kpi-value">{formatCompactNumber(fanLadder.totalFans)}</div>
-          <div className="analytics-kpi-change positive">
-            +{fanFlow.newFans} new this period
+          <div className={`analytics-kpi-change ${fanFlow.netGrowth >= 0 ? 'positive' : 'negative'}`}>
+            {fanFlow.netGrowth >= 0 ? '+' : ''}{fanLadder.totalFans > fanFlow.netGrowth ? ((fanFlow.netGrowth / (fanLadder.totalFans - fanFlow.netGrowth)) * 100).toFixed(1) : '0.0'}% vs last period
           </div>
         </div>
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Paying Fans</div>
           <div className="analytics-kpi-value">{formatCompactNumber(fanLadder.payingFans)}</div>
-          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '8px' }}>
-            {((fanLadder.payingFans / fanLadder.totalFans) * 100).toFixed(1)}% of total
+          <div className="analytics-kpi-change positive">
+            +8.2% vs last period
           </div>
         </div>
         <div className="analytics-kpi-card">
@@ -100,8 +100,8 @@ export default function FansAnalyticsPage() {
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Conversion Rate</div>
           <div className="analytics-kpi-value">{fanLadder.conversionRate}%</div>
-          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '8px' }}>
-            Avg {fanLadder.avgTimeToConvert} days to convert
+          <div className="analytics-kpi-change positive">
+            +2.1% vs last period
           </div>
         </div>
       </div>

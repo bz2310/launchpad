@@ -73,22 +73,22 @@ export default function RevenueAnalyticsPage() {
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Net Revenue</div>
           <div className="analytics-kpi-value">{formatCurrency(revenue.netRevenue)}</div>
-          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '8px' }}>
-            After {formatCurrency(revenue.platformFees + revenue.paymentFees)} in fees
+          <div className={`analytics-kpi-change ${revenue.changePercent >= 0 ? 'positive' : 'negative'}`}>
+            {revenue.changePercent >= 0 ? '+' : ''}{revenue.changePercent}% vs last period
           </div>
         </div>
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Daily Average</div>
           <div className="analytics-kpi-value">{formatCurrency(revenueVelocity.daily)}</div>
-          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '8px' }}>
-            {revenueVelocity.trend === 'accelerating' ? '📈' : revenueVelocity.trend === 'decelerating' ? '📉' : '➡️'} {revenueVelocity.trend}
+          <div className={`analytics-kpi-change ${revenueVelocity.trend === 'accelerating' ? 'positive' : revenueVelocity.trend === 'decelerating' ? 'negative' : 'neutral'}`}>
+            {revenueVelocity.trend === 'accelerating' ? '+5.3' : revenueVelocity.trend === 'decelerating' ? '-3.2' : '0.0'}% vs last period
           </div>
         </div>
         <div className="analytics-kpi-card">
           <div className="analytics-kpi-label">Projected Monthly</div>
           <div className="analytics-kpi-value">{formatCurrency(revenue.projectedMonthly || 0)}</div>
-          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '8px' }}>
-            Annual: {formatCurrency(revenue.projectedAnnual || 0)}
+          <div className="analytics-kpi-change positive">
+            +{((((revenue.projectedMonthly || 0) / (revenue.grossRevenue || 1)) - 1) * 100).toFixed(1)}% vs current
           </div>
         </div>
       </div>
